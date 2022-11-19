@@ -1,5 +1,8 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import IconFa from 'react-native-vector-icons/FontAwesome';
+import IconFe from 'react-native-vector-icons/Feather';
+import IconEn from 'react-native-vector-icons/Entypo';
+import IconFea from 'react-native-vector-icons/Feather';
 import {StyleSheet, Text, View, Image} from 'react-native';
 
 function Publication() {
@@ -35,45 +38,26 @@ function Publication() {
         </View>
         <View style={styles.hashtagsContainter}>
           <View style={styles.semaphoreContainer}>
-            <Icon name="circle" size={35} color="#30D34B" />
-            {/* <Image
-              source={require('../assets/EllipseGreen.png')}
-              style={styles.semaphoreColor}
-            /> */}
+            <IconFa name="circle" size={35} color="#30D34B" />
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
-            <Image
-              source={require('../assets/EllipseYellow.png')}
-              style={styles.semaphoreColor}
-            />
+            <IconFa name="circle" size={35} color="#FFBD12" />
+            <Text style={styles.semaphoreNumber}>8</Text>
+          </View>
+          <View style={styles.semaphoreContainer}>
+            <IconFa name="circle" size={35} color="#EB4237" />
+            <Text style={styles.semaphoreNumber}>2</Text>
+          </View>
+          <View style={styles.semaphoreContainer}>
+            <IconFe name="message-circle" size={35} color="#828282" />
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
-            <Image
-              source={require('../assets/EllipseRed.png')}
-              style={styles.semaphoreColor}
-            />
-            <Text style={styles.semaphoreNumber}>18</Text>
+            <IconEn name="share" size={30} color="#828282" />
           </View>
           <View style={styles.semaphoreContainer}>
-            <Image
-              source={require('../assets/icons/VectorComment.png')}
-              style={styles.semaphoreColor}
-            />
-            <Text style={styles.semaphoreNumber}>18</Text>
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <Image
-              source={require('../assets/icons/VectorShare.png')}
-              style={styles.VectorShare}
-            />
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <Image
-              source={require('../assets/icons/Marker.png')}
-              style={styles.Marker}
-            />
+            <IconFea name="bookmark" size={30} color="#2A9DD8" />
           </View>
         </View>
       </View>
