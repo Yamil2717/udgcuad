@@ -1,14 +1,12 @@
 import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
-  Text,
   View,
-  SafeAreaView,
-  ActivityIndicator,
-  FlatList,
   ScrollView,
+  Image,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
-import {Image, Input, Button, ButtonGroup, withTheme, Card} from 'react-native';
 import {AuthContext} from '../../global/contexts/AuthContext';
 import Publication from '../components/Publication';
 import NavBar from '../components/NavBar';
@@ -20,13 +18,14 @@ function HomeScreen() {
     <View style={styles.container}>
       {showNavBar && <NavBar setShowNavBar={setShowNavBar} />}
       <View style={styles.navigate}>
-        <Image
-          source={require('../assets/icons/IconNav.png')}
-          containerStyle={styles.IconNav}
-          onPress={() => setShowNavBar(true)}
-        />
-        <Input
-          containerStyle={styles.containerInputLogin}
+        <TouchableOpacity onPress={() => setShowNavBar(true)}>
+          <Image
+            source={require('../assets/icons/IconNav.png')}
+            style={styles.IconNav}
+          />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.containerInputLogin}
           placeholder="Busca temas de tu interés"
           rightIcon={{
             type: 'font-awesome',
@@ -34,14 +33,13 @@ function HomeScreen() {
             color: '#045A17',
             size: 20,
           }}
-          // onChangeText={(value) => setState({ comment: value })}
         />
         <Image
           source={require('../assets/ImgProfile.png')}
-          containerStyle={styles.ImageProfile}
+          style={styles.ImageProfile}
         />
       </View>
-      <ScrollView>
+      <ScrollView style={styles.containerPublications}>
         <Publication />
         <Publication />
         <Publication />
@@ -68,12 +66,16 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   containerInputLogin: {
-    width: 260,
+    width: 250,
+    color: '#164578',
   },
   ImageProfile: {
     width: 50,
     height: 50,
     margin: 10,
+  },
+  containerPublications: {
+    marginBottom: 100,
   },
 });
 

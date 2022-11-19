@@ -4,48 +4,33 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  ActivityIndicator,
-  FlatList,
+  Image,
+  Button,
+  TouchableOpacity,
 } from 'react-native';
-import {Image, Input, Button, ButtonGroup, withTheme, Card} from 'react-native';
 
 function NavBar({setShowNavBar}) {
   return (
     <View style={styles.container}>
-      <View style={styles.containerClose}>
-        <Image
-          source={require('../assets/icons/ArrowCircleDown.png')}
-          style={styles.imgClose}
-          onPress={() => setShowNavBar(false)}
-        />
-        <Text style={styles.textClose} onPress={() => setShowNavBar(false)}>
-          Cerrar
-        </Text>
-      </View>
+      <TouchableOpacity onPress={() => setShowNavBar(false)}>
+        <View style={styles.containerClose}>
+          <Image
+            source={require('../assets/icons/ArrowCircleDown.png')}
+            style={styles.imgClose}
+          />
+          <Text style={styles.textClose}>Cerrar</Text>
+        </View>
+      </TouchableOpacity>
 
       <Text style={styles.textTitle}>Tus comunidades</Text>
 
       <Button
         title="Crear comunidad"
-        buttonStyle={{
-          borderColor: '#45A17C',
-          borderRadius: 30,
-          borderWidth: 2,
-        }}
+        buttonStyle={styles.buttonStyle}
         type="outline"
         raised
-        containerStyle={{
-          width: 200,
-          borderRadius: 30,
-          marginHorizontal: 50,
-          marginVertical: 10,
-        }}
-        titleStyle={{
-          color: '#45A17C',
-          marginHorizontal: 5,
-          fontSize: 16,
-        }}
+        containerStyle={styles.buttonContainerStyle}
+        titleStyle={styles.buttonTitleStyle}
         onPress={() => navigation.navigate('Register')}
       />
 
@@ -78,7 +63,7 @@ const styles = StyleSheet.create({
   },
   textClose: {
     fontSize: 16,
-    color: '#96B1A6',
+    color: '#164578',
     marginLeft: 10,
   },
   textTitle: {
@@ -87,6 +72,7 @@ const styles = StyleSheet.create({
     marginLeft: '20%',
   },
   textCategory: {
+    color: '#828282',
     fontSize: 18,
     marginVertical: 10,
     marginLeft: 20,
@@ -100,6 +86,22 @@ const styles = StyleSheet.create({
   ImageProfile: {
     width: 50,
     height: 50,
+  },
+  buttonStyle: {
+    borderColor: '#45A17C',
+    borderRadius: 30,
+    borderWidth: 2,
+  },
+  buttonContainerStyle: {
+    width: 200,
+    borderRadius: 30,
+    marginHorizontal: 50,
+    marginVertical: 10,
+  },
+  buttonTitleStyle: {
+    color: '#45A17C',
+    marginHorizontal: 5,
+    fontSize: 16,
   },
 });
 export default NavBar;

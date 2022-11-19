@@ -1,22 +1,14 @@
 import React from 'react';
-
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ActivityIndicator,
-  FlatList,
-} from 'react-native';
-import {Image, Input, Button, ButtonGroup, withTheme, Card} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {StyleSheet, Text, View, Image} from 'react-native';
 
 function Publication() {
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.informationProfile}>
         <Image
           source={require('../assets/ImgProfile.png')}
-          containerStyle={styles.ImageProfile}
+          style={styles.ImageProfile}
         />
         <View>
           <Text style={styles.titleInformationProfile}>Ciclovías</Text>
@@ -38,48 +30,49 @@ function Publication() {
         <View style={styles.picturePublication}>
           <Image
             source={require('../assets/PublicationImg.png')}
-            containerStyle={styles.ImagePublication}
+            style={styles.ImagePublication}
           />
         </View>
         <View style={styles.hashtagsContainter}>
           <View style={styles.semaphoreContainer}>
-            <Image
+            <Icon name="circle" size={35} color="#30D34B" />
+            {/* <Image
               source={require('../assets/EllipseGreen.png')}
-              containerStyle={styles.semaphoreColor}
-            />
+              style={styles.semaphoreColor}
+            /> */}
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
             <Image
               source={require('../assets/EllipseYellow.png')}
-              containerStyle={styles.semaphoreColor}
+              style={styles.semaphoreColor}
             />
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
             <Image
               source={require('../assets/EllipseRed.png')}
-              containerStyle={styles.semaphoreColor}
+              style={styles.semaphoreColor}
             />
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
             <Image
               source={require('../assets/icons/VectorComment.png')}
-              containerStyle={styles.semaphoreColor}
+              style={styles.semaphoreColor}
             />
             <Text style={styles.semaphoreNumber}>18</Text>
           </View>
           <View style={styles.semaphoreContainer}>
             <Image
               source={require('../assets/icons/VectorShare.png')}
-              containerStyle={styles.VectorShare}
+              style={styles.VectorShare}
             />
           </View>
           <View style={styles.semaphoreContainer}>
             <Image
               source={require('../assets/icons/Marker.png')}
-              containerStyle={styles.Marker}
+              style={styles.Marker}
             />
           </View>
         </View>
@@ -106,7 +99,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   titleInformationProfile: {
-    color: '#45A17C',
+    color: '#2A9DD8',
     fontSize: 22,
   },
   subTitleInformationProfile: {
@@ -130,9 +123,11 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     backgroundColor: '#F5F5F5',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   hashtags: {
-    color: '#45A17C',
+    color: '#2A9DD8',
     textAlign: 'left',
     marginVertical: 1,
     marginHorizontal: 5,
@@ -142,7 +137,7 @@ const styles = StyleSheet.create({
     marginVertical: 1,
   },
   descriptionText: {
-    color: '#828282',
+    color: '#2A9DD8',
     fontSize: 18,
     marginVertical: 1,
   },
@@ -162,8 +157,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   Marker: {
-    width: 20,
-    height: 23,
+    width: 28,
+    height: 26,
   },
   VectorShare: {
     width: 20,
