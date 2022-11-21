@@ -1,182 +1,248 @@
 import React from 'react';
-import {Text, View, ScrollView} from 'react-native';
-import {Input, Button} from 'react-native';
+
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  Image,
+} from 'react-native';
+import NavigationRegister from './NavigationRegister';
+
+import IconsAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconsFoundation from 'react-native-vector-icons/Foundation';
 
 function RegisterStepOne({
-  setStep,
+  step,
+  onChangeStep,
   name,
-  setName,
+  onChangeName,
   email,
-  setEmail,
+  onChangeEmail,
+  password,
+  onChangePassword,
+  rePassword,
+  onChangeRePassword,
   phone,
-  setPhone,
+  onChangePhone,
   postalCode,
-  setPostalCode,
-  styles,
+  onChangePostalCode,
+  registerWithFacebook,
+  registerWithGoogle,
 }) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <NavigationRegister
+        valueScreen={step}
+        previousScreenOnPress={onChangeStep}
+        afterScreenOnPress={onChangeStep}
+        incrementOnPress={1}
+      />
       <ScrollView>
-        <View style={{justifyContent: 'flex-end', alignItems: 'flex-end'}}>
-          <Button
-            title="Continuar"
-            icon={{
-              name: 'arrow-right',
-              type: 'font-awesome',
-              size: 15,
-              color: '#45A17C',
-            }}
-            iconRight
-            iconContainerStyle={{
-              borderColor: '#45A17C',
-              borderRadius: 30,
-              borderWidth: 2,
-              padding: 5,
-            }}
-            type="clear"
-            raised
-            containerStyle={{
-              width: 150,
-              borderRadius: 30,
-            }}
-            titleStyle={{
-              color: '#45A17C',
-              marginHorizontal: 5,
-              fontSize: 20,
-            }}
-            onPress={() => setStep(1)}
-          />
-        </View>
         <Text style={styles.textTitle}>Crear cuenta</Text>
-        <View style={styles.subContainerStep1}>
+        <View style={styles.subContainer}>
           <Text style={styles.textSubTitle}>Nombre completo</Text>
-          <Input
-            placeholder="Nombre"
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'user',
-              color: '#045A17',
-              size: 20,
-            }}
-            value={name}
-            style={styles.inputLogin}
-            onChangeText={value => setName(value)}
-          />
-
-          <Text style={styles.textSubTitle}>Correo</Text>
-          <Input
-            placeholder="Correo"
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'envelope',
-              color: '#045A17',
-              size: 20,
-            }}
-            value={email}
-            style={styles.inputLogin}
-            onChangeText={value => setEmail(value)}
-          />
-
+          <View style={styles.formsStyle}>
+            <IconsAwesome5
+              name="user-alt"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="Nombre"
+              style={styles.input}
+              value={name}
+              onChangeText={onChangeName}
+            />
+          </View>
+          <Text style={styles.textSubTitle}>Correo electrónico</Text>
+          <View style={styles.formsStyle}>
+            <IconsMaterial
+              name="email"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="voces@gmail.com"
+              style={styles.input}
+              value={email}
+              onChangeText={onChangeEmail}
+            />
+          </View>
+          <Text style={styles.textSubTitle}>Contraseña</Text>
+          <View style={styles.formsStyle}>
+            <IconsFoundation
+              name="lock"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="********"
+              style={styles.input}
+              secureTextEntry={true}
+              value={password}
+              onChangeText={onChangePassword}
+              keyboardType="numeric"
+            />
+          </View>
+          <Text style={styles.textSubTitle}>Repetir contraseña</Text>
+          <View style={styles.formsStyle}>
+            <IconsFoundation
+              name="lock"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="********"
+              style={styles.input}
+              secureTextEntry={true}
+              value={rePassword}
+              onChangeText={onChangeRePassword}
+              keyboardType="numeric"
+            />
+          </View>
           <Text style={styles.textSubTitle}>Teléfono</Text>
-          <Input
-            placeholder="Teléfono"
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'phone',
-              color: '#045A17',
-              size: 20,
-            }}
-            value={phone}
-            style={styles.inputLogin}
-            onChangeText={value => setPhone(value)}
-          />
-
-          <Text style={styles.textSubTitle}>C.P.</Text>
-          <Input
-            placeholder="Código postal"
-            leftIcon={{
-              type: 'font-awesome',
-              name: 'user',
-              color: '#045A17',
-              size: 20,
-            }}
-            value={postalCode}
-            style={styles.inputLogin}
-            onChangeText={value => setPostalCode(value)}
-          />
+          <View style={styles.formsStyle}>
+            <IconsMaterial
+              name="phone"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="345 548 9415"
+              style={styles.input}
+              value={phone}
+              onChangeText={onChangePhone}
+              keyboardType="numeric"
+            />
+          </View>
+          <Text style={styles.textSubTitle}>Código Postal</Text>
+          <View style={styles.formsStyle}>
+            <IconsAwesome5
+              name="map-marker-alt"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="00000"
+              keyboardType="numeric"
+              style={styles.input}
+              value={postalCode}
+              onChangeText={onChangePostalCode}
+            />
+          </View>
         </View>
         <View style={styles.buttons}>
-          <Button
-            title="Ingresa con Google"
-            icon={{
-              // type: "flat-color",
-              // name: "FcGoogle",
-              // color: "white",
-              // backgroundColor: "#DB4437",
-              // background: uri(GoogleLogo),
-              paddingHorizontal: 8,
-              paddingVertical: 5,
-              borderRadius: 100,
-              size: 30,
-            }}
-            buttonStyle={{
-              borderColor: '#156746',
-              borderRadius: 30,
-              borderWidth: 2,
-              paddingVertical: 5,
-            }}
-            type="outline"
-            raised
-            containerStyle={{
-              width: 300,
-              borderRadius: 30,
-              marginHorizontal: 10,
-              marginBottom: 15,
-            }}
-            titleStyle={{
-              color: '#156746',
-              marginHorizontal: 5,
-              fontSize: 16,
-            }}
-            onPress={() => alert('Google')}
-          />
-
-          <Button
-            title="Ingresa con Facebook"
-            icon={{
-              type: 'font-awesome',
-              name: 'facebook',
-              color: 'white',
-              backgroundColor: '#3b5998',
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              borderRadius: 100,
-              size: 30,
-            }}
-            buttonStyle={{
-              borderColor: '#156746',
-              borderRadius: 30,
-              borderWidth: 2,
-              paddingVertical: 5,
-            }}
-            containerStyle={{
-              width: 300,
-              borderRadius: 30,
-              marginHorizontal: 10,
-              marginTop: 15,
-            }}
-            titleStyle={{
-              color: '#156746',
-              marginHorizontal: 5,
-              fontSize: 16,
-            }}
-            type="submit"
-            onPress={() => alert('Facebook')}
-          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => registerWithGoogle()}>
+            <Image
+              source={require('../../../assets/icons/LogoGoogleIcon.png')}
+              style={styles.icons2}
+            />
+            <Text style={styles.buttonText}>Ingresa con Google</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => registerWithFacebook()}>
+            <Image
+              source={require('../../../assets/icons/LogoFacebook.png')}
+              style={styles.icons2}
+            />
+            <Text style={styles.buttonText}>Ingresa con Facebook</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+  },
+  textTitle: {
+    color: '#2A9DD8',
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subContainer: {
+    marginHorizontal: 50,
+    marginBottom: 10,
+  },
+  textSubTitle: {
+    color: '#828282',
+    fontSize: 18,
+    marginVertical: 5,
+  },
+  formsStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: '#F8F8F8',
+    height: 35,
+    borderRadius: 24,
+    marginBottom: 10,
+  },
+  iconForm: {
+    width: 15,
+    height: 15,
+    marginTop: 10,
+    marginLeft: 15,
+    marginRight: 5,
+    padding: 0,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#F8F8F8',
+    fontSize: 14,
+    height: 35,
+    borderTopRightRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingVertical: 5,
+    paddingHorizontal: 0,
+  },
+  buttons: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  button: {
+    paddingVertical: 7,
+    borderColor: '#2A9DD8',
+    borderRadius: 30,
+    borderWidth: 2,
+    backgroundColor: 'transparent',
+    marginBottom: 20,
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icons2: {
+    width: 25,
+    height: 25,
+    marginRight: 20,
+  },
+  buttonText: {
+    color: '#164578',
+    fontSize: 16,
+    fontWeight: '300',
+  },
+});
 
 export default RegisterStepOne;

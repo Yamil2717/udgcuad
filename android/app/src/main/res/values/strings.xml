@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">udgcuad</string>
+    <string name="app_name">Voces</string>
+    <string name="facebook_app_id">526765202674252</string>
+    <string name="fb_login_protocol_scheme">fb526765202674252</string>
+    <string name="facebook_client_token">af5ecd339da9db91078427e9ff576d39</string>
+    <string name="server_client_id">1070407633105-hbtss9bnqm1kq6go2iic1m4chceiihkp.apps.googleusercontent.com</string>
 </resources>

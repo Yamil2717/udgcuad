@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,14 +7,38 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import {AuthContext} from '../../global/contexts/AuthContext';
+import {AuthContext} from '../contexts/AuthContext';
+import {AxiosContext} from '../contexts/AxiosContext';
 import Publication from '../components/Publication';
 import NavBar from '../components/NavBar';
+import Spinner from '../components/Spinner';
 
 function HomeScreen() {
   let [showNavBar, setShowNavBar] = useState(false);
+  let [loading, setLoading] = useState(true);
 
-  return (
+  let authContext = useContext(AuthContext);
+  const {authAxios} = useContext(AxiosContext);
+
+  useEffect(() => {
+    getDataUser();
+  }, []);
+
+  async function getDataUser() {
+    await authAxios
+      .get('/user')
+      .then(({data}) => {
+        console.log(data);
+        //authContext.setDataUser({})*/
+      })
+      .catch(err => console.error(JSON.stringify(err)));
+
+    setLoading(false);
+  }
+
+  return loading ? (
+    <Spinner />
+  ) : (
     <View style={styles.container}>
       {showNavBar && <NavBar setShowNavBar={setShowNavBar} />}
       <View style={styles.navigate}>
@@ -50,11 +74,9 @@ function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     backgroundColor: '#fff',
   },
   navigate: {
-    // flex: 1,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',

@@ -22,15 +22,14 @@ function AuthProvider({children}) {
   let [dataUser, setDataUser] = useState({...DataUserDefault});
   let [authState, setAuthState] = useState({...AuthStateDefault});
 
-  async function logout() {
-    await resetGenericPassword();
-    setAuthState({...AuthStateDefault});
-  }
-
   function getAccessToken() {
     return authState.accessToken;
   }
 
+  async function logout() {
+    await resetGenericPassword();
+    setAuthState({...AuthStateDefault});
+  }
   return (
     <Provider
       value={{

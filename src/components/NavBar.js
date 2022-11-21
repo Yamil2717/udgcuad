@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 import {
   StyleSheet,
@@ -8,8 +8,10 @@ import {
   Button,
   TouchableOpacity,
 } from 'react-native';
+import {AuthContext} from '../contexts/AuthContext';
 
-function NavBar({setShowNavBar}) {
+function NavBar({setShowNavBar, navigation}) {
+  let authContext = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setShowNavBar(false)}>
@@ -41,6 +43,16 @@ function NavBar({setShowNavBar}) {
         />
         <Text style={styles.textCategory}>Ciclovías</Text>
       </View>
+
+      <Button
+        title="Cerrar sesión"
+        buttonStyle={styles.buttonStyleLogout}
+        type="outline"
+        raised
+        containerStyle={styles.buttonContainerStyle}
+        titleStyle={styles.buttonTitleStyle}
+        onPress={() => authContext.logout()}
+      />
     </View>
   );
 }
@@ -88,6 +100,11 @@ const styles = StyleSheet.create({
     height: 50,
   },
   buttonStyle: {
+    borderColor: '#45A17C',
+    borderRadius: 30,
+    borderWidth: 2,
+  },
+  buttonStyleLogout: {
     borderColor: '#45A17C',
     borderRadius: 30,
     borderWidth: 2,

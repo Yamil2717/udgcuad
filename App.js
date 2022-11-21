@@ -8,8 +8,6 @@ import HomeScreen from './src/pages/HomeScreen';
 import LoginScreen from './src/pages/UserAccess/LoginScreen';
 import RegisterScreen from './src/pages/UserAccess/RegisterScreen';
 
-import {Text, View} from 'react-native';
-
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -19,7 +17,6 @@ function App() {
   const loadJWT = useCallback(async () => {
     try {
       let value = await getGenericPassword();
-      console.log(`value of get auth "${value}"`);
       let JWT = JSON.parse(value.password);
       authContext.setAuthState({
         accessToken: JWT.accessToken || null,
@@ -30,9 +27,6 @@ function App() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(
-        `Ha sucedido un error, contacté al administrador y provéase la siguiente información: ${error.message}`,
-      );
 
       authContext.setAuthState({
         accessToken: null,
@@ -45,8 +39,6 @@ function App() {
   useEffect(() => {
     loadJWT();
   }, [loadJWT]);
-
-  console.log(authContext?.authState?.authenticated);
 
   return loading ? (
     <Spinner />
