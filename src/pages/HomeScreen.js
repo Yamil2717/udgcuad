@@ -28,8 +28,7 @@ function HomeScreen() {
     await authAxios
       .get('/user')
       .then(({data}) => {
-        console.log(data);
-        //authContext.setDataUser({})*/
+        authContext.setDataUser({...data});
       })
       .catch(err => console.error(JSON.stringify(err)));
 
@@ -56,6 +55,14 @@ function HomeScreen() {
             name: 'search',
             color: '#045A17',
             size: 20,
+          }}
+          textColor={styles.colorInput}
+          theme={{
+            colors: {
+              placeholder: 'black',
+              text: 'black',
+              primary: 'black',
+            },
           }}
         />
         <Image
@@ -98,6 +105,9 @@ const styles = StyleSheet.create({
   },
   containerPublications: {
     marginBottom: 100,
+  },
+  colorInput: {
+    color: '#000',
   },
 });
 

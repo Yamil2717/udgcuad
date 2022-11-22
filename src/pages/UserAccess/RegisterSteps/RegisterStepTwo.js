@@ -45,9 +45,9 @@ function RegisterStepTwo({
       },
       response => {
         if (response.assets) {
-          if (response.assets[0].fileSize > 2097152) {
+          if (response.assets[0].fileSize > 6291456) {
             return alert(
-              'La imagen no puede superar los 2MB, por favor escoja otra.',
+              'La imagen no puede superar los 6MB, por favor escoja otra.',
             );
           }
           setPhoto({...response.assets[0]});

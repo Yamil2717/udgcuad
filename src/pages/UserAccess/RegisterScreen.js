@@ -152,6 +152,10 @@ function RegisterScreen({navigation}) {
       if (password !== rePassword)
         return alert('Las contraseñas no coinciden.');
       if (!photo) return alert('Debe seleccionar una imagen');
+      if (password.length < 8)
+        return alert(
+          'Debe ingresar una contraseña segura (minimo 8 caracteres).',
+        );
       await authAxios
         .post(`${env.api}/user/upload`, createFormData(photo), {
           headers: {'Content-Type': 'multipart/form-data'},

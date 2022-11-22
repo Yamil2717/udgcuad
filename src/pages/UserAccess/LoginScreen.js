@@ -106,6 +106,14 @@ function LoginScreen({navigation}) {
                 style={styles.inputLogin}
                 value={email}
                 onChangeText={onChangeEmail}
+                textColor={styles.colorInput}
+                theme={{
+                  colors: {
+                    placeholder: 'black',
+                    text: 'black',
+                    primary: 'black',
+                  },
+                }}
               />
             </View>
             <Text style={styles.textSubTitle}>Contraseña</Text>
@@ -122,6 +130,14 @@ function LoginScreen({navigation}) {
                 style={styles.inputLogin}
                 value={password}
                 onChangeText={onChangePassword}
+                textColor={styles.colorInput}
+                theme={{
+                  colors: {
+                    placeholder: 'black',
+                    text: 'black',
+                    primary: 'black',
+                  },
+                }}
               />
             </View>
           </View>
@@ -242,6 +258,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontWeight: '500',
+  },
+  colorInput: {
+    color: '#000',
   },
 });
 

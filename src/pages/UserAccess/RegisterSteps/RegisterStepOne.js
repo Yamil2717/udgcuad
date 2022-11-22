@@ -58,6 +58,14 @@ function RegisterStepOne({
               style={styles.input}
               value={name}
               onChangeText={onChangeName}
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={styles.textSubTitle}>Correo electrónico</Text>
@@ -73,6 +81,14 @@ function RegisterStepOne({
               style={styles.input}
               value={email}
               onChangeText={onChangeEmail}
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={styles.textSubTitle}>Contraseña</Text>
@@ -90,6 +106,14 @@ function RegisterStepOne({
               value={password}
               onChangeText={onChangePassword}
               keyboardType="numeric"
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={styles.textSubTitle}>Repetir contraseña</Text>
@@ -107,6 +131,14 @@ function RegisterStepOne({
               value={rePassword}
               onChangeText={onChangeRePassword}
               keyboardType="numeric"
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={styles.textSubTitle}>Teléfono</Text>
@@ -123,6 +155,14 @@ function RegisterStepOne({
               value={phone}
               onChangeText={onChangePhone}
               keyboardType="numeric"
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={styles.textSubTitle}>Código Postal</Text>
@@ -139,6 +179,14 @@ function RegisterStepOne({
               style={styles.input}
               value={postalCode}
               onChangeText={onChangePostalCode}
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
         </View>
@@ -242,6 +290,9 @@ const styles = StyleSheet.create({
     color: '#164578',
     fontSize: 16,
     fontWeight: '300',
+  },
+  colorInput: {
+    color: '#000',
   },
 });
 

@@ -80,6 +80,14 @@ function RegisterStepThree({
               onChangeText={value =>
                 setCurrentLocation({...currentLocation, addressManual: value})
               }
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: 'black',
+                  text: 'black',
+                  primary: 'black',
+                },
+              }}
             />
           </View>
           <Text style={[styles.textSubTitle, styles.textCenter]}>
@@ -207,6 +215,9 @@ const styles = StyleSheet.create({
     color: '#2A9DD8',
     fontSize: 16,
     marginTop: 10,
+  },
+  colorInput: {
+    color: '#000',
   },
 });
 
