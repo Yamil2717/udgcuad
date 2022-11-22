@@ -61,11 +61,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={styles.textSubTitle}>Correo electrónico</Text>
@@ -84,11 +86,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={styles.textSubTitle}>Contraseña</Text>
@@ -109,11 +113,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={styles.textSubTitle}>Repetir contraseña</Text>
@@ -134,11 +140,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={styles.textSubTitle}>Teléfono</Text>
@@ -158,11 +166,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={styles.textSubTitle}>Código Postal</Text>
@@ -182,11 +192,13 @@ function RegisterStepOne({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
         </View>
@@ -292,7 +304,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   colorInput: {
-    color: '#000',
+    color: '#000000',
   },
 });
 

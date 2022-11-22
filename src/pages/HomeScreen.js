@@ -59,11 +59,13 @@ function HomeScreen() {
           textColor={styles.colorInput}
           theme={{
             colors: {
-              placeholder: 'black',
-              text: 'black',
-              primary: 'black',
+              placeholder: '#000000',
+              text: '#000000',
+              primary: '#000000',
             },
           }}
+          selectionColor="#000000"
+          accessibilityIgnoresInvertColors={true}
         />
         <Image
           source={require('../assets/ImgProfile.png')}
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   colorInput: {
-    color: '#000',
+    color: '#000000',
   },
 });
 

@@ -109,11 +109,13 @@ function LoginScreen({navigation}) {
                 textColor={styles.colorInput}
                 theme={{
                   colors: {
-                    placeholder: 'black',
-                    text: 'black',
-                    primary: 'black',
+                    placeholder: '#000000',
+                    text: '#000000',
+                    primary: '#000000',
                   },
                 }}
+                selectionColor="#000000"
+                accessibilityIgnoresInvertColors={true}
               />
             </View>
             <Text style={styles.textSubTitle}>Contraseña</Text>
@@ -133,11 +135,13 @@ function LoginScreen({navigation}) {
                 textColor={styles.colorInput}
                 theme={{
                   colors: {
-                    placeholder: 'black',
-                    text: 'black',
-                    primary: 'black',
+                    placeholder: '#000000',
+                    text: '#000000',
+                    primary: '#000000',
                   },
                 }}
+                selectionColor="#000000"
+                accessibilityIgnoresInvertColors={true}
               />
             </View>
           </View>
@@ -260,7 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   colorInput: {
-    color: '#000',
+    color: '#000000',
   },
 });
 

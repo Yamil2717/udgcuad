@@ -83,11 +83,13 @@ function RegisterStepThree({
               textColor={styles.colorInput}
               theme={{
                 colors: {
-                  placeholder: 'black',
-                  text: 'black',
-                  primary: 'black',
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
                 },
               }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
             />
           </View>
           <Text style={[styles.textSubTitle, styles.textCenter]}>
@@ -107,7 +109,7 @@ function RegisterStepThree({
                 ? `Longitud: ${currentLocation.long} - Latitud: ${currentLocation.lat}`
                 : currentLocation?.addressManual
                 ? currentLocation?.addressManual
-                : 'No se pudo obtener su ubicación. asdasdsadsads j aja jajajajajaaj'}
+                : 'No se pudo obtener su ubicación.'}
             </Text>
           </TouchableOpacity>
           <Image
@@ -217,7 +219,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   colorInput: {
-    color: '#000',
+    color: '#000000',
   },
 });
 
