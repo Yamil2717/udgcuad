@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   PermissionsAndroid,
   SafeAreaView,
@@ -9,10 +9,13 @@ import {
   View,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import NavigationRegister from './NavigationRegister';
 import Geolocation from '@react-native-community/geolocation';
 import IconsAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MapView, {Marker} from 'react-native-maps';
+import Spinner from '../../../components/Spinner';
 
 function RegisterStepThree({
   step,
@@ -24,6 +27,8 @@ function RegisterStepThree({
   useEffect(() => {
     requestLocationPermission();
   }, []);
+
+  let [loadingMap, setLoadingMap] = useState(true);
 
   async function requestLocationPermission() {
     const granted = await PermissionsAndroid.request(
@@ -40,6 +45,7 @@ function RegisterStepThree({
           const currentLongitude = JSON.stringify(position.coords.longitude);
           const currentLatitude = JSON.stringify(position.coords.latitude);
           setCurrentLocation({long: currentLongitude, lat: currentLatitude});
+          setLoadingMap(false);
         },
         error => console.error(error),
       );
@@ -112,10 +118,35 @@ function RegisterStepThree({
                 : 'No se pudo obtener su ubicación.'}
             </Text>
           </TouchableOpacity>
-          <Image
+          <View style={styles}>
+            {loadingMap ? (
+              Spinner
+            ) : (
+              <MapView
+                style={styles.map}
+                region={{
+                  latitude: parseFloat(currentLocation.lat),
+                  longitude: parseFloat(currentLocation.long),
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}>
+                <Marker
+                  coordinate={{
+                    latitude: parseFloat(currentLocation.lat),
+                    longitude: parseFloat(currentLocation.long),
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  title={`Here`}
+                  description={`description`}
+                />
+              </MapView>
+            )}
+          </View>
+          {/* <Image
             source={require('../../../assets/map.jpg')}
             style={styles.map}
-          />
+          /> */}
           <Text
             style={styles.textSkip}
             onPress={() => {
@@ -221,6 +252,10 @@ const styles = StyleSheet.create({
   colorInput: {
     color: '#000000',
   },
+  // map: {
+  //   width: Dimensions.get('window').width,
+  //   height: Dimensions.get('window').height,
+  // },
 });
 
 export default RegisterStepThree;
