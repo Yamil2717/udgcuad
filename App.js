@@ -5,6 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Spinner from './src/components/Spinner';
 import HomeScreen from './src/pages/HomeScreen';
+import CreatePublicationScreen from './src/pages/Publications/CreatePublicationScreen';
 import LoginScreen from './src/pages/UserAccess/LoginScreen';
 import RegisterScreen from './src/pages/UserAccess/RegisterScreen';
 
@@ -48,6 +49,11 @@ function App() {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="CreatePublication"
+          component={CreatePublicationScreen}
           options={{title: null, headerShown: false}}
         />
       </Stack.Navigator>

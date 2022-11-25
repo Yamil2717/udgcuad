@@ -36,6 +36,16 @@ function NavBar({setShowNavBar, navigation}) {
         onPress={() => navigation.navigate('Register')}
       />
 
+      <Button
+        title="Crear Publicacion"
+        buttonStyle={styles.buttonStyle}
+        type="outline"
+        raised
+        containerStyle={styles.buttonContainerStyle}
+        titleStyle={styles.buttonTitleStyle}
+        onPress={() => navigation.navigate('CreatePublication')}
+      />
+
       <View style={styles.subContainer}>
         <Image
           source={require('../assets/ImgProfile.png')}

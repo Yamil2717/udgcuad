@@ -13,7 +13,7 @@ import Publication from '../components/Publication';
 import NavBar from '../components/NavBar';
 import Spinner from '../components/Spinner';
 
-function HomeScreen() {
+function HomeScreen({navigation}) {
   let [showNavBar, setShowNavBar] = useState(false);
   let [loading, setLoading] = useState(true);
 
@@ -39,7 +39,9 @@ function HomeScreen() {
     <Spinner />
   ) : (
     <View style={styles.container}>
-      {showNavBar && <NavBar setShowNavBar={setShowNavBar} />}
+      {showNavBar && (
+        <NavBar setShowNavBar={setShowNavBar} navigation={navigation} />
+      )}
       <View style={styles.navigate}>
         <TouchableOpacity onPress={() => setShowNavBar(true)}>
           <Image
