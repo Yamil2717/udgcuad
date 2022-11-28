@@ -5,67 +5,75 @@ import IconEn from 'react-native-vector-icons/Entypo';
 import IconFea from 'react-native-vector-icons/Feather';
 import {StyleSheet, Text, View, Image} from 'react-native';
 
-function Publication() {
+function Publication({dataPublication}) {
+  console.log(dataPublication, 'dadtadtadtat');
   return (
-    <View style={styles.container}>
-      <View style={styles.informationProfile}>
-        <Image
-          source={require('../assets/ImgProfile.png')}
-          style={styles.ImageProfile}
-        />
-        <View>
-          <Text style={styles.titleInformationProfile}>Ciclovías</Text>
-          <Text style={styles.subTitleInformationProfile}>Pedro Gutiérrez</Text>
-        </View>
-      </View>
-      <View style={styles.subContainer}>
-        <View style={styles.descriptionPublication}>
-          <Text style={styles.descriptionText}>
-            Se permite el paso de tríciclos por ciclovías
-          </Text>
-          <Text style={styles.userLinked}>@Juan Gutiérrez</Text>
-          <View style={styles.hashtagsContainter}>
-            <Text style={styles.hashtags}>#gobiernogdl</Text>
-            <Text style={styles.hashtags}>#bicicletas</Text>
-            <Text style={styles.hashtags}>#circulación</Text>
+    <>
+      {dataPublication.map((result, index) => {
+        return (
+          <View style={styles.container}>
+            <View style={styles.informationProfile}>
+              <Image
+                source={require('../assets/ImgProfile.png')}
+                style={styles.ImageProfile}
+              />
+              <View>
+                <Text style={styles.descriptionText}>
+                  {result?.description}
+                </Text>
+                <Text style={styles.userLinked}>@{result.ownerName}</Text>
+                <View style={styles.hashtagsContainter}>
+                  <Text style={styles.hashtags}>#gobiernogdl</Text>
+                  <Text style={styles.hashtags}>#bicicletas</Text>
+                  <Text style={styles.hashtags}>#circulación</Text>
+                </View>
+              </View>
+
+              <View style={styles.picturePublication}>
+                <Image
+                  source={require('../assets/PublicationImg.png')}
+                  // source={{uri: result?.pictureGroup}}
+                  style={styles.ImagePublication}
+                />
+              </View>
+              
+              <View style={styles.hashtagsContainter}>
+                <View style={styles.semaphoreContainer}>
+                  <IconFa name="circle" size={35} color="#30D34B" />
+                  <Text style={styles.semaphoreNumber}>18</Text>
+                </View>
+                <View style={styles.semaphoreContainer}>
+                  <IconFa name="circle" size={35} color="#FFBD12" />
+                  <Text style={styles.semaphoreNumber}>8</Text>
+                </View>
+                <View style={styles.semaphoreContainer}>
+                  <IconFa name="circle" size={35} color="#EB4237" />
+                  <Text style={styles.semaphoreNumber}>2</Text>
+                </View>
+                <View style={styles.semaphoreContainer}>
+                  <IconFe name="message-circle" size={35} color="#828282" />
+                  <Text style={styles.semaphoreNumber}>18</Text>
+                </View>
+                <View style={styles.semaphoreContainer}>
+                  <IconEn name="share" size={30} color="#828282" />
+                </View>
+                <View style={styles.semaphoreContainer}>
+                  <IconFea name="bookmark" size={30} color="#2A9DD8" />
+                </View>
+              </View>
+            </View>
           </View>
-        </View>
-        <View style={styles.picturePublication}>
-          <Image
-            source={require('../assets/PublicationImg.png')}
-            style={styles.ImagePublication}
-          />
-        </View>
-        <View style={styles.hashtagsContainter}>
-          <View style={styles.semaphoreContainer}>
-            <IconFa name="circle" size={35} color="#30D34B" />
-            <Text style={styles.semaphoreNumber}>18</Text>
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <IconFa name="circle" size={35} color="#FFBD12" />
-            <Text style={styles.semaphoreNumber}>8</Text>
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <IconFa name="circle" size={35} color="#EB4237" />
-            <Text style={styles.semaphoreNumber}>2</Text>
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <IconFe name="message-circle" size={35} color="#828282" />
-            <Text style={styles.semaphoreNumber}>18</Text>
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <IconEn name="share" size={30} color="#828282" />
-          </View>
-          <View style={styles.semaphoreContainer}>
-            <IconFea name="bookmark" size={30} color="#2A9DD8" />
-          </View>
-        </View>
-      </View>
-    </View>
+        );
+      })}
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    position: 'relative',
+  },
   subContainer: {
     backgroundColor: '#F5F5F5',
   },

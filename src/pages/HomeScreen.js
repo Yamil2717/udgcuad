@@ -4,6 +4,7 @@ import {
   View,
   ScrollView,
   Image,
+  Text,
   TextInput,
   TouchableOpacity,
 } from 'react-native';
@@ -18,6 +19,7 @@ import IconFontisto from 'react-native-vector-icons/Fontisto';
 function HomeScreen({navigation}) {
   let [showNavBar, setShowNavBar] = useState(false);
   let [loading, setLoading] = useState(true);
+  let [dataPublication, setDataPublication] = useState([]);
 
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -34,12 +36,11 @@ function HomeScreen({navigation}) {
         await authAxios
           .get('/publications')
           .then(({data}) => {
-            console.log('todas las publicaciones');
-            console.log(data);
+            setDataPublication(data.data);
             setLoading(false);
           })
           .catch(err => {
-            console.error(JSON.stringify(err));
+            console.error(JSON.stringify(err), 'erererer');
           });
       })
       .catch(err => {
@@ -47,7 +48,6 @@ function HomeScreen({navigation}) {
         authContext.logout();
       });
   }
-
   return loading ? (
     <Spinner />
   ) : (
@@ -94,7 +94,7 @@ function HomeScreen({navigation}) {
         />
       </View>
       <ScrollView style={styles.containerPublications}>
-        <Publication />
+        <Publication dataPublication={dataPublication} />
       </ScrollView>
     </View>
   );
