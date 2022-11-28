@@ -42,6 +42,7 @@ function HomeScreen({navigation}) {
           .catch(err => {
             console.error(JSON.stringify(err), 'erererer');
           });
+        setLoading(false);
       })
       .catch(err => {
         console.error(JSON.stringify(err));
