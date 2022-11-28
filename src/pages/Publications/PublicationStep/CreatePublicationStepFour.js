@@ -1,108 +1,108 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
-  PermissionsAndroid,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   Image,
   Switch,
-  Dimensions,
 } from 'react-native';
+import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
-import MapView, {Marker} from 'react-native-maps';
-import Spinner from '../../../components/Spinner';
-
-import IconsEntypo from 'react-native-vector-icons/Entypo';
-import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconsFoundation from 'react-native-vector-icons/Foundation';
-import IconFontisto from 'react-native-vector-icons/Fontisto';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-function CreatePublicationStepFour({step, onChangeStep}) {
+function CreatePublicationStepFour({
+  step,
+  onChangeStep,
+  description,
+  photos,
+  groupsFormatted,
+  setGroupsFormatted,
+  group,
+  setGroup,
+  createPost,
+}) {
+  let authContext = useContext(AuthContext);
   let [open, setOpen] = useState(false);
-  let grupos = ['grupo1', 'grupo2'];
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  let [isEnabled, setIsEnabled] = useState(false);
+
+  function toggleSwitch() {
+    setIsEnabled(previousState => !previousState);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
         valueScreen={step}
         previousScreenOnPress={onChangeStep}
-        afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
-        // createUser={createUser}
       />
-      <ScrollView>
-        <View style={styles.navigate}>
-          <View style={styles.containerDropDownPickerMain}>
-            <DropDownPicker
-              open={open}
-              setOpen={setOpen}
-              items={grupos}
-              // setItems={setTypesUser}
-              // value={selectTypeUser}
-              // setValue={onChangeSelectTypeUser}
-              listMode="SCROLLVIEW"
-              placeholder="Seleccionar"
-              style={styles.dropDownStyle}
-              containerStyle={styles.containerDropDownPicker}
-              dropDownStyle={styles.dropDownPickerBackground}
-              labelStyle={styles.dropDownPickerLabel}
-              itemStyle={styles.dropDownPickerItem}
-            />
-          </View>
+      <View style={styles.navigate}>
+        <View style={styles.containerDropDownPickerMain}>
+          <DropDownPicker
+            open={open}
+            setOpen={setOpen}
+            items={groupsFormatted}
+            setItems={setGroupsFormatted}
+            value={group}
+            setValue={setGroup}
+            defaultValue={group}
+            listMode="SCROLLVIEW"
+            placeholder="Seleccionar"
+            style={styles.dropDownStyle}
+            containerStyle={styles.containerDropDownPicker}
+            dropDownStyle={styles.dropDownPickerBackground}
+            labelStyle={styles.dropDownPickerLabel}
+            itemStyle={styles.dropDownPickerItem}
+          />
+        </View>
 
-          <View style={styles.containerPublicationSub}>
-            <View>
-              <Text>Ciclovías obstrullen el tráfico</Text>
-              <Text>@Juan Gutiérrez </Text>
-              <Text>#gobiernogdl #bicicletas #circulación</Text>
-            </View>
+        <View style={styles.containerPublicationSub}>
+          <View>
+            <Text style={{maxWidth: '80%'}}>{description}</Text>
+            <Text>@{authContext.dataUser.name}</Text>
+            {/*<Text>#gobiernogdl #bicicletas #circulación</Text>*/}
+          </View>
+          {photos && photos.length > 0 && (
             <Image
-              source={require('../../../assets/PublicationImg.png')}
+              source={{uri: photos[0].uri}}
               style={styles.ImagePublication}
             />
-          </View>
+          )}
         </View>
+      </View>
 
-        <View style={styles.listStyle}>
-          <Image
-            source={require('../../../assets/twitter.png')}
-            style={styles.ImageProfile}
+      <View style={styles.listStyle}>
+        <Image
+          source={require('../../../assets/twitter.png')}
+          style={styles.ImageProfile}
+        />
+        <View>
+          <Text style={styles.textCreatePublication}>Publicar en Twitter</Text>
+          <Switch
+            trackColor={{false: '#767577', true: '#2A9DD8'}}
+            thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            style={styles.switch}
+            value={isEnabled}
           />
-          <View>
-            <Text style={styles.textCreatePublication}>
-              Publicar en Twitter
-            </Text>
-            <Switch
-              trackColor={{false: '#767577', true: '#2A9DD8'}}
-              thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              style={styles.switch}
-              value={isEnabled}
-            />
-          </View>
         </View>
+      </View>
 
-        <View style={styles.containerButton}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => console.log('crear comunidad')}>
-            <Text style={styles.textButton}>Ver mas</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <View style={styles.containerButton}>
+        <TouchableOpacity style={styles.button} onPress={() => createPost()}>
+          <Text style={styles.textButton}>Publicar</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    flex: 1,
   },
   navigate: {
     justifyContent: 'center',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
-    marginHorizontal: 10,
+    marginHorizontal: 25,
   },
   iconCreatePublication: {
     marginHorizontal: 15,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   textCreatePublication: {
     fontSize: 24,
   },
-  subTtextCreatePublication: {
+  subTextCreatePublication: {
     fontSize: 12,
   },
   formsStyle: {
@@ -190,15 +190,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    marginTop: 50,
     paddingVertical: 5,
     paddingHorizontal: 5,
     borderColor: '#2A9DD8',
+    backgroundColor: '#2A9DD8',
     borderWidth: 2,
     borderRadius: 24,
   },
   textButton: {
     fontSize: 16,
-    color: '#2A9DD8',
+    color: 'white',
   },
   containerDropDownPickerMain: {
     display: 'flex',
@@ -206,6 +208,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10,
+    marginBottom: 20,
   },
   containerDropDownPicker: {
     width: '80%',
@@ -226,17 +229,24 @@ const styles = StyleSheet.create({
   containerPublicationSub: {
     backgroundColor: '#F5F5F5',
     borderRadius: 10,
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    width: '80%',
   },
   ImagePublication: {
     width: 50,
     height: 50,
     margin: 10,
     borderRadius: 10,
+  },
+  dropDownStyle: {
+    backgroundColor: '#F5F5F5',
+    minHeight: 35,
+    borderRadius: 24,
   },
 });
 

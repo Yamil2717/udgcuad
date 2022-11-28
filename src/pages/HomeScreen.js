@@ -29,13 +29,23 @@ function HomeScreen({navigation}) {
   async function getDataUser() {
     await authAxios
       .get('/user')
-      .then(({data}) => {
+      .then(async ({data}) => {
         authContext.setDataUser({...data.data});
-        console.log(data);
+        await authAxios
+          .get('/publications')
+          .then(({data}) => {
+            console.log('todas las publicaciones');
+            console.log(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error(JSON.stringify(err));
+          });
       })
-      .catch(err => console.error(JSON.stringify(err)));
-
-    setLoading(false);
+      .catch(err => {
+        console.error(JSON.stringify(err));
+        authContext.logout();
+      });
   }
 
   return loading ? (

@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
-  PermissionsAndroid,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -9,18 +8,11 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Dimensions,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
-import MapView, {Marker} from 'react-native-maps';
-import Spinner from '../../../components/Spinner';
-
-import IconsEntypo from 'react-native-vector-icons/Entypo';
-import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconsFoundation from 'react-native-vector-icons/Foundation';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
 
-function CreatePublicationStepTwo({step, onChangeStep}) {
+function CreatePublicationStepTwo({step, onChangeStep, groups, setGroup}) {
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -28,7 +20,6 @@ function CreatePublicationStepTwo({step, onChangeStep}) {
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
-        // createUser={createUser}
       />
       <ScrollView>
         <View style={styles.navigate}>
@@ -56,27 +47,28 @@ function CreatePublicationStepTwo({step, onChangeStep}) {
           </View>
         </View>
 
-        <View style={styles.listStyle}>
-          <Image
-            source={require('../../../assets/imgGroups.png')}
-            style={styles.ImageProfile}
-          />
-          <View>
-            <Text style={styles.textCreatePublication}>Ciclovías</Text>
-            <Text style={styles.subTtextCreatePublication}>20 miebmbros</Text>
-          </View>
-        </View>
-
-        <View style={styles.listStyle}>
-          <Image
-            source={require('../../../assets/imgGroups.png')}
-            style={styles.ImageProfile}
-          />
-          <View>
-            <Text style={styles.textCreatePublication}>Vialidad</Text>
-            <Text style={styles.subTtextCreatePublication}>20 miebmbros</Text>
-          </View>
-        </View>
+        {groups.length > 0 &&
+          groups.map(groupMap => {
+            return (
+              <TouchableOpacity
+                style={styles.listStyle}
+                key={groupMap.id}
+                onPress={() => {
+                  setGroup(groupMap.id.toString());
+                  onChangeStep(Number(step) + 1);
+                }}>
+                <Image source={{uri: groupMap.picture}} style={styles.image} />
+                <View>
+                  <Text style={styles.textCreatePublication}>
+                    {groupMap.name}
+                  </Text>
+                  <Text style={styles.subTextCreatePublication}>
+                    {groupMap.membersCount} Miembros
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
 
         <View style={styles.containerButton}>
           <TouchableOpacity
@@ -92,6 +84,7 @@ function CreatePublicationStepTwo({step, onChangeStep}) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    flex: 1,
   },
   navigate: {
     display: 'flex',
@@ -111,10 +104,11 @@ const styles = StyleSheet.create({
     height: 400,
     fontSize: 20,
   },
-  ImageProfile: {
-    width: 50,
-    height: 50,
+  image: {
+    width: 45,
+    height: 45,
     margin: 10,
+    borderRadius: 45 / 2,
   },
   containerPublications: {
     marginBottom: 100,
@@ -141,7 +135,7 @@ const styles = StyleSheet.create({
   textCreatePublication: {
     fontSize: 24,
   },
-  subTtextCreatePublication: {
+  subTextCreatePublication: {
     fontSize: 12,
   },
   formsStyle: {

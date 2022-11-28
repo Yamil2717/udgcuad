@@ -7,7 +7,6 @@ function NavigationPublication({
   previousScreenOnPress,
   afterScreenOnPress,
   incrementOnPress,
-  createUser,
 }) {
   return (
     <View
@@ -29,21 +28,16 @@ function NavigationPublication({
             color="#2A9DD8"
             style={styles.icon}
           />
-          <Text style={styles.buttonsText}>Volver</Text>
+          <Text style={styles.buttonsText}>
+            {valueScreen === 0 ? 'Cancelar' : 'Volver'}
+          </Text>
         </TouchableOpacity>
       )}
       {afterScreenOnPress && (
         <TouchableOpacity
           style={styles.buttons}
-          onPress={() => {
-            if (valueScreen === 3) {
-              return createUser();
-            }
-            afterScreenOnPress(valueScreen + incrementOnPress);
-          }}>
-          <Text style={styles.buttonsText}>
-            {valueScreen === 3 ? 'Registrarse' : 'Continuar'}
-          </Text>
+          onPress={() => afterScreenOnPress(valueScreen + incrementOnPress)}>
+          <Text style={styles.buttonsText}>Continuar</Text>
           <IconsEntypo
             size={18}
             name="arrow-with-circle-right"

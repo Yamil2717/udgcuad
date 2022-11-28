@@ -13,6 +13,11 @@ const DataUserDefault = {
   email: null,
   typeUser: null,
   avatar: null,
+  location: null,
+  phone: null,
+  postalCode: null,
+  interestIds: null,
+  tagsIds: null,
 };
 
 const AuthContext = createContext();
