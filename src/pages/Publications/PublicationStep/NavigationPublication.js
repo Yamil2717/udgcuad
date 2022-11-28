@@ -36,13 +36,13 @@ function NavigationPublication({
         <TouchableOpacity
           style={styles.buttons}
           onPress={() => {
-            if (valueScreen === 2) {
+            if (valueScreen === 3) {
               return createUser();
             }
             afterScreenOnPress(valueScreen + incrementOnPress);
           }}>
           <Text style={styles.buttonsText}>
-            {valueScreen === 2 ? 'Registrarse' : 'Continuar'}
+            {valueScreen === 3 ? 'Registrarse' : 'Continuar'}
           </Text>
           <IconsEntypo
             size={18}

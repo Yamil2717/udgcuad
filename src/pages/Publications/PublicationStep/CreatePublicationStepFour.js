@@ -9,6 +9,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  Switch,
   Dimensions,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
@@ -19,8 +20,13 @@ import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconsFoundation from 'react-native-vector-icons/Foundation';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
+import DropDownPicker from 'react-native-dropdown-picker';
 
-function CreatePublicationStepTwo({step, onChangeStep}) {
+function CreatePublicationStepFour({step, onChangeStep}) {
+  let [open, setOpen] = useState(false);
+  let grupos = ['grupo1', 'grupo2'];
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -32,49 +38,54 @@ function CreatePublicationStepTwo({step, onChangeStep}) {
       />
       <ScrollView>
         <View style={styles.navigate}>
-          <View style={styles.formsStyle}>
-            <TextInput
-              placeholder="Busca temas de tu interés"
-              style={styles.input}
-              textColor={styles.colorInput}
-              theme={{
-                colors: {
-                  placeholder: '#000000',
-                  text: '#000000',
-                  primary: '#000000',
-                },
-              }}
-              selectionColor="#000000"
-              accessibilityIgnoresInvertColors={true}
+          <View style={styles.containerDropDownPickerMain}>
+            <DropDownPicker
+              open={open}
+              setOpen={setOpen}
+              items={grupos}
+              // setItems={setTypesUser}
+              // value={selectTypeUser}
+              // setValue={onChangeSelectTypeUser}
+              listMode="SCROLLVIEW"
+              placeholder="Seleccionar"
+              style={styles.dropDownStyle}
+              containerStyle={styles.containerDropDownPicker}
+              dropDownStyle={styles.dropDownPickerBackground}
+              labelStyle={styles.dropDownPickerLabel}
+              itemStyle={styles.dropDownPickerItem}
             />
-            <IconFontisto
-              name="search"
-              color="#2A9DD8"
-              size={16}
-              style={styles.iconForm}
+          </View>
+
+          <View style={styles.containerPublicationSub}>
+            <View>
+              <Text>Ciclovías obstrullen el tráfico</Text>
+              <Text>@Juan Gutiérrez </Text>
+              <Text>#gobiernogdl #bicicletas #circulación</Text>
+            </View>
+            <Image
+              source={require('../../../assets/PublicationImg.png')}
+              style={styles.ImagePublication}
             />
           </View>
         </View>
 
         <View style={styles.listStyle}>
           <Image
-            source={require('../../../assets/imgGroups.png')}
+            source={require('../../../assets/twitter.png')}
             style={styles.ImageProfile}
           />
           <View>
-            <Text style={styles.textCreatePublication}>Ciclovías</Text>
-            <Text style={styles.subTtextCreatePublication}>20 miebmbros</Text>
-          </View>
-        </View>
-
-        <View style={styles.listStyle}>
-          <Image
-            source={require('../../../assets/imgGroups.png')}
-            style={styles.ImageProfile}
-          />
-          <View>
-            <Text style={styles.textCreatePublication}>Vialidad</Text>
-            <Text style={styles.subTtextCreatePublication}>20 miebmbros</Text>
+            <Text style={styles.textCreatePublication}>
+              Publicar en Twitter
+            </Text>
+            <Switch
+              trackColor={{false: '#767577', true: '#2A9DD8'}}
+              thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              style={styles.switch}
+              value={isEnabled}
+            />
           </View>
         </View>
 
@@ -94,8 +105,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   navigate: {
-    display: 'flex',
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -191,6 +200,44 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2A9DD8',
   },
+  containerDropDownPickerMain: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  containerDropDownPicker: {
+    width: '80%',
+  },
+  dropDownPickerBackground: {
+    backgroundColor: '#fafafa',
+  },
+  dropDownPickerLabel: {
+    fontSize: 14,
+  },
+  dropDownPickerItem: {
+    justifyContent: 'flex-start',
+    height: 15,
+  },
+  switch: {
+    width: 40,
+  },
+  containerPublicationSub: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 10,
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ImagePublication: {
+    width: 50,
+    height: 50,
+    margin: 10,
+    borderRadius: 10,
+  },
 });
 
-export default CreatePublicationStepTwo;
+export default CreatePublicationStepFour;

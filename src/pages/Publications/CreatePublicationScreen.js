@@ -4,6 +4,8 @@ import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
 import CreatePublicationStepOne from './PublicationStep/CreatePublicationStepOne';
 import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo';
+import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepThree';
+import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
 
 function CreatePublicationScreen() {
   let [step, onChangeStep] = useState(0);
@@ -20,6 +22,14 @@ function CreatePublicationScreen() {
     case 1:
       return (
         <CreatePublicationStepTwo step={step} onChangeStep={onChangeStep} />
+      );
+    case 2:
+      return (
+        <CreatePublicationStepThree step={step} onChangeStep={onChangeStep} />
+      );
+    case 3:
+      return (
+        <CreatePublicationStepFour step={step} onChangeStep={onChangeStep} />
       );
   }
 }
