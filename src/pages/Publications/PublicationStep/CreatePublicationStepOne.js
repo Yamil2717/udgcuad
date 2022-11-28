@@ -12,7 +12,6 @@ import {
   Dimensions,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
-import Geolocation from '@react-native-community/geolocation';
 import MapView, {Marker} from 'react-native-maps';
 import Spinner from '../../../components/Spinner';
 
@@ -20,7 +19,7 @@ import IconsAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconsFoundation from 'react-native-vector-icons/Foundation';
 
-function CreatePublicationSetpOne({step, onChangeStep}) {
+function CreatePublicationStepOne({step, onChangeStep}) {
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
   },
-  containerSec:{
+  containerSec: {
     backgroundColor: 'gray',
   },
   navigate: {
@@ -124,4 +123,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreatePublicationSetpOne;
+export default CreatePublicationStepOne;

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Platform} from 'react-native';
+import {Platform, Alert} from 'react-native';
 import {LoginManager, Profile} from 'react-native-fbsdk-next';
 import {
   GoogleSignin,
@@ -44,7 +44,11 @@ function RegisterScreen({navigation}) {
   let [categoriesInterest, setCategoriesInterest] = useState([]);
   let [tagsCategoriesInterest, setTagsCategoriesInterest] = useState([]);
   let [selectTags, onChangeSelectTags] = useState({});
-  let [currentLocation, setCurrentLocation] = useState({});
+  let [currentLocation, setCurrentLocation] = useState({
+    lat: 0,
+    long: 0,
+    locationName: 'No street name',
+  });
 
   const {authAxios} = useContext(AxiosContext);
 
@@ -143,38 +147,76 @@ function RegisterScreen({navigation}) {
         location: currentLocation,
         dateBirth: new Date().toISOString(),
       };
-      if (!name) return alert('Debe ingresar su nombre completo.');
-      if (!email) return alert('Debe ingresar su correo electronico.');
-      if (!phone) return alert('Debe ingresar su número telefonico..');
-      if (!postalCode) return alert('Debe ingresar su código postal.');
-      if (tagsIds.length === 0 || interestIds.length === 0)
-        return alert('Debe ingresar seleccionar intereses y luego tags.');
-      if (password !== rePassword)
-        return alert('Las contraseñas no coinciden.');
-      if (!photo) return alert('Debe seleccionar una imagen');
-      if (password.length < 8)
-        return alert(
-          'Debe ingresar una contraseña segura (minimo 8 caracteres).',
+      if (!name) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar su nombre completo.',
         );
-      await authAxios
-        .post(`${env.api}/user/upload`, createFormData(photo), {
-          headers: {'Content-Type': 'multipart/form-data'},
-        })
-        .then(({data}) => {
-          dataCreate.avatar = data.data;
-          authAxios
-            .post('/user', {...dataCreate})
-            .then(({data}) => {
-              let {message} = data;
-              alert(message);
-              navigation.navigate('Login');
-            })
-            .catch(err => console.error(JSON.stringify(err)));
-        })
-        .catch(err => console.error(JSON.stringify(err)));
+      }
+      if (!email) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar su correo electrónico.',
+        );
+      }
+      if (!phone) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar su número telefónico.',
+        );
+      }
+      if (!postalCode) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar su código postal.',
+        );
+      }
+      if (tagsIds.length === 0 || interestIds.length === 0) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar seleccionar intereses y luego tags.',
+        );
+      }
+      if (password !== rePassword) {
+        return Alert.alert('Datos faltantes', 'Las contraseñas no coinciden.');
+      }
+      if (password.length < 8) {
+        return Alert.alert(
+          'Datos faltantes',
+          'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
+        );
+      }
+      if (photo) {
+        await authAxios
+          .post(`${env.api}/images/user/upload`, createFormData(photo), {
+            headers: {'Content-Type': 'multipart/form-data'},
+          })
+          .then(({data}) => {
+            dataCreate.avatar = data.data;
+            authAxios
+              .post('/user', {...dataCreate})
+              .then(data2 => {
+                let {message} = data2.data;
+                Alert.alert('Voces', message);
+                navigation.navigate('Login');
+              })
+              .catch(err => console.error(JSON.stringify(err)));
+          })
+          .catch(err => console.error(JSON.stringify(err)));
+      } else {
+        dataCreate.avatar = `${env.api}/images/user/default.jpeg`;
+        await authAxios
+          .post('/user', {...dataCreate})
+          .then(({data}) => {
+            let {message} = data;
+            Alert.alert('Voces', message);
+            navigation.navigate('Login');
+          })
+          .catch(err => console.error(JSON.stringify(err)));
+      }
     } catch (err) {
       console.error(JSON.stringify(err));
-      alert(err?.response?.data?.message || err.message);
+      Alert.alert(err?.response?.data?.message || err.message);
     }
   }
 

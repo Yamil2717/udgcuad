@@ -109,7 +109,6 @@ function RegisterStepOne({
               secureTextEntry={true}
               value={password}
               onChangeText={onChangePassword}
-              keyboardType="numeric"
               textColor={styles.colorInput}
               theme={{
                 colors: {
@@ -136,7 +135,6 @@ function RegisterStepOne({
               secureTextEntry={true}
               value={rePassword}
               onChangeText={onChangeRePassword}
-              keyboardType="numeric"
               textColor={styles.colorInput}
               theme={{
                 colors: {

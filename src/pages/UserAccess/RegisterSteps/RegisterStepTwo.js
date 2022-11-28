@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import NavigationRegister from './NavigationRegister';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -46,7 +47,8 @@ function RegisterStepTwo({
       response => {
         if (response.assets) {
           if (response.assets[0].fileSize > 6291456) {
-            return alert(
+            return Alert.alert(
+              'Error',
               'La imagen no puede superar los 6MB, por favor escoja otra.',
             );
           }

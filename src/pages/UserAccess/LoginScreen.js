@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {Svg, G, Path, Defs, ClipPath, Rect} from 'react-native-svg';
 import {AuthContext} from '../../contexts/AuthContext';
@@ -28,8 +29,7 @@ function LoginScreen({navigation}) {
         email,
         password,
       });
-      let {accessToken, refreshToken, message} = response.data;
-      alert(message);
+      let {accessToken, refreshToken} = response.data;
       authContext.setAuthState({
         accessToken,
         refreshToken,
@@ -44,7 +44,7 @@ function LoginScreen({navigation}) {
       );
     } catch (err) {
       console.error(err);
-      alert(err?.response?.data?.message || err.message);
+      Alert.alert('Error', err?.response?.data?.message || err.message);
     }
   }
 
