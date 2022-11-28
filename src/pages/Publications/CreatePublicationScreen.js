@@ -3,6 +3,7 @@ import {View, Text} from 'react-native';
 import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
 import CreatePublicationStepOne from './PublicationStep/CreatePublicationStepOne';
+import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo';
 
 function CreatePublicationScreen() {
   let [step, onChangeStep] = useState(0);
@@ -17,7 +18,9 @@ function CreatePublicationScreen() {
         <CreatePublicationStepOne step={step} onChangeStep={onChangeStep} />
       );
     case 1:
-      return <Text>step2</Text>;
+      return (
+        <CreatePublicationStepTwo step={step} onChangeStep={onChangeStep} />
+      );
   }
 }
 

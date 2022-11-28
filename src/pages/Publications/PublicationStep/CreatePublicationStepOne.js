@@ -15,11 +15,19 @@ import NavigationPublication from './NavigationPublication';
 import MapView, {Marker} from 'react-native-maps';
 import Spinner from '../../../components/Spinner';
 
-import IconsAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import IconsFoundation from 'react-native-vector-icons/Foundation';
+import IconsIonicons from 'react-native-vector-icons/Ionicons';
 
 function CreatePublicationStepOne({step, onChangeStep}) {
+  let [images, setImages] = useState();
+
+  function emulateImage() {
+    setImages(
+      'https://img.freepik.com/foto-gratis/primer-plano-piernas-hombre-casual-bicicleta-clasica-carretera-ciudad_158595-4575.jpg?w=740&t=st=1669633444~exp=1669634044~hmac=9efc4dbf38208bf181c0d8e80a92688ff06e499e0315be5fda1d2cc15236293f',
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -52,28 +60,68 @@ function CreatePublicationStepOne({step, onChangeStep}) {
             selectionColor="#000000"
             accessibilityIgnoresInvertColors={true}
           />
+
+          <View style={styles.imagesPublications}>
+            <TouchableOpacity>
+              <Image source={{uri: images}} style={styles.ImageProfile} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                source={require('../../../assets/addPublication.jpg')}
+                style={styles.ImageProfile}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.containerSec}>
-          <View style={styles.listStyle}>
-            <Text>1</Text>
-            <Text>Foto</Text>
-          </View>
+          <TouchableOpacity onPress={() => emulateImage()}>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="image-inverted"
+                color="#2A9DD8"
+                size={35}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Imagen</Text>
+            </View>
+          </TouchableOpacity>
 
-          <View style={styles.listStyle}>
-            <Text>1</Text>
-            <Text>Foto</Text>
-          </View>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="video"
+                color="#2A9DD8"
+                size={35}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Video</Text>
+            </View>
+          </TouchableOpacity>
 
-          <View style={styles.listStyle}>
-            <Text>1</Text>
-            <Text>Foto</Text>
-          </View>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsMaterial
+                name="text-recognition"
+                color="#2A9DD8"
+                size={35}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Texto</Text>
+            </View>
+          </TouchableOpacity>
 
-          <View style={styles.listStyle}>
-            <Text>1</Text>
-            <Text>Foto</Text>
-          </View>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="link"
+                color="#2A9DD8"
+                size={35}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Enlace</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -84,7 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   containerSec: {
-    backgroundColor: 'gray',
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 30,
   },
   navigate: {
     display: 'flex',
@@ -101,12 +150,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 20,
     color: '#164578',
-    height: 200,
+    height: 150,
     fontSize: 20,
   },
   ImageProfile: {
-    width: 50,
-    height: 50,
+    width: 150,
+    height: 150,
     margin: 10,
   },
   containerPublications: {
@@ -116,6 +165,25 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   listAdd: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    marginHorizontal: 10,
+  },
+  iconCreatePublication: {
+    marginHorizontal: 15,
+  },
+  textCreatePublication: {
+    fontSize: 18,
+  },
+  imagesPublications: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
