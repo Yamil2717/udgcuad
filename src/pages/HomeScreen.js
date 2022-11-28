@@ -36,11 +36,11 @@ function HomeScreen({navigation}) {
           .then(({data}) => {
             console.log('todas las publicaciones');
             console.log(data);
-            setLoading(false);
           })
           .catch(err => {
             console.error(JSON.stringify(err));
           });
+        setLoading(false);
       })
       .catch(err => {
         console.error(JSON.stringify(err));
