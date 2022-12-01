@@ -21,6 +21,7 @@ function CreatePublicationStepFour({
   setGroupsFormatted,
   group,
   setGroup,
+  lock,
   createPost,
 }) {
   let authContext = useContext(AuthContext);
@@ -32,7 +33,9 @@ function CreatePublicationStepFour({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={styles.container}
+      pointerEvents={lock ? 'none' : 'auto'}>
       <NavigationPublication
         valueScreen={step}
         previousScreenOnPress={onChangeStep}
@@ -92,8 +95,12 @@ function CreatePublicationStepFour({
       </View>
 
       <View style={styles.containerButton}>
-        <TouchableOpacity style={styles.button} onPress={() => createPost()}>
-          <Text style={styles.textButton}>Publicar</Text>
+        <TouchableOpacity
+          style={[lock ? styles.buttonLock : styles.button]}
+          onPress={() => createPost()}>
+          <Text style={styles.textButton}>
+            {lock ? 'Enviando...' : 'Publicar'}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -184,6 +191,19 @@ const styles = StyleSheet.create({
   containerButton: {
     alignItems: 'center',
     marginVertical: 5,
+  },
+  buttonLock: {
+    width: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 50,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderColor: '#767577',
+    backgroundColor: '#767577',
+    borderWidth: 2,
+    borderRadius: 24,
   },
   button: {
     width: '40%',

@@ -27,6 +27,24 @@ const AxiosProvider = ({children}) => {
     },
   );
 
+  authAxios.interceptors.response.use(
+    response => {
+      return response.data;
+    },
+    error => {
+      return Promise.reject(error);
+    },
+  );
+
+  publicAxios.interceptors.response.use(
+    response => {
+      return response.data;
+    },
+    error => {
+      return Promise.reject(error);
+    },
+  );
+
   async function refreshAuthLogic(failedRequest) {
     let data = {refreshToken: authContext.authState.refreshToken};
 

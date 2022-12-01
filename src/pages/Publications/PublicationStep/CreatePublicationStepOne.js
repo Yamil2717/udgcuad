@@ -16,7 +16,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 function CreatePublicationStepOne({
   step,
@@ -176,6 +176,8 @@ function CreatePublicationStepOne({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    height: height,
+    maxHeight: height,
   },
   containerSec: {
     backgroundColor: '#f5f5f5',

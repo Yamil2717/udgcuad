@@ -8,10 +8,11 @@ import {
 import RegisterStepOne from './RegisterSteps/RegisterStepOne';
 import RegisterStepTwo from './RegisterSteps/RegisterStepTwo';
 import RegisterStepThree from './RegisterSteps/RegisterStepThree';
-import Axios from 'axios';
 import env from '../../env';
 import Spinner from '../../components/Spinner';
+import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
+import {setGenericPassword} from 'react-native-keychain';
 
 function createFormData(photo) {
   const data = new FormData();
@@ -21,10 +22,6 @@ function createFormData(photo) {
     type: photo.type,
     uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
   });
-
-  /*Object.keys(body).forEach(key => {
-    data.append(key, body[key]);
-  });*/
 
   return data;
 }
@@ -49,27 +46,42 @@ function RegisterScreen({navigation}) {
     long: 0,
     locationName: 'No street name',
   });
-
-  const {authAxios} = useContext(AxiosContext);
+  let authContext = useContext(AuthContext);
+  const {publicAxios, authAxios} = useContext(AxiosContext);
 
   useEffect(() => {
-    Axios.get(`${env.api}/user/types`)
-      .then(({data}) => {
-        setTypesUser(data.data);
-        onChangeSelectTypeUser(data.data[0].value);
-        Axios.get(`${env.api}/interest`)
-          .then(({data}) => {
-            setCategoriesInterest(data.data);
-            Axios.get(`${env.api}/tags`)
-              .then(({data}) => {
-                setTagsCategoriesInterest(data.data);
+    publicAxios
+      .get(`${env.api}/user/types`)
+      .then(types => {
+        setTypesUser(types);
+        onChangeSelectTypeUser(types[0].value);
+        publicAxios
+          .get(`${env.api}/interest`)
+          .then(interests => {
+            setCategoriesInterest(interests);
+            publicAxios
+              .get(`${env.api}/tags`)
+              .then(tags => {
+                setTagsCategoriesInterest(tags);
                 setLoading(false);
               })
-              .catch(err => console.error(err));
+              .catch(err => {
+                console.error(err?.response?.data?.message || err.message);
+                Alert.alert(
+                  'Voces',
+                  err?.response?.data?.message || err.message,
+                );
+              });
           })
-          .catch(err => console.error(err));
+          .catch(err => {
+            console.error(err?.response?.data?.message || err.message);
+            Alert.alert('Voces', err?.response?.data?.message || err.message);
+          });
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+        Alert.alert('Voces', err?.response?.data?.message || err.message);
+      });
   }, []);
 
   function registerWithFacebook() {
@@ -119,104 +131,146 @@ function RegisterScreen({navigation}) {
             });
         }
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+        Alert.alert('Voces', err?.response?.data?.message || err.message);
+      });
   }
 
   async function createUser() {
-    try {
-      let interestIds = [];
-      categoriesInterest.map(category => {
-        if (category?.active && category?.active === true) {
-          interestIds.push(category.id);
-        }
-      });
-      let tagsIds = [];
-      for (const keyID in selectTags) {
-        tagsIds.push(Number(keyID));
+    let interestIds = [];
+    categoriesInterest.map(category => {
+      if (category?.active && category?.active === true) {
+        interestIds.push(category.id);
       }
-      let dataCreate = {
-        name,
-        email,
-        password,
-        rePassword,
-        phone,
-        postalCode,
-        userType: selectTypeUser,
-        tagsIds,
-        interestIds,
-        location: currentLocation,
-        dateBirth: new Date().toISOString(),
-      };
-      if (!name) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar su nombre completo.',
-        );
-      }
-      if (!email) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar su correo electrónico.',
-        );
-      }
-      if (!phone) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar su número telefónico.',
-        );
-      }
-      if (!postalCode) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar su código postal.',
-        );
-      }
-      if (tagsIds.length === 0 || interestIds.length === 0) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar seleccionar intereses y luego tags.',
-        );
-      }
-      if (password !== rePassword) {
-        return Alert.alert('Datos faltantes', 'Las contraseñas no coinciden.');
-      }
-      if (password.length < 8) {
-        return Alert.alert(
-          'Datos faltantes',
-          'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
-        );
-      }
-      if (photo) {
-        await authAxios
-          .post(`${env.api}/images/user/upload`, createFormData(photo), {
-            headers: {'Content-Type': 'multipart/form-data'},
-          })
-          .then(({data}) => {
-            dataCreate.avatar = data.data;
-            authAxios
-              .post('/user', {...dataCreate})
-              .then(data2 => {
-                let {message} = data2.data;
-                Alert.alert('Voces', message);
-                navigation.navigate('Login');
-              })
-              .catch(err => console.error(JSON.stringify(err)));
-          })
-          .catch(err => console.error(JSON.stringify(err)));
-      } else {
-        dataCreate.avatar = `${env.api}/images/user/default.jpeg`;
-        await authAxios
-          .post('/user', {...dataCreate})
-          .then(({data}) => {
-            let {message} = data;
-            Alert.alert('Voces', message);
-            navigation.navigate('Login');
-          })
-          .catch(err => console.error(JSON.stringify(err)));
-      }
-    } catch (err) {
-      console.error(JSON.stringify(err));
-      Alert.alert(err?.response?.data?.message || err.message);
+    });
+    let tagsIds = [];
+    for (const keyID in selectTags) {
+      tagsIds.push(Number(keyID));
+    }
+    let dataCreate = {
+      name,
+      email,
+      password,
+      rePassword,
+      phone,
+      postalCode,
+      userType: selectTypeUser,
+      tagsIds,
+      interestIds,
+      location: currentLocation,
+      dateBirth: new Date().toISOString(),
+    };
+    if (!name) {
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su nombre completo.',
+      );
+    }
+    if (!email) {
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su correo electrónico.',
+      );
+    }
+    if (!phone) {
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su número telefónico.',
+      );
+    }
+    if (!postalCode) {
+      return Alert.alert('Datos faltantes', 'Debe ingresar su código postal.');
+    }
+    if (tagsIds.length === 0 || interestIds.length === 0) {
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar seleccionar intereses y luego tags.',
+      );
+    }
+    if (password !== rePassword) {
+      return Alert.alert('Datos faltantes', 'Las contraseñas no coinciden.');
+    }
+    if (password.length < 8) {
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
+      );
+    }
+    if (photo) {
+      await publicAxios
+        .post(`${env.api}/images/user/upload`, createFormData(photo), {
+          headers: {'Content-Type': 'multipart/form-data'},
+        })
+        .then(async url => {
+          dataCreate.avatar = url;
+          await publicAxios
+            .post('/user', {...dataCreate})
+            .then(async data => {
+              let {message} = data;
+              Alert.alert('Voces', message);
+              await authAxios
+                .post('/user/auth', {
+                  email: dataCreate.email,
+                  password: dataCreate.password,
+                })
+                .then(async login => {
+                  let {accessToken, refreshToken} = login;
+                  authContext.setAuthState({
+                    accessToken,
+                    refreshToken,
+                    authenticated: true,
+                  });
+                  await setGenericPassword(
+                    'token',
+                    JSON.stringify({
+                      accessToken,
+                      refreshToken,
+                    }),
+                  );
+                });
+            })
+            .catch(err => {
+              console.error(err?.response?.data?.message || err.message);
+              Alert.alert('Voces', err?.response?.data?.message || err.message);
+            });
+        })
+        .catch(err => {
+          console.error(err?.response?.data?.message || err.message);
+          Alert.alert('Voces', err?.response?.data?.message || err.message);
+        });
+    } else {
+      dataCreate.avatar = `${env.api}/images/user/default.jpeg`;
+      await publicAxios
+        .post('/user', {...dataCreate})
+        .then(async data => {
+          let {message} = data;
+          Alert.alert('Voces', message);
+          await authAxios
+            .post('/user/auth', {
+              email: dataCreate.email,
+              password: dataCreate.password,
+            })
+            .then(async login => {
+              let {accessToken, refreshToken} = login;
+              authContext.setAuthState({
+                accessToken,
+                refreshToken,
+                authenticated: true,
+              });
+              await setGenericPassword(
+                'token',
+                JSON.stringify({
+                  accessToken,
+                  refreshToken,
+                }),
+              );
+            });
+        })
+        .catch(err => {
+          console.error(err?.response?.data?.message || err.message);
+          Alert.alert('Voces', err?.response?.data?.message || err.message);
+        });
     }
   }
 

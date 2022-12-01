@@ -25,6 +25,7 @@ const {Provider} = AuthContext;
 
 function AuthProvider({children}) {
   let [dataUser, setDataUser] = useState({...DataUserDefault});
+  let [dataGroups, setDataGroups] = useState([]);
   let [authState, setAuthState] = useState({...AuthStateDefault});
 
   function getAccessToken() {
@@ -40,6 +41,8 @@ function AuthProvider({children}) {
       value={{
         dataUser,
         setDataUser,
+        dataGroups,
+        setDataGroups,
         authState,
         setAuthState,
         getAccessToken,

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,12 +6,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Dimensions,
-  ScrollView,
-  Image,
+  FlatList,
 } from 'react-native';
-import Loading from './Spinner';
 import {AuthContext} from '../contexts/AuthContext';
-import {AxiosContext} from '../contexts/AxiosContext';
+import FastImage from 'react-native-fast-image';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,24 +17,6 @@ import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const {height} = Dimensions.get('window');
 function NavBar({setShowNavBar, navigation}) {
   let authContext = useContext(AuthContext);
-  const {authAxios} = useContext(AxiosContext);
-
-  let [loading, setLoading] = useState(true);
-  let [groups, setGroups] = useState([]);
-
-  useEffect(() => {
-    getGroups();
-  }, []);
-
-  async function getGroups() {
-    await authAxios
-      .get('/groups')
-      .then(({data}) => {
-        setGroups(data.data);
-        setLoading(false);
-      })
-      .catch(err => console.error(JSON.stringify(err)));
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,28 +62,28 @@ function NavBar({setShowNavBar, navigation}) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView>
-        <View style={styles.containerGroups}>
-          {loading ? (
-            <Loading />
-          ) : (
-            groups.map(group => {
-              return (
-                <TouchableOpacity
-                  key={group.id}
-                  style={styles.buttonGroups}
-                  onPress={() => console.log(`press ${group.name}`)}>
-                  <Image
-                    source={{uri: group.picture}}
-                    style={styles.imageGroups}
-                  />
-                  <Text style={styles.textGroups}>{group.name}</Text>
-                </TouchableOpacity>
-              );
-            })
+      <View style={styles.containerGroups}>
+        <FlatList
+          data={authContext.dataGroups}
+          renderItem={({item}) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.buttonGroups}
+              onPress={() => console.log(`press ${item.name}`)}>
+              <FastImage
+                source={{
+                  uri: item.picture,
+                  priority: FastImage.priority.normal,
+                }}
+                style={styles.imageGroups}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <Text style={styles.textGroups}>{item.name}</Text>
+            </TouchableOpacity>
           )}
-        </View>
-      </ScrollView>
+          removeClippedSubviews={true}
+        />
+      </View>
 
       <View style={styles.containerLogout}>
         <TouchableOpacity

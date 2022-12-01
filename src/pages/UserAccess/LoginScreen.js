@@ -25,25 +25,23 @@ function LoginScreen({navigation}) {
 
   async function Auth() {
     try {
-      let response = await authAxios.post('/user/auth', {
-        email,
-        password,
-      });
-      let {accessToken, refreshToken} = response.data;
-      authContext.setAuthState({
-        accessToken,
-        refreshToken,
-        authenticated: true,
-      });
-      await setGenericPassword(
-        'token',
-        JSON.stringify({
+      await authAxios.post('/user/auth', {email, password}).then(async data => {
+        let {accessToken, refreshToken} = data;
+        authContext.setAuthState({
           accessToken,
           refreshToken,
-        }),
-      );
+          authenticated: true,
+        });
+        await setGenericPassword(
+          'token',
+          JSON.stringify({
+            accessToken,
+            refreshToken,
+          }),
+        );
+      });
     } catch (err) {
-      console.error(err);
+      console.error(err?.response?.data?.message || err.message);
       Alert.alert('Error', err?.response?.data?.message || err.message);
     }
   }

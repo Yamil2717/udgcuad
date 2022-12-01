@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,6 +7,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Dimensions,
+  FlatList,
 } from 'react-native';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
@@ -16,6 +18,7 @@ import Spinner from '../components/Spinner';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
 
+const {width, height} = Dimensions.get('window');
 function HomeScreen({navigation}) {
   let [showNavBar, setShowNavBar] = useState(false);
   let [loading, setLoading] = useState(true);
@@ -26,29 +29,35 @@ function HomeScreen({navigation}) {
 
   useEffect(() => {
     getDataUser();
+    getDataRemaining();
   }, []);
 
   async function getDataUser() {
     await authAxios
       .get('/user')
-      .then(async ({data}) => {
-        authContext.setDataUser({...data.data});
-        await authAxios
-          .get('/publications')
-          .then(({data}) => {
-            setDataPublication(data.data);
-            setLoading(false);
-          })
-          .catch(err => {
-            console.error(JSON.stringify(err), 'erererer');
-          });
+      .then(userData => {
+        authContext.setDataUser({...userData});
         setLoading(false);
       })
       .catch(err => {
-        console.error(JSON.stringify(err));
+        console.error(err?.response?.data?.message || err.message);
         authContext.logout();
       });
   }
+
+  async function getDataRemaining() {
+    await authAxios
+      .get('/publications')
+      .then(data => setDataPublication(data))
+      .catch(() => setDataPublication([]));
+    await authAxios
+      .get('/groups')
+      .then(groupsData => {
+        authContext.setDataGroups([...groupsData]);
+      })
+      .catch(() => authContext.setDataGroups([]));
+  }
+
   return loading ? (
     <Spinner />
   ) : (
@@ -94,9 +103,32 @@ function HomeScreen({navigation}) {
           style={styles.imageProfile}
         />
       </View>
-      <ScrollView style={styles.containerPublications}>
-        <Publication dataPublication={dataPublication} />
-      </ScrollView>
+      <View style={styles.containerPublications}>
+        {dataPublication.length <= 0 ? (
+          <View>
+            <Text style={styles.textNoContainPublications}>
+              No se encontraron publicaciones.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={dataPublication}
+            style={styles.flatListContainer}
+            renderItem={({item, index}) => (
+              <Publication
+                key={item.id}
+                description={item.description}
+                groupID={item.groupID}
+                groupName={item.groupName}
+                pictureGroup={item.pictureGroup}
+                pictures={item.pictures}
+                ownerName={item.ownerName}
+              />
+            )}
+            removeClippedSubviews={true}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -107,6 +139,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   navigate: {
+    width: width,
+    maxWidth: width,
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -154,7 +189,18 @@ const styles = StyleSheet.create({
     borderRadius: 35 / 2,
     marginLeft: 10,
   },
-  containerPublications: {},
+  containerPublications: {
+    minHeight: height,
+  },
+  textNoContainPublications: {
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  flatListContainer: {
+    height: height - 65.1,
+    maxHeight: height - 65.1,
+  },
   colorInput: {
     color: '#000000',
   },
