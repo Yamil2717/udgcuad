@@ -66,7 +66,6 @@ function HomeScreen({navigation}) {
     <Spinner />
   ) : (
     <SafeAreaView style={styles.container}>
-
       {showNavBar && (
         <NavBar setShowNavBar={setShowNavBar} navigation={navigation} />
       )}
@@ -101,20 +100,20 @@ function HomeScreen({navigation}) {
             color="#2A9DD8"
             size={16}
             style={styles.iconForm}
-          
-
           />
         </View>
         <TouchableOpacity onPress={() => setShowNotifacation(true)}>
-
-        <Image
-          source={{uri: authContext.dataUser.avatar}}
-          style={styles.imageProfile}
+          <Image
+            source={{uri: authContext.dataUser.avatar}}
+            style={styles.imageProfile}
           />
-          </TouchableOpacity>
+        </TouchableOpacity>
       </View>
 
-        {showNotifacation && <Notifications setShowNotifacation={setShowNotifacation} />}
+      {showNotifacation && (
+        <Notifications setShowNotifacation={setShowNotifacation} />
+      )}
+
       <View style={styles.containerPublications}>
         {dataPublication.length <= 0 ? (
           <View>
@@ -141,8 +140,10 @@ function HomeScreen({navigation}) {
           />
         )}
       </View>
-      <NavigationScreens />
+      <View style={styles.NavigationScreensStyle}>
 
+      <NavigationScreens navigation={navigation} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -203,9 +204,9 @@ const styles = StyleSheet.create({
     borderRadius: 35 / 2,
     marginLeft: 10,
   },
-  containerPublications: {
-    minHeight: height,
-  },
+  // containerPublications: {
+  //   minHeight: height,
+  // },
   textNoContainPublications: {
     textAlign: 'center',
     fontWeight: '600',
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   },
   colorInput: {
     color: '#000000',
-  },
+  }
 });
 
 export default HomeScreen;

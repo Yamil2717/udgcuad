@@ -13,39 +13,49 @@ import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 const {width, height} = Dimensions.get('window');
-function NavigationScreens(params) {
+function NavigationScreens({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <IconMaterialCommunityIcons
           name="home-city"
           color="#2A9DD8"
-          size={16}
+          size={28}
           style={styles.iconForm}
         />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('Home')}>
         <IconFontAwesome
           name="hashtag"
           color="#2A9DD8"
-          size={16}
+          size={28}
           style={styles.iconForm}
         />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('Home')}>
         <IconMaterialIcons
           name="add-circle-outline"
           color="#2A9DD8"
-          size={16}
+          size={28}
           style={styles.iconForm}
         />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('Home')}>
         <IconFontAwesome
           name="whatsapp"
           color="#2A9DD8"
-          size={16}
+          size={28}
           style={styles.iconForm}
         />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
         <IconIonicons
           name="notifications"
           color="#2A9DD8"
-          size={16}
+          size={28}
           style={styles.iconForm}
         />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -54,7 +64,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: width,
     maxWidth: width,
-    height: 200,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -62,12 +71,9 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   iconForm: {
-    width: 15,
-    height: 15,
-    marginTop: 10,
-    marginRight: 15,
-    marginLeft: 5,
-    padding: 0,
+    marginHorizontal: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
