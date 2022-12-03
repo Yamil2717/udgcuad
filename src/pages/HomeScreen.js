@@ -15,12 +15,16 @@ import {AxiosContext} from '../contexts/AxiosContext';
 import Publication from '../components/Publication';
 import NavBar from '../components/NavBar';
 import Spinner from '../components/Spinner';
+import Notifications from '../components/Notifications';
+import NavigationScreens from '../components/NavigationScreens';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const {width, height} = Dimensions.get('window');
 function HomeScreen({navigation}) {
   let [showNavBar, setShowNavBar] = useState(false);
+  let [showNotifacation, setShowNotifacation] = useState(false);
   let [loading, setLoading] = useState(true);
   let [dataPublication, setDataPublication] = useState([]);
 
@@ -61,7 +65,8 @@ function HomeScreen({navigation}) {
   return loading ? (
     <Spinner />
   ) : (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+
       {showNavBar && (
         <NavBar setShowNavBar={setShowNavBar} navigation={navigation} />
       )}
@@ -96,13 +101,20 @@ function HomeScreen({navigation}) {
             color="#2A9DD8"
             size={16}
             style={styles.iconForm}
+          
+
           />
         </View>
+        <TouchableOpacity onPress={() => setShowNotifacation(true)}>
+
         <Image
           source={{uri: authContext.dataUser.avatar}}
           style={styles.imageProfile}
-        />
+          />
+          </TouchableOpacity>
       </View>
+
+        {showNotifacation && <Notifications setShowNotifacation={setShowNotifacation} />}
       <View style={styles.containerPublications}>
         {dataPublication.length <= 0 ? (
           <View>
@@ -129,7 +141,9 @@ function HomeScreen({navigation}) {
           />
         )}
       </View>
-    </View>
+      <NavigationScreens />
+
+    </SafeAreaView>
   );
 }
 
@@ -140,7 +154,7 @@ const styles = StyleSheet.create({
   },
   navigate: {
     width: width,
-    maxWidth: width,
+    // maxWidth: width,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
