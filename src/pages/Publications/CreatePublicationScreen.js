@@ -7,6 +7,7 @@ import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo
 import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepThree';
 import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
 import {Alert, Platform} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 function createFormData(photos) {
   const data = new FormData();
@@ -130,53 +131,65 @@ function CreatePublicationScreen({navigation}) {
   switch (step) {
     case 0:
       return (
-        <CreatePublicationStepOne
-          step={step}
-          onChangeStep={onChangeStep}
-          description={description}
-          onChangeDescription={onChangeDescription}
-          photos={photos}
-          setPhotos={setPhotos}
-        />
+        <SafeAreaView>
+          <CreatePublicationStepOne
+            step={step}
+            onChangeStep={onChangeStep}
+            description={description}
+            onChangeDescription={onChangeDescription}
+            photos={photos}
+            setPhotos={setPhotos}
+          />
+          {/* <NavigationScreens navigation={navigation} /> */}
+        </SafeAreaView>
       );
     case 1:
       return (
-        <CreatePublicationStepTwo
-          step={step}
-          onChangeStep={onChangeStep}
-          groups={groups}
-          setGroup={setGroup}
-        />
+        <SafeAreaView>
+          <CreatePublicationStepTwo
+            step={step}
+            onChangeStep={onChangeStep}
+            groups={groups}
+            setGroup={setGroup}
+          />
+          {/* <NavigationScreens navigation={navigation} /> */}
+        </SafeAreaView>
       );
     case 2:
       return (
-        <CreatePublicationStepThree
-          step={step}
-          onChangeStep={onChangeStep}
-          description={description}
-          onChangeDescription={onChangeDescription}
-          photos={photos}
-          setPhotos={setPhotos}
-          groupsFormatted={groupsFormatted}
-          setGroupsFormatted={setGroupsFormatted}
-          group={group}
-          setGroup={setGroup}
-        />
+        <SafeAreaView>
+          <CreatePublicationStepThree
+            step={step}
+            onChangeStep={onChangeStep}
+            description={description}
+            onChangeDescription={onChangeDescription}
+            photos={photos}
+            setPhotos={setPhotos}
+            groupsFormatted={groupsFormatted}
+            setGroupsFormatted={setGroupsFormatted}
+            group={group}
+            setGroup={setGroup}
+          />
+          {/* <NavigationScreens navigation={navigation} /> */}
+        </SafeAreaView>
       );
     case 3:
       return (
-        <CreatePublicationStepFour
-          step={step}
-          onChangeStep={onChangeStep}
-          description={description}
-          photos={photos}
-          groupsFormatted={groupsFormatted}
-          setGroupsFormatted={setGroupsFormatted}
-          group={group}
-          setGroup={setGroup}
-          lock={lock}
-          createPost={createPost}
-        />
+        <SafeAreaView>
+          <CreatePublicationStepFour
+            step={step}
+            onChangeStep={onChangeStep}
+            description={description}
+            photos={photos}
+            groupsFormatted={groupsFormatted}
+            setGroupsFormatted={setGroupsFormatted}
+            group={group}
+            setGroup={setGroup}
+            lock={lock}
+            createPost={createPost}
+          />
+          {/* <NavigationScreens navigation={navigation} /> */}
+        </SafeAreaView>
       );
   }
 }

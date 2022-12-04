@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,7 +19,6 @@ function Notifications({
   ImageContainer,
 }) {
   let authContext = useContext(AuthContext);
-
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={() => setShowNotifacation(false)}>

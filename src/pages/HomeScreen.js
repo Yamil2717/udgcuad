@@ -28,6 +28,9 @@ function HomeScreen({navigation}) {
   let [loading, setLoading] = useState(true);
   let [dataPublication, setDataPublication] = useState([]);
 
+
+
+
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
 
@@ -142,7 +145,9 @@ function HomeScreen({navigation}) {
       </View>
       <View style={styles.NavigationScreensStyle}>
 
-      <NavigationScreens navigation={navigation} />
+      <NavigationScreens 
+      navigation={navigation}
+      />
       </View>
     </SafeAreaView>
   );
@@ -204,9 +209,9 @@ const styles = StyleSheet.create({
     borderRadius: 35 / 2,
     marginLeft: 10,
   },
-  // containerPublications: {
-  //   minHeight: height,
-  // },
+  containerPublications: {
+    height:'85%',
+  },
   textNoContainPublications: {
     textAlign: 'center',
     fontWeight: '600',

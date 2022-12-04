@@ -57,9 +57,91 @@ function NotificationsScreen({navigation}) {
           />
         </TouchableOpacity>
       </View>
-      <View style={styles.containerBody}>
-        <View>
+
+      <ScrollView style={styles.containerBody}>
+        <View style={styles.continerHoy}>
           <Text style={styles.textContainerBody}>Hoy</Text>
+
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>8 Votos !</Text>
+              <Text style={styles.descriptionCard}>
+                Descripcion Cortita UwU
+              </Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#32DC9F"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>8 Votos !</Text>
+              <Text style={styles.descriptionCard}>
+                Descripcion Cortita UwU
+              </Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#32DC9F"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>8 Votos !</Text>
+              <Text style={styles.descriptionCard}>
+                Descripcion Cortita UwU
+              </Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#32DC9F"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>8 Votos !</Text>
+              <Text style={styles.descriptionCard}>
+                Descripcion Cortita UwU
+              </Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#32DC9F"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
           <View style={styles.cardContainer}>
             <Image
               source={{uri: authContext.dataUser.avatar}}
@@ -81,7 +163,8 @@ function NotificationsScreen({navigation}) {
             />
           </View>
         </View>
-        <View>
+        
+        <View style={styles.continerAyer}>
           <Text style={styles.textContainerBody}>Anteriores</Text>
           <View style={styles.cardContainer}>
             <Image
@@ -103,8 +186,29 @@ function NotificationsScreen({navigation}) {
               style={styles.IconNav}
             />
           </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>
+                Descripcion Cortita UwU
+              </Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
+
       <NavigationScreens navigation={navigation} />
     </SafeAreaView>
   );
@@ -162,8 +266,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   containerBody: {
+    height:'85%',
     paddingHorizontal: 30,
     paddingVertical: 20,
+  },
+  continerHoy: {
+    // height: height / 2,
+
+  },
+  continerAyer: {
+    // height: height / 2,
+
   },
   textContainerBody: {
     fontSize: 18,
@@ -179,6 +292,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
+    marginVertical: 10,
   },
   imageCard: {
     width: 50,
