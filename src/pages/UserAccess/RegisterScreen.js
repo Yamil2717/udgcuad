@@ -155,7 +155,7 @@ function RegisterScreen({navigation}) {
       rePassword,
       phone,
       postalCode,
-      userType: selectTypeUser,
+      roleId: selectTypeUser,
       tagsIds,
       interestIds,
       location: currentLocation,

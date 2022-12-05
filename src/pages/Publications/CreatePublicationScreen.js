@@ -6,7 +6,7 @@ import CreatePublicationStepOne from './PublicationStep/CreatePublicationStepOne
 import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo';
 import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepThree';
 import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
-import {Alert, Platform} from 'react-native';
+import {Alert, Linking, Platform} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 function createFormData(photos) {

@@ -28,9 +28,6 @@ function HomeScreen({navigation}) {
   let [loading, setLoading] = useState(true);
   let [dataPublication, setDataPublication] = useState([]);
 
-
-
-
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
 
@@ -43,6 +40,7 @@ function HomeScreen({navigation}) {
     await authAxios
       .get('/user')
       .then(userData => {
+        console.log(userData);
         authContext.setDataUser({...userData});
         setLoading(false);
       })
@@ -131,6 +129,9 @@ function HomeScreen({navigation}) {
             renderItem={({item, index}) => (
               <Publication
                 key={item.id}
+                id={index + 1}
+                length={dataPublication.length}
+                idPost={item.id}
                 description={item.description}
                 groupID={item.groupID}
                 groupName={item.groupName}
@@ -143,11 +144,12 @@ function HomeScreen({navigation}) {
           />
         )}
       </View>
-      <View style={styles.NavigationScreensStyle}>
-
-      <NavigationScreens 
-      navigation={navigation}
-      />
+      <View
+        style={[
+          styles.NavigationScreensStyle,
+          {position: 'absolute', top: height - 55, left: 0, right: 0},
+        ]}>
+        <NavigationScreens navigation={navigation} />
       </View>
     </SafeAreaView>
   );
@@ -210,7 +212,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   containerPublications: {
-    height:'85%',
+    //height: '85%',
+    height: height,
   },
   textNoContainPublications: {
     textAlign: 'center',
@@ -218,12 +221,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   flatListContainer: {
+    //height: '90%',
+    //maxHeight: '90%',
     height: height - 65.1,
     maxHeight: height - 65.1,
   },
   colorInput: {
     color: '#000000',
-  }
+  },
 });
 
 export default HomeScreen;

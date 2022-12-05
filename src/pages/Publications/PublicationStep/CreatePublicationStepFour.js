@@ -7,10 +7,14 @@ import {
   TouchableOpacity,
   Image,
   Switch,
+  Dimensions,
+  Linking,
 } from 'react-native';
 import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
 import DropDownPicker from 'react-native-dropdown-picker';
+
+let {height} = Dimensions.get('window');
 
 function CreatePublicationStepFour({
   step,
@@ -30,6 +34,23 @@ function CreatePublicationStepFour({
 
   function toggleSwitch() {
     setIsEnabled(previousState => !previousState);
+  }
+
+  function shareTwitter() {
+    if (isEnabled && description !== '') {
+      let twitterParameters = [];
+      twitterParameters[0] = 'text=' + encodeURI(description);
+      twitterParameters[1] = 'via=' + encodeURI('@Voces');
+      const url =
+        'https://twitter.com/intent/tweet?' + twitterParameters.join('&');
+      Linking.openURL(url);
+      /*.then(data => {
+        alert('Twitter Opened');
+      })
+      .catch(() => {
+        alert('Something went wrong');
+      });*/
+    }
   }
 
   return (
@@ -63,7 +84,7 @@ function CreatePublicationStepFour({
 
         <View style={styles.containerPublicationSub}>
           <View>
-            <Text style={{maxWidth: '80%'}}>{description}</Text>
+            <Text style={photos && {maxWidth: '80%'}}>{description}</Text>
             <Text>@{authContext.dataUser.name}</Text>
             {/*<Text>#gobiernogdl #bicicletas #circulación</Text>*/}
           </View>
@@ -97,7 +118,10 @@ function CreatePublicationStepFour({
       <View style={styles.containerButton}>
         <TouchableOpacity
           style={[lock ? styles.buttonLock : styles.button]}
-          onPress={() => createPost()}>
+          onPress={() => {
+            createPost();
+            shareTwitter();
+          }}>
           <Text style={styles.textButton}>
             {lock ? 'Enviando...' : 'Publicar'}
           </Text>
@@ -110,6 +134,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
+    minHeight: height,
   },
   navigate: {
     justifyContent: 'center',

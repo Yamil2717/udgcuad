@@ -50,7 +50,7 @@ function NotificationsScreen({navigation}) {
         <View style={styles.formsStyle}>
           <Text style={styles.titleNotification}>Notificaciones</Text>
         </View>
-        <TouchableOpacity onPress={() => setShowNotifacation(true)}>
+        <TouchableOpacity onPress={() => console.log('a')}>
           <Image
             source={{uri: authContext.dataUser.avatar}}
             style={styles.imageProfile}
@@ -69,9 +69,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -89,9 +87,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -109,9 +105,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -129,9 +123,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -149,9 +141,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -163,7 +153,7 @@ function NotificationsScreen({navigation}) {
             />
           </View>
         </View>
-        
+
         <View style={styles.continerAyer}>
           <Text style={styles.textContainerBody}>Anteriores</Text>
           <View style={styles.cardContainer}>
@@ -173,9 +163,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>2 Voto !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -193,9 +181,7 @@ function NotificationsScreen({navigation}) {
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>2 Voto !</Text>
-              <Text style={styles.descriptionCard}>
-                Descripcion Cortita UwU
-              </Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
               <Text style={styles.timeCard}>12 min</Text>
             </View>
 
@@ -266,17 +252,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   containerBody: {
-    height:'85%',
+    height: '85%',
     paddingHorizontal: 30,
     paddingVertical: 20,
   },
   continerHoy: {
     // height: height / 2,
-
   },
   continerAyer: {
     // height: height / 2,
-
   },
   textContainerBody: {
     fontSize: 18,

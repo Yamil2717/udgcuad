@@ -8,9 +8,12 @@ import {
   View,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
+
+const {height} = Dimensions.get('window');
 
 function CreatePublicationStepTwo({step, onChangeStep, groups, setGroup}) {
   return (
@@ -85,6 +88,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
+    minHeight: height,
   },
   navigate: {
     display: 'flex',
