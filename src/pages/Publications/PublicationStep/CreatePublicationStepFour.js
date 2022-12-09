@@ -9,12 +9,13 @@ import {
   Switch,
   Dimensions,
   Linking,
+  Alert,
 } from 'react-native';
 import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-let {height} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 function CreatePublicationStepFour({
   step,
@@ -32,24 +33,25 @@ function CreatePublicationStepFour({
   let [open, setOpen] = useState(false);
   let [isEnabled, setIsEnabled] = useState(false);
 
-  function toggleSwitch() {
+  const toggleSwitch = () => {
     setIsEnabled(previousState => !previousState);
-  }
+  };
 
   function shareTwitter() {
     if (isEnabled && description !== '') {
       let twitterParameters = [];
       twitterParameters[0] = 'text=' + encodeURI(description);
-      twitterParameters[1] = 'via=' + encodeURI('@Voces');
+      twitterParameters[1] = 'via=' + encodeURI('Voces');
       const url =
         'https://twitter.com/intent/tweet?' + twitterParameters.join('&');
-      Linking.openURL(url);
-      /*.then(data => {
-        alert('Twitter Opened');
-      })
-      .catch(() => {
-        alert('Something went wrong');
-      });*/
+      Linking.openURL(url)
+        .then(() => console.log('Se abrió twitter correctamente.'))
+        .catch(() =>
+          Alert.alert(
+            'Voces',
+            'Algo fallo y no pudimos redireccionar hacía twitter.',
+          ),
+        );
     }
   }
 
@@ -84,9 +86,10 @@ function CreatePublicationStepFour({
 
         <View style={styles.containerPublicationSub}>
           <View>
-            <Text style={photos && {maxWidth: '80%'}}>{description}</Text>
+            <Text style={photos && styles.postHaveImageAndDescription}>
+              {description}
+            </Text>
             <Text>@{authContext.dataUser.name}</Text>
-            {/*<Text>#gobiernogdl #bicicletas #circulación</Text>*/}
           </View>
           {photos && photos.length > 0 && (
             <Image
@@ -109,8 +112,8 @@ function CreatePublicationStepFour({
             thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
-            style={styles.switch}
             value={isEnabled}
+            style={styles.switch}
           />
         </View>
       </View>
@@ -120,7 +123,7 @@ function CreatePublicationStepFour({
           style={[lock ? styles.buttonLock : styles.button]}
           onPress={() => {
             createPost();
-            shareTwitter();
+            isEnabled && shareTwitter();
           }}>
           <Text style={styles.textButton}>
             {lock ? 'Enviando...' : 'Publicar'}
@@ -133,7 +136,6 @@ function CreatePublicationStepFour({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    flex: 1,
     minHeight: height,
   },
   navigate: {
@@ -169,6 +171,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  postHaveImageAndDescription: {
+    maxWidth: '80%',
+  },
   listStyle: {
     display: 'flex',
     flexDirection: 'row',
@@ -181,6 +186,7 @@ const styles = StyleSheet.create({
   },
   textCreatePublication: {
     fontSize: 24,
+    width: '100%',
   },
   subTextCreatePublication: {
     fontSize: 12,

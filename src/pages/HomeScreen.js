@@ -2,13 +2,13 @@ import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView,
   Image,
   Text,
   TextInput,
   TouchableOpacity,
   Dimensions,
   FlatList,
+  RefreshControl,
 } from 'react-native';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
@@ -24,9 +24,10 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 const {width, height} = Dimensions.get('window');
 function HomeScreen({navigation}) {
   let [showNavBar, setShowNavBar] = useState(false);
-  let [showNotifacation, setShowNotifacation] = useState(false);
+  let [showNotification, setShowNotification] = useState(false);
   let [loading, setLoading] = useState(true);
   let [dataPublication, setDataPublication] = useState([]);
+  let [refreshing, setRefreshing] = useState(false);
 
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -40,7 +41,6 @@ function HomeScreen({navigation}) {
     await authAxios
       .get('/user')
       .then(userData => {
-        console.log(userData);
         authContext.setDataUser({...userData});
         setLoading(false);
       })
@@ -62,6 +62,20 @@ function HomeScreen({navigation}) {
       })
       .catch(() => authContext.setDataGroups([]));
   }
+
+  const refreshPublications = useCallback(async () => {
+    setRefreshing(true);
+    await authAxios
+      .get('/publications')
+      .then(data => {
+        setDataPublication(data);
+        setRefreshing(false);
+      })
+      .catch(() => {
+        setDataPublication([]);
+        setRefreshing(false);
+      });
+  }, []);
 
   return loading ? (
     <Spinner />
@@ -103,7 +117,7 @@ function HomeScreen({navigation}) {
             style={styles.iconForm}
           />
         </View>
-        <TouchableOpacity onPress={() => setShowNotifacation(true)}>
+        <TouchableOpacity onPress={() => setShowNotification(true)}>
           <Image
             source={{uri: authContext.dataUser.avatar}}
             style={styles.imageProfile}
@@ -111,8 +125,8 @@ function HomeScreen({navigation}) {
         </TouchableOpacity>
       </View>
 
-      {showNotifacation && (
-        <Notifications setShowNotifacation={setShowNotifacation} />
+      {showNotification && (
+        <Notifications setShowNotification={setShowNotification} />
       )}
 
       <View style={styles.containerPublications}>
@@ -126,6 +140,13 @@ function HomeScreen({navigation}) {
           <FlatList
             data={dataPublication}
             style={styles.flatListContainer}
+            refreshControl={
+              <RefreshControl
+                colors={['#2A9DD8', '#2A9DD8']}
+                refreshing={refreshing}
+                onRefresh={refreshPublications}
+              />
+            }
             renderItem={({item, index}) => (
               <Publication
                 key={item.id}
@@ -133,22 +154,22 @@ function HomeScreen({navigation}) {
                 length={dataPublication.length}
                 idPost={item.id}
                 description={item.description}
-                groupID={item.groupID}
-                groupName={item.groupName}
-                pictureGroup={item.pictureGroup}
+                groupID={item.group.id}
+                groupName={item.group.name}
+                pictureGroup={item.group.picture}
                 pictures={item.pictures}
-                ownerName={item.ownerName}
+                ownerName={item.user.name}
+                likeNegative={item.likeNegative}
+                likeNeutral={item.likeNeutral}
+                likePositive={item.likePositive}
+                commentCount={item.commentCount}
               />
             )}
             removeClippedSubviews={true}
           />
         )}
       </View>
-      <View
-        style={[
-          styles.NavigationScreensStyle,
-          {position: 'absolute', top: height - 55, left: 0, right: 0},
-        ]}>
+      <View style={styles.NavigationScreensStyle}>
         <NavigationScreens navigation={navigation} />
       </View>
     </SafeAreaView>
@@ -162,7 +183,6 @@ const styles = StyleSheet.create({
   },
   navigate: {
     width: width,
-    // maxWidth: width,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
@@ -212,7 +232,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   containerPublications: {
-    //height: '85%',
     height: height,
   },
   textNoContainPublications: {
@@ -221,13 +240,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   flatListContainer: {
-    //height: '90%',
-    //maxHeight: '90%',
-    height: height - 65.1,
-    maxHeight: height - 65.1,
+    height: height - 115.1,
+    maxHeight: height - 115.1,
   },
   colorInput: {
     color: '#000000',
+  },
+  NavigationScreensStyle: {
+    position: 'absolute',
+    top: height - 50,
+    left: 0,
+    right: 0,
   },
 });
 

@@ -12,10 +12,9 @@ import {AuthContext} from '../contexts/AuthContext';
 import FastImage from 'react-native-fast-image';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const {height} = Dimensions.get('window');
-function NavBar({setShowNavBar, navigation}) {
+function NavBar({setShowNavBar}) {
   let authContext = useContext(AuthContext);
 
   return (
@@ -45,20 +44,6 @@ function NavBar({setShowNavBar, navigation}) {
             style={styles.iconButton}
           />
           <Text style={styles.textButton}>Crear comunidad</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.containerButton}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('CreatePublication')}>
-          <IconMaterialIcons
-            name="post-add"
-            color="#2A9DD8"
-            size={26}
-            style={styles.iconButton}
-          />
-          <Text style={styles.textButton}>Crear publicación</Text>
         </TouchableOpacity>
       </View>
 

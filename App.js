@@ -25,11 +25,9 @@ function App() {
         refreshToken: JWT.refreshToken || null,
         authenticated: JWT.refreshToken !== null,
       });
-
       setLoading(false);
     } catch (error) {
       setLoading(false);
-
       authContext.setAuthState({
         accessToken: null,
         refreshToken: null,

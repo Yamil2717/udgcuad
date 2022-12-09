@@ -42,10 +42,10 @@ function CreatePublicationScreen({navigation}) {
   async function getGroups() {
     setGroups(authContext.dataGroups);
     let tempGroups = [];
-    authContext.dataGroups.map((groupFormat, index) => {
+    authContext.dataGroups.map(groupFormat => {
       tempGroups.push({
         label: groupFormat.name,
-        value: index.toString(),
+        value: groupFormat.id,
       });
     });
     setGroupsFormatted([...tempGroups]);
@@ -65,14 +65,17 @@ function CreatePublicationScreen({navigation}) {
         'Debe ingresar al menos la descripción o una fotografía para poder crear un post.',
       );
     }
+    let groupSelect;
+    groups.map(gp => {
+      if (gp.id === group) {
+        groupSelect = gp;
+      }
+    });
     let dataCreate = {
       description: description || '',
-      pictureGroup: groups[group].picture.toString(),
-      groupID: groups[group].id,
-      groupName: groups[group].name,
-      categoryID: groups[group].idCategory,
+      groupID: groupSelect.id,
+      categoryID: groupSelect.idInterest,
       ownerID: authContext.dataUser.id,
-      ownerName: authContext.dataUser.name,
       pictures: [],
     };
     setLock(true);

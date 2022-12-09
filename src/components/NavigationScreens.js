@@ -14,12 +14,12 @@ import IconIonicons from 'react-native-vector-icons/Ionicons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 const {width, height} = Dimensions.get('window');
 function NavigationScreens({navigation}) {
-   /* -------------------------- STATE PARA NAGIATION -------------------------- */
-   let [homeScreenActive, setHomeScreenActive] = useState(false);
-   let [hashtagScreenActive, setHashtagScreenActive] = useState(false);
-   let [addScreenActive, setAddScreenActive] = useState(false);
-   let [chatScreenActive, setChatScreenActive] = useState(false);
-   let [notificationScreenActive, setNotificationScreenActive] = useState(false);
+  /* -------------------------- STATE PARA NAVIGATION -------------------------- */
+  let [homeScreenActive, setHomeScreenActive] = useState(false);
+  let [hashtagScreenActive, setHashtagScreenActive] = useState(false);
+  let [addScreenActive, setAddScreenActive] = useState(false);
+  let [chatScreenActive, setChatScreenActive] = useState(false);
+  let [notificationScreenActive, setNotificationScreenActive] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,19 +32,17 @@ function NavigationScreens({navigation}) {
           setHashtagScreenActive(false);
           setAddScreenActive(false);
         }}>
-          <View style={
-            homeScreenActive
-              ? styles.iconFormactivate
-              : styles.iconFormDesactivate
+        <View
+          style={
+            homeScreenActive ? styles.iconFormActive : styles.iconFormDisable
           }>
-
-        <IconMaterialCommunityIcons
-          name="home-city"
-          color= {!homeScreenActive ? "#2A9DD8" : "#fff"}
-          size={28}
-          style={styles.iconForm}
+          <IconMaterialCommunityIcons
+            name="home-city"
+            color={!homeScreenActive ? '#2A9DD8' : '#fff'}
+            size={28}
+            style={styles.iconForm}
           />
-          </View>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -56,19 +54,17 @@ function NavigationScreens({navigation}) {
           setHomeScreenActive(false);
           setAddScreenActive(false);
         }}>
-          <View style={
-            hashtagScreenActive
-              ? styles.iconFormactivate
-              : styles.iconFormDesactivate
+        <View
+          style={
+            hashtagScreenActive ? styles.iconFormActive : styles.iconFormDisable
           }>
-
-        <IconFontAwesome
-          name="hashtag"
-          color= {!hashtagScreenActive ? "#2A9DD8" : "#fff"}
-          size={28}
-          style={styles.iconForm}
+          <IconFontAwesome
+            name="hashtag"
+            color={!hashtagScreenActive ? '#2A9DD8' : '#fff'}
+            size={28}
+            style={styles.iconForm}
           />
-          </View>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -80,19 +76,17 @@ function NavigationScreens({navigation}) {
           setHashtagScreenActive(false);
           setHomeScreenActive(false);
         }}>
-          <View style={
-            addScreenActive
-              ? styles.iconFormactivate
-              : styles.iconFormDesactivate
+        <View
+          style={
+            addScreenActive ? styles.iconFormActive : styles.iconFormDisable
           }>
-
-        <IconMaterialIcons
-          name="add-circle-outline"
-          color= {!addScreenActive ? "#2A9DD8" : "#fff"}
-          size={28}
-          style={styles.iconForm}
+          <IconMaterialIcons
+            name="add-circle-outline"
+            color={!addScreenActive ? '#2A9DD8' : '#fff'}
+            size={28}
+            style={styles.iconForm}
           />
-          </View>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -104,19 +98,17 @@ function NavigationScreens({navigation}) {
           setHomeScreenActive(false);
           setAddScreenActive(false);
         }}>
-          <View style={
-            chatScreenActive
-              ? styles.iconFormactivate
-              : styles.iconFormDesactivate
+        <View
+          style={
+            chatScreenActive ? styles.iconFormActive : styles.iconFormDisable
           }>
-
-        <IconFontAwesome
-          name="whatsapp"
-          color= {!chatScreenActive ? "#2A9DD8" : "#fff"}
-          size={28}
-          style={styles.iconForm}
+          <IconFontAwesome
+            name="whatsapp"
+            color={!chatScreenActive ? '#2A9DD8' : '#fff'}
+            size={28}
+            style={styles.iconForm}
           />
-          </View>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -131,12 +123,12 @@ function NavigationScreens({navigation}) {
         <View
           style={
             notificationScreenActive
-              ? styles.iconFormactivate
-              : styles.iconFormDesactivate
+              ? styles.iconFormActive
+              : styles.iconFormDisable
           }>
           <IconIonicons
             name="notifications"
-            color= {!notificationScreenActive ? "#2A9DD8" : "#fff"}
+            color={!notificationScreenActive ? '#2A9DD8' : '#fff'}
             size={28}
             style={styles.iconForm}
           />
@@ -150,6 +142,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: width,
     maxWidth: width,
+    minWidth: width,
+    height: 50,
+    maxHeight: 50,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -160,16 +155,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconFormactivate: {
+  iconFormActive: {
     backgroundColor: '#2A9DD8',
-    paddingVertical: 5,
-    paddingVertical: 15,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    paddingVertical: 10,
+    borderTopLeftRadius: 28 / 2,
+    borderTopRightRadius: 28 / 2,
   },
-  iconFormDesactivate: {
-    paddingVertical: 5,
-    paddingVertical: 15,
+  iconFormDisable: {
+    paddingVertical: 10,
   },
 });
 

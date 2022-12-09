@@ -14,14 +14,14 @@ import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 
 function Notifications({
-  setShowNotifacation,
+  setShowNotification,
   DescriptionContainer,
   ImageContainer,
 }) {
   let authContext = useContext(AuthContext);
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => setShowNotifacation(false)}>
+      <TouchableOpacity onPress={() => setShowNotification(false)}>
         <View style={styles.containerClose}>
           <IconAntDesign name="closecircleo" size={20} color="#2A9DD8" />
           <Text style={styles.textCloseStyle}>Cerrar</Text>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     marginHorizontal: 40,
-    marginVertical: 20
+    marginVertical: 20,
   },
   imageNotification: {
     width: 65,

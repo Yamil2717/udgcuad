@@ -20,6 +20,7 @@ import NavigationScreens from '../../components/NavigationScreens';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
 const {width, height} = Dimensions.get('window');
 
 function NotificationsScreen({navigation}) {
@@ -51,21 +52,29 @@ function NotificationsScreen({navigation}) {
           <Text style={styles.titleNotification}>Notificaciones</Text>
         </View>
         <TouchableOpacity onPress={() => console.log('a')}>
-          <Image
-            source={{uri: authContext.dataUser.avatar}}
+          <FastImage
+            source={{
+              uri: authContext.dataUser.avatar,
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
             style={styles.imageProfile}
           />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.containerBody}>
-        <View style={styles.continerHoy}>
+        <View style={styles.containerHoy}>
           <Text style={styles.textContainerBody}>Hoy</Text>
 
           <View style={styles.cardContainer}>
-            <Image
-              source={{uri: authContext.dataUser.avatar}}
+            <FastImage
+              source={{
+                uri: authContext.dataUser.avatar,
+                priority: FastImage.priority.normal,
+              }}
               style={styles.imageCard}
+              resizeMode={FastImage.resizeMode.cover}
             />
             <View style={styles.textCard}>
               <Text style={styles.titleCard}>8 Votos !</Text>
@@ -154,8 +163,152 @@ function NotificationsScreen({navigation}) {
           </View>
         </View>
 
-        <View style={styles.continerAyer}>
+        <View style={styles.containerAyer}>
           <Text style={styles.textContainerBody}>Anteriores</Text>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <Image
+              source={{uri: authContext.dataUser.avatar}}
+              style={styles.imageCard}
+            />
+            <View style={styles.textCard}>
+              <Text style={styles.titleCard}>2 Voto !</Text>
+              <Text style={styles.descriptionCard}>Descripcion corta</Text>
+              <Text style={styles.timeCard}>12 min</Text>
+            </View>
+
+            <IconFontAwesome
+              name="circle"
+              color="#EB4237"
+              size={40}
+              style={styles.IconNav}
+            />
+          </View>
           <View style={styles.cardContainer}>
             <Image
               source={{uri: authContext.dataUser.avatar}}
@@ -195,7 +348,9 @@ function NotificationsScreen({navigation}) {
         </View>
       </ScrollView>
 
-      <NavigationScreens navigation={navigation} />
+      <View style={styles.NavigationScreensStyle}>
+        <NavigationScreens navigation={navigation} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -235,16 +390,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#828282',
   },
-  input: {
-    flex: 1,
-    backgroundColor: '#F8F8F8',
-    fontSize: 14,
-    height: 35,
-    borderTopLeftRadius: 24,
-    borderBottomLeftRadius: 24,
-    paddingVertical: 5,
-    paddingLeft: 15,
-  },
   imageProfile: {
     width: 35,
     height: 35,
@@ -252,20 +397,19 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   containerBody: {
-    height: '85%',
-    paddingHorizontal: 30,
-    paddingVertical: 20,
+    height: height - 115.1,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-  continerHoy: {
+  containerHoy: {
     // height: height / 2,
   },
-  continerAyer: {
+  containerAyer: {
     // height: height / 2,
   },
   textContainerBody: {
     fontSize: 18,
     color: '#164578',
-    paddingVertical: 20,
   },
   cardContainer: {
     display: 'flex',
@@ -273,28 +417,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#CDE7F4',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginVertical: 10,
+    padding: 5,
+    marginBottom: 5,
   },
   imageCard: {
-    width: 50,
-    height: 50,
-    borderRadius: 100,
+    marginHorizontal: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 40 / 2,
   },
   textCard: {
-    marginRight: 50,
+    width: '70%',
   },
   titleCard: {
     color: '#636363',
-    fontSize: 18,
+    fontSize: 14,
   },
   descriptionCard: {
     color: '#828282',
+    fontSize: 12,
   },
   timeCard: {
     color: '#828282',
+    fontSize: 12,
+  },
+  NavigationScreensStyle: {
+    position: 'absolute',
+    top: height - 50,
+    left: 0,
+    right: 0,
   },
 });
 
