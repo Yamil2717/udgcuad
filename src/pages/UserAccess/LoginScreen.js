@@ -27,23 +27,21 @@ function LoginScreen({navigation}) {
     try {
       /*await authAxios
         .post('/user/auth', {email: 'admin@gmail.com', password: 'Dofus159'})*/
-      await authAxios
-        .post('/user/auth', {email, password})
-        .then(async data => {
-          let {accessToken, refreshToken} = data;
-          authContext.setAuthState({
+      await authAxios.post('/user/auth', {email, password}).then(async data => {
+        let {accessToken, refreshToken} = data;
+        authContext.setAuthState({
+          accessToken,
+          refreshToken,
+          authenticated: true,
+        });
+        await setGenericPassword(
+          'token',
+          JSON.stringify({
             accessToken,
             refreshToken,
-            authenticated: true,
-          });
-          await setGenericPassword(
-            'token',
-            JSON.stringify({
-              accessToken,
-              refreshToken,
-            }),
-          );
-        });
+          }),
+        );
+      });
     } catch (err) {
       console.error(err?.response?.data?.message || err.message);
       Alert.alert('Error', err?.response?.data?.message || err.message);
