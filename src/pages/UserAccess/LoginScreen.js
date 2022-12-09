@@ -26,9 +26,9 @@ function LoginScreen({navigation}) {
   async function Auth() {
     try {
       /*await authAxios
-        .post('/user/auth', {email, password})*/
+        .post('/user/auth', {email: 'admin@gmail.com', password: 'Dofus159'})*/
       await authAxios
-        .post('/user/auth', {email: 'admin@gmail.com', password: 'Dofus159'})
+        .post('/user/auth', {email, password})
         .then(async data => {
           let {accessToken, refreshToken} = data;
           authContext.setAuthState({
