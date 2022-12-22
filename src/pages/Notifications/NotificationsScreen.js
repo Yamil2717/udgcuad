@@ -1,30 +1,24 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   View,
   ScrollView,
   Image,
   Text,
-  TextInput,
-  TouchableOpacity,
   Dimensions,
   FlatList,
 } from 'react-native';
 import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
-import Publication from '../../components/Publication';
-import NavBar from '../../components/NavBar';
+import Navbar from '../../components/Navbar/Navbar';
 import Spinner from '../../components/Spinner';
-import Notifications from '../../components/Notifications';
 import NavigationScreens from '../../components/NavigationScreens';
-import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 const {width, height} = Dimensions.get('window');
 
 function NotificationsScreen({navigation}) {
-  let [showNavBar, setShowNavBar] = useState(false);
   let [loading, setLoading] = useState(false);
 
   let authContext = useContext(AuthContext);
@@ -34,35 +28,7 @@ function NotificationsScreen({navigation}) {
     <Spinner />
   ) : (
     <SafeAreaView>
-      {showNavBar && (
-        <NavBar setShowNavBar={setShowNavBar} navigation={navigation} />
-      )}
-      <View style={styles.navigate}>
-        <TouchableOpacity
-          style={styles.menu}
-          onPress={() => setShowNavBar(true)}>
-          <IconEntypo
-            name="menu"
-            color="#2A9DD8"
-            size={28}
-            style={styles.IconNav}
-          />
-        </TouchableOpacity>
-        <View style={styles.formsStyle}>
-          <Text style={styles.titleNotification}>Notificaciones</Text>
-        </View>
-        <TouchableOpacity onPress={() => console.log('a')}>
-          <FastImage
-            source={{
-              uri: authContext.dataUser.avatar,
-              priority: FastImage.priority.high,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
-            style={styles.imageProfile}
-          />
-        </TouchableOpacity>
-      </View>
-
+      <Navbar navigation={navigation} title="Notificaciones" />
       <ScrollView style={styles.containerBody}>
         <View style={styles.containerHoy}>
           <Text style={styles.textContainerBody}>Hoy</Text>
@@ -357,55 +323,14 @@ function NotificationsScreen({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     position: 'relative',
-  },
-  navigate: {
-    width: width,
-    // maxWidth: width,
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 5,
-  },
-  menu: {
-    height: 35,
-    marginRight: 10,
-    alignSelf: 'center',
-    alignContent: 'center',
-    justifyContent: 'center',
-  },
-  formsStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    height: 35,
-    borderRadius: 24,
-    marginVertical: 10,
-    width: 280,
-  },
-  titleNotification: {
-    fontSize: 22,
-    color: '#828282',
-  },
-  imageProfile: {
-    width: 35,
-    height: 35,
-    borderRadius: 35 / 2,
-    marginLeft: 10,
   },
   containerBody: {
     height: height - 115.1,
     paddingHorizontal: 20,
     paddingBottom: 20,
-  },
-  containerHoy: {
-    // height: height / 2,
-  },
-  containerAyer: {
-    // height: height / 2,
+    backgroundColor: 'white',
   },
   textContainerBody: {
     fontSize: 18,

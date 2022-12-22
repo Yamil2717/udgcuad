@@ -8,20 +8,7 @@ import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepT
 import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
 import {Alert, Linking, Platform} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-
-function createFormData(photos) {
-  const data = new FormData();
-
-  photos.map(photo => {
-    data.append('pictures', {
-      name: photo.fileName,
-      type: photo.type,
-      uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
-    });
-  });
-
-  return data;
-}
+import tools from '../../tools/tools';
 
 function CreatePublicationScreen({navigation}) {
   const {authAxios} = useContext(AxiosContext);
@@ -81,9 +68,13 @@ function CreatePublicationScreen({navigation}) {
     setLock(true);
     if (photos) {
       await authAxios
-        .post('/images/publication/upload', createFormData(photos), {
-          headers: {'Content-Type': 'multipart/form-data'},
-        })
+        .post(
+          '/images/publications/upload',
+          tools.formDataMultiplePhotos(photos),
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+          },
+        )
         .then(async imagesURL => {
           dataCreate.pictures = imagesURL;
           await authAxios
@@ -102,7 +93,8 @@ function CreatePublicationScreen({navigation}) {
         })
         .catch(err => {
           setLock(false);
-          console.error(err?.response?.data?.message || err.message);
+          Alert.alert('Voces', err?.response?.data?.message || err.message);
+          //console.error(err?.response?.data?.message || err.message);
         });
     } else {
       await authAxios

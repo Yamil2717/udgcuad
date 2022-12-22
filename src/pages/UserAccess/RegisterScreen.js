@@ -13,18 +13,7 @@ import Spinner from '../../components/Spinner';
 import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
 import {setGenericPassword} from 'react-native-keychain';
-
-function createFormData(photo) {
-  const data = new FormData();
-
-  data.append('avatar', {
-    name: photo.fileName,
-    type: photo.type,
-    uri: Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
-  });
-
-  return data;
-}
+import tools from '../../tools/tools';
 
 function RegisterScreen({navigation}) {
   let [loading, setLoading] = useState(true);
@@ -161,47 +150,15 @@ function RegisterScreen({navigation}) {
       location: currentLocation,
       dateBirth: new Date().toISOString(),
     };
-    if (!name) {
-      return Alert.alert(
-        'Datos faltantes',
-        'Debe ingresar su nombre completo.',
-      );
-    }
-    if (!email) {
-      return Alert.alert(
-        'Datos faltantes',
-        'Debe ingresar su correo electrónico.',
-      );
-    }
-    if (!phone) {
-      return Alert.alert(
-        'Datos faltantes',
-        'Debe ingresar su número telefónico.',
-      );
-    }
-    if (!postalCode) {
-      return Alert.alert('Datos faltantes', 'Debe ingresar su código postal.');
-    }
-    if (tagsIds.length === 0 || interestIds.length === 0) {
-      return Alert.alert(
-        'Datos faltantes',
-        'Debe ingresar seleccionar intereses y luego tags.',
-      );
-    }
-    if (password !== rePassword) {
-      return Alert.alert('Datos faltantes', 'Las contraseñas no coinciden.');
-    }
-    if (password.length < 8) {
-      return Alert.alert(
-        'Datos faltantes',
-        'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
-      );
-    }
     if (photo) {
       await publicAxios
-        .post(`${env.api}/images/user/upload`, createFormData(photo), {
-          headers: {'Content-Type': 'multipart/form-data'},
-        })
+        .post(
+          `${env.api}/images/user/upload`,
+          tools.formDataSinglePhoto(photo),
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+          },
+        )
         .then(async url => {
           dataCreate.avatar = url;
           await publicAxios

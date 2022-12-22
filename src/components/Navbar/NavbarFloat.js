@@ -8,18 +8,18 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
-import {AuthContext} from '../contexts/AuthContext';
+import {AuthContext} from '../../contexts/AuthContext';
 import FastImage from 'react-native-fast-image';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 const {height} = Dimensions.get('window');
-function NavBar({setShowNavBar}) {
+function NavbarFloat({setShowNavbarFloat}) {
   let authContext = useContext(AuthContext);
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => setShowNavBar(false)}>
+      <TouchableOpacity onPress={() => setShowNavbarFloat(false)}>
         <View style={styles.containerClose}>
           <IconIonicons
             name="md-close-circle-outline"
@@ -187,4 +187,4 @@ const styles = StyleSheet.create({
     color: '#828282',
   },
 });
-export default NavBar;
+export default NavbarFloat;

@@ -51,10 +51,10 @@ function CreatePublicationStepOne({
             );
           }
           response.assets.map(image => {
-            if (image.fileSize > 6291456) {
+            if (image.fileSize > 4 * 1024 * 1024) {
               return Alert.alert(
                 'Error',
-                'La imagen no puede superar los 6MB, por favor escoja otra.',
+                'La imagen no puede superar los 4MB, por favor escoja otra.',
               );
             } else {
               tempPhotos.push(image);

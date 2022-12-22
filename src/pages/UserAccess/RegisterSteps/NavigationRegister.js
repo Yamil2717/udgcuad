@@ -7,6 +7,7 @@ function NavigationRegister({
   previousScreenOnPress,
   afterScreenOnPress,
   incrementOnPress,
+  validateStep,
   createUser,
 }) {
   return (
@@ -36,6 +37,12 @@ function NavigationRegister({
         <TouchableOpacity
           style={styles.buttons}
           onPress={() => {
+            if (validateStep) {
+              let validateFailed = validateStep();
+              if (validateFailed === undefined || validateFailed === true) {
+                return;
+              }
+            }
             if (valueScreen === 2) {
               return createUser();
             }

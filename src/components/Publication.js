@@ -10,9 +10,12 @@ import {
   FlatList,
   SafeAreaView,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Comments from './Comments';
+import Moment from 'moment';
+import ES from 'moment/locale/es';
 
 const {width} = Dimensions.get('window');
 
@@ -25,12 +28,16 @@ function Publication({
   groupName,
   pictureGroup,
   pictures,
+  ownerID,
   ownerName,
+  createdAt,
   likeNegative,
   likeNeutral,
   likePositive,
   commentCount,
+  navigation,
 }) {
+  Moment.updateLocale('es', ES);
   let [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   return (
@@ -47,16 +54,24 @@ function Publication({
         />
         <View style={styles.textsGroup}>
           <Text style={styles.nameGroup}>{groupName}</Text>
-          <Text style={styles.username}>{ownerName}</Text>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.navigate('Profile', {id: ownerID})}>
+            <Text style={styles.username}>@{ownerName}</Text>
+          </TouchableWithoutFeedback>
         </View>
       </View>
       <View style={styles.descriptionContainer}>
-        <Text style={styles.descriptionText}>{description}</Text>
-        <View style={styles.hashtagsContainer}>
-          <Text style={styles.hashtags}>#hashtagTest1</Text>
-          <Text style={styles.hashtags}>#hashtagTest2</Text>
-          <Text style={styles.hashtags}>#hashtagTest3</Text>
+        <View>
+          {description && (
+            <Text style={styles.descriptionText}>{description}</Text>
+          )}
+          <View style={styles.hashtagsContainer}>
+            <Text style={styles.hashtags}>#hashtagTest1</Text>
+          </View>
         </View>
+        <Text style={styles.textTime} numberOfLines={1}>
+          {Moment(createdAt).startOf('minute').fromNow()}
+        </Text>
       </View>
       <FlatList
         data={pictures}
@@ -154,6 +169,10 @@ const styles = StyleSheet.create({
     color: '#828282',
     fontSize: 14,
     lineHeight: 14,
+  },
+  textTime: {
+    color: '#828282',
+    fontSize: 13,
   },
   descriptionContainer: {
     marginTop: 10,

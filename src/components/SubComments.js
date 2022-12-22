@@ -33,6 +33,10 @@ function SubComments({
 
   function addSubComment() {
     setLock(true);
+    if (!subCommentInput || subCommentInput.length <= 0) {
+      setLock(false);
+      return Alert.alert('Voces', 'Error, debe ingresar un comentario.');
+    }
     authAxios
       .post('/comment', {
         idPublication,

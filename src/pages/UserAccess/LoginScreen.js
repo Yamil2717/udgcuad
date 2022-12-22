@@ -25,23 +25,24 @@ function LoginScreen({navigation}) {
 
   async function Auth() {
     try {
-      /*await authAxios
-        .post('/user/auth', {email: 'admin@gmail.com', password: 'Dofus159'})*/
-      await authAxios.post('/user/auth', {email, password}).then(async data => {
-        let {accessToken, refreshToken} = data;
-        authContext.setAuthState({
-          accessToken,
-          refreshToken,
-          authenticated: true,
-        });
-        await setGenericPassword(
-          'token',
-          JSON.stringify({
+      await authAxios
+        .post('/user/auth', {email, password})
+        //await authAxios.post('/user/auth', {email: 'admin@gmail.com', password: 'Dofus159'})
+        .then(async data => {
+          let {accessToken, refreshToken} = data;
+          authContext.setAuthState({
             accessToken,
             refreshToken,
-          }),
-        );
-      });
+            authenticated: true,
+          });
+          await setGenericPassword(
+            'token',
+            JSON.stringify({
+              accessToken,
+              refreshToken,
+            }),
+          );
+        });
     } catch (err) {
       console.error(err?.response?.data?.message || err.message);
       Alert.alert('Error', err?.response?.data?.message || err.message);
@@ -133,6 +134,7 @@ function LoginScreen({navigation}) {
                 value={password}
                 onChangeText={onChangePassword}
                 textColor={styles.colorInput}
+                autoCapitalize="none"
                 theme={{
                   colors: {
                     placeholder: '#000000',

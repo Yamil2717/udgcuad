@@ -9,6 +9,7 @@ import NotificationsScreen from './src/pages/Notifications/NotificationsScreen';
 import CreatePublicationScreen from './src/pages/Publications/CreatePublicationScreen';
 import LoginScreen from './src/pages/UserAccess/LoginScreen';
 import RegisterScreen from './src/pages/UserAccess/RegisterScreen';
+import Profile from './src/pages/Profile/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,11 @@ function App() {
         <Stack.Screen
           name="Notifications"
           component={NotificationsScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={Profile}
           options={{title: null, headerShown: false}}
         />
       </Stack.Navigator>

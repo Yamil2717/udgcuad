@@ -9,6 +9,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  Alert,
 } from 'react-native';
 import NavigationRegister from './NavigationRegister';
 
@@ -34,6 +35,54 @@ function RegisterStepOne({
   registerWithFacebook,
   registerWithGoogle,
 }) {
+  function validateStep() {
+    let failed = false;
+    if (!name) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su nombre completo.',
+      );
+    }
+    if (!email) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su correo electrónico.',
+      );
+    }
+    if (password !== rePassword) {
+      failed = true;
+      return Alert.alert('Datos faltantes', 'Las contraseñas no coinciden.');
+    }
+    if (password.length < 8) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
+      );
+    }
+    if (!phone) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar su número telefónico.',
+      );
+    }
+    if (phone.length !== 10) {
+      failed = true;
+      return Alert.alert(
+        'Datos incorrectos',
+        'Debe ingresar un numero de teléfono válido.',
+      );
+    }
+    if (!postalCode) {
+      failed = true;
+      return Alert.alert('Datos faltantes', 'Debe ingresar su código postal.');
+    }
+    return failed;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationRegister
@@ -41,6 +90,7 @@ function RegisterStepOne({
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
+        validateStep={validateStep}
       />
       <ScrollView>
         <Text style={styles.textTitle}>Crear cuenta</Text>
@@ -110,6 +160,7 @@ function RegisterStepOne({
               value={password}
               onChangeText={onChangePassword}
               textColor={styles.colorInput}
+              autoCapitalize="none"
               theme={{
                 colors: {
                   placeholder: '#000000',
@@ -136,6 +187,7 @@ function RegisterStepOne({
               value={rePassword}
               onChangeText={onChangeRePassword}
               textColor={styles.colorInput}
+              autoCapitalize="none"
               theme={{
                 colors: {
                   placeholder: '#000000',

@@ -27,11 +27,7 @@ function Comments({idPublication}) {
   let [commentInput, onChangeCommentInput] = useState('');
   let [commentsList, setCommentsList] = useState([]);
   let [lock, setLock] = useState(false);
-  let [inputSubComment, setInputSubComment] = useState({
-    id: {
-      active: false,
-    },
-  });
+  let [inputSubComment, setInputSubComment] = useState({});
 
   useEffect(() => {
     getAllComments();
@@ -50,6 +46,10 @@ function Comments({idPublication}) {
 
   async function postComment() {
     setLock(true);
+    if (!commentInput || commentInput.length <= 0) {
+      setLock(false);
+      return Alert.alert('Voces', 'Error, debe ingresar un comentario.');
+    }
     authAxios
       .post('/comment', {
         idPublication,

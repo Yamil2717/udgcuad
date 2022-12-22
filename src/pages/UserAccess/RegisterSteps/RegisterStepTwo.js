@@ -46,13 +46,14 @@ function RegisterStepTwo({
       },
       response => {
         if (response.assets) {
-          if (response.assets[0].fileSize > 6291456) {
+          if (response.assets[0].fileSize > 4 * 1024 * 1024) {
             return Alert.alert(
               'Error',
-              'La imagen no puede superar los 6MB, por favor escoja otra.',
+              'La imagen no puede superar los 4MB, por favor escoja otra.',
             );
+          } else {
+            setPhoto({...response.assets[0]});
           }
-          setPhoto({...response.assets[0]});
         }
       },
     );
@@ -85,6 +86,35 @@ function RegisterStepTwo({
     }
   }
 
+  function validateStep() {
+    let failed = false;
+    let interestIds = [];
+    categoriesInterest.map(category => {
+      if (category?.active && category?.active === true) {
+        interestIds.push(category.id);
+      }
+    });
+    let tagsIds = [];
+    for (const keyID in selectTags) {
+      tagsIds.push(Number(keyID));
+    }
+    if (interestIds.length === 0) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar seleccionar intereses.',
+      );
+    }
+    if (tagsIds.length === 0) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar seleccionar algunos tags del o de los intereses seleccionados.',
+      );
+    }
+    return failed;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationRegister
@@ -92,6 +122,7 @@ function RegisterStepTwo({
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
+        validateStep={validateStep}
       />
       <ScrollView>
         <Text style={styles.textTitle}>Crear cuenta</Text>
