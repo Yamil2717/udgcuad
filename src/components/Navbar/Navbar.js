@@ -22,7 +22,7 @@ function Navbar({navigation, title = ''}) {
   return (
     <>
       {showNavbarFloat && (
-        <NavbarFloat setShowNavbarFloat={setShowNavbarFloat} />
+        <NavbarFloat setShowNavbarFloat={setShowNavbarFloat} navigation={navigation} />
       )}
       <View style={styles.navigate}>
         <TouchableOpacity

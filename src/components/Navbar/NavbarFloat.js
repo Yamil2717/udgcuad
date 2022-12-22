@@ -14,7 +14,7 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
 const {height} = Dimensions.get('window');
-function NavbarFloat({setShowNavbarFloat}) {
+function NavbarFloat({setShowNavbarFloat, navigation}) {
   let authContext = useContext(AuthContext);
 
   return (
@@ -36,7 +36,7 @@ function NavbarFloat({setShowNavbarFloat}) {
       <View style={styles.containerButton}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => console.log('crear comunidad')}>
+          onPress={() => navigation.navigate('CreateGroup')}>
           <IconIonicons
             name="ios-add-circle-outline"
             color="#2A9DD8"

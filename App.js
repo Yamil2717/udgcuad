@@ -10,6 +10,8 @@ import CreatePublicationScreen from './src/pages/Publications/CreatePublicationS
 import LoginScreen from './src/pages/UserAccess/LoginScreen';
 import RegisterScreen from './src/pages/UserAccess/RegisterScreen';
 import Profile from './src/pages/Profile/Profile';
+import CreateGroupScreen from './src/pages/Groups/CreateGroupScreen';
+import GroupScreen from './src/pages/Groups/GroupScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +66,16 @@ function App() {
         <Stack.Screen
           name="Profile"
           component={Profile}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Group"
+          component={GroupScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="CreateGroup"
+          component={CreateGroupScreen}
           options={{title: null, headerShown: false}}
         />
       </Stack.Navigator>
