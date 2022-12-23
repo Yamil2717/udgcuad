@@ -51,9 +51,7 @@ function HomeScreen({navigation}) {
       .catch(() => setDataPublication([]));
     await authAxios
       .get('/groups')
-      .then(groupsData => {
-        authContext.setDataGroups([...groupsData]);
-      })
+      .then(groupsData => authContext.setDataGroups([...groupsData]))
       .catch(() => authContext.setDataGroups([]));
   }
 
@@ -70,6 +68,93 @@ function HomeScreen({navigation}) {
         setRefreshing(false);
       });
   }, []);
+
+  function addCommentCounter(indexPublication) {
+    let tempDataPublication = [...dataPublication];
+    tempDataPublication[indexPublication].commentCount =
+      tempDataPublication[indexPublication].commentCount + 1;
+    setDataPublication(tempDataPublication);
+  }
+
+  async function addReactionCounter(indexPublication, action) {
+    let tempDataPublication = [...dataPublication];
+    let reaction = {};
+    if (tempDataPublication[indexPublication].reaction.action === action) {
+      switch (action) {
+        case 1:
+          tempDataPublication[indexPublication].likePositive -= 2;
+          break;
+        case 2:
+          tempDataPublication[indexPublication].likeNeutral -= 1;
+          break;
+        case 3:
+          tempDataPublication[indexPublication].likeNegative -= 1;
+          break;
+      }
+      reaction = {action: 0, liked: false};
+    } else if (tempDataPublication[indexPublication].reaction.action === 0) {
+      switch (action) {
+        case 1:
+          tempDataPublication[indexPublication].likePositive += 2;
+          break;
+        case 2:
+          tempDataPublication[indexPublication].likeNeutral += 1;
+          break;
+        case 3:
+          tempDataPublication[indexPublication].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    } else {
+      switch (action) {
+        case 1:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likePositive += 2;
+          break;
+        case 2:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likeNeutral += 1;
+          break;
+        case 3:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    }
+    tempDataPublication[indexPublication].reaction = reaction;
+    setDataPublication([...tempDataPublication]);
+  }
 
   return loading ? (
     <Spinner />
@@ -119,7 +204,10 @@ function HomeScreen({navigation}) {
                 likeNeutral={item.likeNeutral}
                 likePositive={item.likePositive}
                 commentCount={item.commentCount}
+                reaction={item.reaction}
                 navigation={navigation}
+                addReactionCounter={addReactionCounter}
+                addCommentCounter={addCommentCounter}
               />
             )}
             removeClippedSubviews={true}

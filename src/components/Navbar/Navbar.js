@@ -60,7 +60,7 @@ function Navbar({navigation, title = ''}) {
               uri: avatar,
               priority: FastImage.priority.high,
             }}
-            resizeMode={FastImage.resizeMode.contain}
+            resizeMode={FastImage.resizeMode.cover}
             style={styles.imageProfile}
           />
         </TouchableOpacity>

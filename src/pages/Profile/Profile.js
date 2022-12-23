@@ -1,7 +1,6 @@
-import React, {useState, useContext, useCallback, useEffect} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   StyleSheet,
@@ -9,7 +8,6 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
-  TouchableWithoutFeedback,
   FlatList,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -20,27 +18,30 @@ import {AxiosContext} from '../../contexts/AxiosContext';
 import {launchImageLibrary} from 'react-native-image-picker';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import Publication from '../../components/Publication';
+import env from '../../env';
+import tools from '../../tools/tools';
 
 const {width, height} = Dimensions.get('window');
 
 function Profile({route, navigation}) {
   let {id} = route.params;
-  console.log('id xd ', id);
   let [loading, setLoading] = useState(true);
-  let [profileInfo, setProfileInfo] = useState({});
-  let [bannerPhoto, setBannerPhoto] = useState(null);
+  let [modalImage, setModalImage] = useState({active: false, image: ''});
   let [follow, setFollow] = useState(false);
+  let [profileInfo, setProfileInfo] = useState({});
   let [dataPublications, setDataPublications] = useState([]);
   let [refreshing, setRefreshing] = useState(false);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
 
-  const refreshPublications = useCallback(async () => {
+  const refreshPublications = async () => {
     setRefreshing(true);
+    if (id !== authContext.dataUser.id) {
+      getDataUser();
+    }
     await authAxios
       .get(`/publications/${id}`)
       .then(data => {
-        console.log(data);
         setDataPublications(data);
         setRefreshing(false);
       })
@@ -48,7 +49,16 @@ function Profile({route, navigation}) {
         setDataPublications([]);
         setRefreshing(false);
       });
-  }, []);
+  };
+
+  async function followHandle() {
+    setFollow(!follow);
+    console.log(authContext.dataUser);
+    await authAxios
+      .put(`/user/follow/${id}`)
+      .then(data => console.log(data))
+      .catch(err => console.log(err));
+  }
 
   function getTextHeaderButton() {
     if (id === authContext.dataUser.id) {
@@ -58,34 +68,68 @@ function Profile({route, navigation}) {
     }
   }
 
-  function choosePhoto() {
+  async function choosePhoto(type) {
     if (id !== authContext.dataUser.id) {
-      return;
-    }
-    launchImageLibrary(
-      {
-        title: 'Seleccione una fotografía',
-        mediaType: 'photo',
-        selectionLimit: 1,
-        quality: 1,
-        storageOptions: {
-          skipBackup: true,
-          path: 'images',
+      setModalImage({active: true, image: type});
+    } else {
+      await launchImageLibrary(
+        {
+          title: 'Seleccione una fotografía',
+          mediaType: 'photo',
+          selectionLimit: 1,
+          quality: 1,
+          storageOptions: {
+            skipBackup: true,
+            path: 'images',
+          },
         },
-      },
-      response => {
-        if (response.assets) {
-          if (response.assets[0].fileSize > 4 * 1024 * 1024) {
-            return Alert.alert(
-              'Error',
-              'La imagen no puede superar los 4MB, por favor escoja otra.',
-            );
-          } else {
-            setBannerPhoto({...response.assets[0]});
+        response => {
+          if (response.assets) {
+            if (response.assets[0].fileSize > 4 * 1024 * 1024) {
+              return Alert.alert(
+                'Error',
+                'La imagen no puede superar los 4MB, por favor escoja otra.',
+              );
+            } else {
+              uploadPhoto(response.assets[0], type);
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    }
+  }
+
+  async function uploadPhoto(imagen, type) {
+    try {
+      await authAxios
+        .post(
+          `${env.api}/images/${
+            type === 'avatar' ? 'user' : 'profile_banner'
+          }/upload`,
+          tools.formDataSinglePhoto(imagen),
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+          },
+        )
+        .then(async url => {
+          let urlType = type === 'avatar' ? '/user/avatar' : '/user/header';
+          await authAxios
+            .put(`${env.api}${urlType}`, {url})
+            .then(async data => {
+              let tempDataUser = {...authContext.dataUser};
+              let deletePhoto = tempDataUser[type]
+                .split('/')
+                .slice(4, 6)
+                .join('/');
+              tempDataUser[type] = url;
+              authContext.setDataUser({...tempDataUser});
+              setProfileInfo({...tempDataUser});
+              await authAxios.delete(`${env.api}/images/${deletePhoto}`);
+            });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -102,7 +146,6 @@ function Profile({route, navigation}) {
     await authAxios
       .get(`/user/${id}`)
       .then(userData => {
-        console.log(userData);
         setProfileInfo(userData);
         setLoading(false);
       })
@@ -116,7 +159,6 @@ function Profile({route, navigation}) {
     await authAxios
       .get(`/publications/${id}`)
       .then(data => {
-        console.log(data);
         setDataPublications(data);
       })
       .catch(() => {
@@ -124,10 +166,97 @@ function Profile({route, navigation}) {
       });
   }
 
+  function addCommentCounter(indexPublication) {
+    let tempDataPublication = [...dataPublications];
+    tempDataPublication[indexPublication].commentCount =
+      tempDataPublication[indexPublication].commentCount + 1;
+    setDataPublications(tempDataPublication);
+  }
+
+  async function addReactionCounter(indexPublication, action) {
+    let tempDataPublication = [...dataPublications];
+    let reaction = {};
+    if (tempDataPublication[indexPublication].reaction.action === action) {
+      switch (action) {
+        case 1:
+          tempDataPublication[indexPublication].likePositive -= 2;
+          break;
+        case 2:
+          tempDataPublication[indexPublication].likeNeutral -= 1;
+          break;
+        case 3:
+          tempDataPublication[indexPublication].likeNegative -= 1;
+          break;
+      }
+      reaction = {action: 0, liked: false};
+    } else if (tempDataPublication[indexPublication].reaction.action === 0) {
+      switch (action) {
+        case 1:
+          tempDataPublication[indexPublication].likePositive += 2;
+          break;
+        case 2:
+          tempDataPublication[indexPublication].likeNeutral += 1;
+          break;
+        case 3:
+          tempDataPublication[indexPublication].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    } else {
+      switch (action) {
+        case 1:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likePositive += 2;
+          break;
+        case 2:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likeNeutral += 1;
+          break;
+        case 3:
+          switch (tempDataPublication[indexPublication].reaction.action) {
+            case 1:
+              tempDataPublication[indexPublication].likePositive -= 2;
+              break;
+            case 2:
+              tempDataPublication[indexPublication].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataPublication[indexPublication].likeNegative -= 1;
+              break;
+          }
+          tempDataPublication[indexPublication].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    }
+    tempDataPublication[indexPublication].reaction = reaction;
+    setDataPublications([...tempDataPublication]);
+  }
+
   return loading ? (
     <Spinner />
   ) : (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <Navbar navigation={navigation} />
       <FlatList
         refreshControl={
@@ -138,13 +267,13 @@ function Profile({route, navigation}) {
           />
         }
         data={dataPublications}
-        style={styles.container}
+        style={styles.containerFlatList}
         ListHeaderComponent={
           <View>
-            <TouchableWithoutFeedback onPress={choosePhoto}>
+            <TouchableOpacity onPress={() => choosePhoto('header')}>
               <FastImage
                 source={{
-                  uri: bannerPhoto?.uri || profileInfo.header,
+                  uri: profileInfo.header,
                   priority: FastImage.priority.high,
                 }}
                 style={styles.imageHeader}
@@ -153,7 +282,7 @@ function Profile({route, navigation}) {
                   {id !== authContext.dataUser.id && (
                     <TouchableOpacity
                       style={styles.headerButtonFollow}
-                      onPress={() => setFollow(!follow)}>
+                      onPress={followHandle}>
                       <IconEntypo
                         name={follow ? 'heart' : 'heart-outlined'}
                         color="#2A9DD8"
@@ -169,16 +298,20 @@ function Profile({route, navigation}) {
                   </TouchableOpacity>
                 </View>
               </FastImage>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
             <View style={styles.containerUserInfo}>
-              <FastImage
-                source={{
-                  uri: profileInfo.avatar,
-                  priority: FastImage.priority.high,
-                }}
-                style={styles.imageAvatar}
-                resizeMode={FastImage.resizeMode.cover}
-              />
+              <TouchableOpacity
+                style={styles.containerAvatar}
+                onPress={() => choosePhoto('avatar')}>
+                <FastImage
+                  source={{
+                    uri: profileInfo.avatar,
+                    priority: FastImage.priority.high,
+                  }}
+                  style={styles.imageAvatar}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              </TouchableOpacity>
               <View style={styles.containerTextUserInfo}>
                 <Text style={styles.name}>{profileInfo.name}</Text>
                 <Text style={styles.role}>{profileInfo.role.name}</Text>
@@ -204,7 +337,10 @@ function Profile({route, navigation}) {
             likeNeutral={item.likeNeutral}
             likePositive={item.likePositive}
             commentCount={item.commentCount}
+            reaction={item.reaction}
             navigation={navigation}
+            addReactionCounter={addReactionCounter}
+            addCommentCounter={addCommentCounter}
           />
         )}
         ListEmptyComponent={
@@ -214,12 +350,31 @@ function Profile({route, navigation}) {
         }
         removeClippedSubviews={true}
       />
+      {modalImage.active && (
+        <View style={styles.containerModal}>
+          <TouchableOpacity
+            style={styles.buttonCloseModal}
+            onPress={() => setModalImage({active: false, image: ''})}
+          />
+          <FastImage
+            source={{
+              uri: profileInfo[modalImage.image],
+              priority: FastImage.priority.high,
+            }}
+            style={styles.imageModal}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
+  },
+  containerFlatList: {
     backgroundColor: 'white',
     height: height - 61.1,
     maxHeight: height - 61.1,
@@ -260,13 +415,15 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  containerAvatar: {
+    position: 'relative',
+    top: -37.5,
+    marginLeft: '5%',
+  },
   imageAvatar: {
     width: 75,
     height: 75,
     borderRadius: 75 / 2,
-    position: 'relative',
-    top: -37.5,
-    marginLeft: '5%',
   },
   containerTextUserInfo: {
     paddingHorizontal: 15,
@@ -285,6 +442,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
+  },
+  containerModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+    backgroundColor: 'rgba(0,0,0,.5)',
+    zIndex: 5,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  buttonCloseModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+    zIndex: 15,
+  },
+  imageModal: {
+    width: '90%',
+    height: '90%',
+    zIndex: 10,
   },
 });
 

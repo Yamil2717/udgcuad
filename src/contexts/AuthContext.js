@@ -13,6 +13,7 @@ const DataUserDefault = {
   email: null,
   typeUser: null,
   avatar: null,
+  header: null,
   location: null,
   phone: null,
   postalCode: null,
@@ -26,6 +27,8 @@ const {Provider} = AuthContext;
 function AuthProvider({children}) {
   let [dataUser, setDataUser] = useState({...DataUserDefault});
   let [dataGroups, setDataGroups] = useState([]);
+  let [friends, setFriends] = useState({});
+  let [follows, setFollows] = useState({});
   let [authState, setAuthState] = useState({...AuthStateDefault});
 
   function getAccessToken() {
@@ -43,6 +46,10 @@ function AuthProvider({children}) {
         setDataUser,
         dataGroups,
         setDataGroups,
+        friends,
+        setFriends,
+        follows,
+        setFollows,
         authState,
         setAuthState,
         getAccessToken,

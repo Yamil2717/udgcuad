@@ -1,22 +1,21 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {AuthContext} from '../../contexts/AuthContext';
 import {AxiosContext} from '../../contexts/AxiosContext';
-import Loading from '../../components/Spinner';
 import CreateGroupStepOne from './GroupStep/CreateGroupStepOne';
 import CreateGroupStepTwo from './GroupStep/CreateGroupStepTwo';
-import {Alert, Linking, Platform} from 'react-native';
+import {Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import tools from '../../tools/tools';
+import env from '../../env';
 
 function CreateGroupScreen({navigation}) {
   const {authAxios} = useContext(AxiosContext);
   let authContext = useContext(AuthContext);
-  let [loading, setLoading] = useState(false);
   let [step, onChangeStep] = useState(0);
-  let [photo, setPhoto] = useState();
-  let [photos, setPhotos] = useState();
-  let [name, setName] = useState();
-  let [description, setDescription] = useState();
+  let [photoGroup, setPhotoGroup] = useState(null);
+  let [photosFirstPublication, setPhotosFirstPublication] = useState(null);
+  let [name, setName] = useState(null);
+  let [description, setDescription] = useState(null);
 
   useEffect(() => {
     if (step === -1) {
@@ -24,8 +23,41 @@ function CreateGroupScreen({navigation}) {
     }
   }, [step, navigation]);
 
-  if (loading) {
-    return <Loading />;
+  async function createGroup() {
+    try {
+      if (!name || !photoGroup || !description) {
+        return Alert.alert(
+          'Voces',
+          'Debe rellenar todos los campos y elegir una imagen para está nueva comunidad.',
+        );
+      }
+      await authAxios
+        .post(
+          `${env.api}/images/groups/upload`,
+          tools.formDataSinglePhoto(photoGroup),
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+          },
+        )
+        .then(async url => {
+          await authAxios
+            .post('/group', {
+              name,
+              description,
+              picture: url,
+              ownerID: authContext.dataUser.id,
+            })
+            .then(data => {
+              console.log(data);
+              navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+              });
+            });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   switch (step) {
@@ -35,24 +67,20 @@ function CreateGroupScreen({navigation}) {
           <CreateGroupStepOne
             step={step}
             onChangeStep={onChangeStep}
-            photo={photo}
-            setPhoto={setPhoto}
+            photoGroup={photoGroup}
+            setPhotoGroup={setPhotoGroup}
             name={name}
             setName={setName}
+            description={description}
+            setDescription={setDescription}
+            createGroup={createGroup}
           />
         </SafeAreaView>
       );
     case 1:
       return (
         <SafeAreaView>
-          <CreateGroupStepTwo
-            step={step}
-            onChangeStep={onChangeStep}
-            description={description}
-            photos={photos}
-            setPhotos={setPhotos}
-            setDescription={setDescription}
-          />
+          <CreateGroupStepTwo step={step} onChangeStep={onChangeStep} />
         </SafeAreaView>
       );
   }

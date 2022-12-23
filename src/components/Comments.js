@@ -20,7 +20,7 @@ import SubComments from './SubComments';
 
 const {width, height} = Dimensions.get('window');
 
-function Comments({idPublication}) {
+function Comments({indexPublication, idPublication, addCommentCounter}) {
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -64,6 +64,7 @@ function Comments({idPublication}) {
             'Voces',
             'Tu comentario fue publicado, gracias por dar tu opinión.',
           );
+          addCommentCounter(indexPublication);
           getAllComments();
         }
       })
@@ -121,7 +122,7 @@ function Comments({idPublication}) {
                   <View style={styles.reactionsCommentsContainer}>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#30D34B"
                       />
@@ -131,7 +132,7 @@ function Comments({idPublication}) {
                     </View>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#FFBD12"
                       />
@@ -141,7 +142,7 @@ function Comments({idPublication}) {
                     </View>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#EB4237"
                       />
@@ -159,6 +160,8 @@ function Comments({idPublication}) {
                     inputSubComment[`${item.id.toString()}`]?.active || false
                   }
                   getAllComments={getAllComments}
+                  indexPublication={indexPublication}
+                  addCommentCounter={addCommentCounter}
                 />
               </View>
             </View>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconEntypo from 'react-native-vector-icons/Entypo';
@@ -16,6 +16,8 @@ import FastImage from 'react-native-fast-image';
 import Comments from './Comments';
 import Moment from 'moment';
 import ES from 'moment/locale/es';
+import {AuthContext} from '../contexts/AuthContext';
+import {AxiosContext} from '../contexts/AxiosContext';
 
 const {width} = Dimensions.get('window');
 
@@ -35,10 +37,25 @@ function Publication({
   likeNeutral,
   likePositive,
   commentCount,
+  reaction,
   navigation,
+  addReactionCounter,
+  addCommentCounter,
 }) {
   Moment.updateLocale('es', ES);
-  let [isCommentsOpen, setIsCommentsOpen] = useState(false);
+  let authContext = useContext(AuthContext);
+  const {authAxios} = useContext(AxiosContext);
+
+  async function addReaction(idPublication, action) {
+    await authAxios
+      .post('/publication/reaction', {
+        idPublication,
+        ownerID: authContext.dataUser.id,
+        action,
+      })
+      .then(data => addReactionCounter(id - 1, action))
+      .catch(err => console.log(err));
+  }
 
   return (
     <SafeAreaView
@@ -103,21 +120,54 @@ function Publication({
       />
       <View style={styles.reactionsContainer}>
         <View style={styles.reaction}>
-          <IconFontAwesome name="circle" size={30} color="#30D34B" />
-          <Text style={styles.semaphoreNumber}>{likeNegative}</Text>
+          <TouchableOpacity onPress={() => addReaction(idPost, 1)}>
+            <IconFontAwesome
+              name={
+                reaction.liked && reaction.action === 1
+                  ? 'circle'
+                  : 'circle-thin'
+              }
+              size={30}
+              color="#30D34B"
+            />
+          </TouchableOpacity>
+          <Text style={styles.semaphoreNumber}>{likePositive}</Text>
         </View>
         <View style={styles.reaction}>
-          <IconFontAwesome name="circle" size={30} color="#FFBD12" />
+          <TouchableOpacity onPress={() => addReaction(idPost, 2)}>
+            <IconFontAwesome
+              name={
+                reaction.liked && reaction.action === 2
+                  ? 'circle'
+                  : 'circle-thin'
+              }
+              size={30}
+              color="#FFBD12"
+            />
+          </TouchableOpacity>
           <Text style={styles.semaphoreNumber}>{likeNeutral}</Text>
         </View>
         <View style={styles.reaction}>
-          <IconFontAwesome name="circle" size={30} color="#EB4237" />
-          <Text style={styles.semaphoreNumber}>{likePositive}</Text>
+          <TouchableOpacity onPress={() => addReaction(idPost, 3)}>
+            <IconFontAwesome
+              name={
+                reaction.liked && reaction.action === 3
+                  ? 'circle'
+                  : 'circle-thin'
+              }
+              size={30}
+              color="#EB4237"
+            />
+          </TouchableOpacity>
+          <Text style={styles.semaphoreNumber}>{likeNegative}</Text>
         </View>
+        {
+          //circle
+        }
         <TouchableOpacity
           style={styles.reaction}
           onPress={() => {
-            setIsCommentsOpen(!isCommentsOpen);
+            //xd
           }}>
           <IconFeather name="message-circle" size={30} color="#828282" />
           <Text style={styles.semaphoreNumber}>{commentCount}</Text>
@@ -129,7 +179,13 @@ function Publication({
           <IconFeather name="bookmark" size={20} color="#2A9DD8" />
         </View>
       </View>
-      {isCommentsOpen && <Comments idPublication={idPost} />}
+      {false && (
+        <Comments
+          indexPublication={id - 1}
+          idPublication={idPost}
+          addCommentCounter={addCommentCounter}
+        />
+      )}
     </SafeAreaView>
   );
 }

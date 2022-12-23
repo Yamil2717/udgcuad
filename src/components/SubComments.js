@@ -24,6 +24,8 @@ function SubComments({
   subComments,
   inputActive,
   getAllComments,
+  indexPublication,
+  addCommentCounter,
 }) {
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
@@ -52,6 +54,7 @@ function SubComments({
             'Voces',
             'Tu comentario fue publicado, gracias por dar tu opinión.',
           );
+          addCommentCounter(indexPublication);
           getAllComments();
         }
       })
@@ -90,7 +93,7 @@ function SubComments({
                   <View style={styles.reactionsCommentsContainer}>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#30D34B"
                       />
@@ -100,7 +103,7 @@ function SubComments({
                     </View>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#FFBD12"
                       />
@@ -110,7 +113,7 @@ function SubComments({
                     </View>
                     <View style={styles.reactionsComments}>
                       <IconFontAwesome
-                        name="circle"
+                        name="circle-thin"
                         size={20}
                         color="#EB4237"
                       />
