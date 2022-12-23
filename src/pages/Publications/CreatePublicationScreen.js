@@ -15,7 +15,8 @@ function CreatePublicationScreen({navigation}) {
   let authContext = useContext(AuthContext);
   let [loading, setLoading] = useState(true);
   let [step, onChangeStep] = useState(0);
-  let [description, onChangeDescription] = useState('');
+  let [title, onChangeTitle] = useState(null);
+  let [description, onChangeDescription] = useState(null);
   let [photos, setPhotos] = useState(null);
   let [groups, setGroups] = useState([]);
   let [groupsFormatted, setGroupsFormatted] = useState([]);
@@ -40,6 +41,9 @@ function CreatePublicationScreen({navigation}) {
   }
 
   async function createPost() {
+    if (!title) {
+      return Alert.alert('Error', 'Debe ingresar el titulo de la publicación');
+    }
     if (!group) {
       return Alert.alert(
         'Error',
@@ -59,6 +63,7 @@ function CreatePublicationScreen({navigation}) {
       }
     });
     let dataCreate = {
+      title: title,
       description: description || '',
       groupID: groupSelect.id,
       categoryID: groupSelect.idInterest,
@@ -130,10 +135,8 @@ function CreatePublicationScreen({navigation}) {
           <CreatePublicationStepOne
             step={step}
             onChangeStep={onChangeStep}
-            description={description}
-            onChangeDescription={onChangeDescription}
-            photos={photos}
-            setPhotos={setPhotos}
+            title={title}
+            onChangeTitle={onChangeTitle}
           />
           {/* <NavigationScreens navigation={navigation} /> */}
         </SafeAreaView>
@@ -174,6 +177,7 @@ function CreatePublicationScreen({navigation}) {
           <CreatePublicationStepFour
             step={step}
             onChangeStep={onChangeStep}
+            title={title}
             description={description}
             photos={photos}
             groupsFormatted={groupsFormatted}

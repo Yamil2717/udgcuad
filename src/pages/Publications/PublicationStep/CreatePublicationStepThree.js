@@ -84,22 +84,13 @@ function CreatePublicationStepThree({
       <View style={styles.containerInput}>
         <TextInput
           style={styles.input}
-          placeholder="Título de tu publicación......"
+          placeholder="Descripción de la publicación..."
           textAlignVertical="top"
           textColor={styles.colorInput}
           multiline={true}
           numberOfLines={4}
           value={description}
           onChangeText={onChangeDescription}
-          theme={{
-            colors: {
-              placeholder: '#000000',
-              text: '#000000',
-              primary: '#000000',
-            },
-          }}
-          selectionColor="#000000"
-          accessibilityIgnoresInvertColors={true}
         />
       </View>
       <View

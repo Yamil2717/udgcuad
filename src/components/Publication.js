@@ -25,6 +25,7 @@ function Publication({
   id,
   length,
   idPost,
+  title,
   description,
   groupID,
   groupName,
@@ -79,12 +80,13 @@ function Publication({
       </View>
       <View style={styles.descriptionContainer}>
         <View>
+          <Text style={styles.titleText}>{title}</Text>
           {description && (
             <Text style={styles.descriptionText}>{description}</Text>
           )}
-          <View style={styles.hashtagsContainer}>
+          {/*<View style={styles.hashtagsContainer}>
             <Text style={styles.hashtags}>#hashtagTest1</Text>
-          </View>
+          </View>*/}
         </View>
         <Text style={styles.textTime} numberOfLines={1}>
           {Moment(createdAt).startOf('minute').fromNow()}
@@ -235,6 +237,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 25,
     backgroundColor: '#F5F5F5',
+  },
+  titleText: {
+    fontWeight: '600',
+    fontSize: 16,
   },
   descriptionText: {
     fontSize: 14,

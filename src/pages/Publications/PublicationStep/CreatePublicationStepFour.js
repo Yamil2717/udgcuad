@@ -20,6 +20,7 @@ const {height} = Dimensions.get('window');
 function CreatePublicationStepFour({
   step,
   onChangeStep,
+  title,
   description,
   photos,
   groupsFormatted,
@@ -87,6 +88,7 @@ function CreatePublicationStepFour({
         <View style={styles.containerPublicationSub}>
           <View>
             <Text style={photos && styles.postHaveImageAndDescription}>
+              {`${title}\n`}
               {description}
             </Text>
             <Text>@{authContext.dataUser.name}</Text>

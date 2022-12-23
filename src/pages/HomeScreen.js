@@ -192,6 +192,7 @@ function HomeScreen({navigation}) {
                 id={index + 1}
                 length={dataPublication.length}
                 idPost={item.id}
+                title={item.title}
                 description={item.description}
                 groupID={item.group.id}
                 groupName={item.group.name}

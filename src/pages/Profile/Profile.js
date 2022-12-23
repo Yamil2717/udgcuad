@@ -325,6 +325,7 @@ function Profile({route, navigation}) {
             id={index + 1}
             length={dataPublications.length}
             idPost={item.id}
+            title={item.title}
             description={item.description}
             groupID={item.group.id}
             groupName={item.group.name}

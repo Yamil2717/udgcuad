@@ -49,6 +49,7 @@ function CreateGroupScreen({navigation}) {
             })
             .then(data => {
               console.log(data);
+              Alert.alert('Voces', 'Se ha creado su grupo correctamente.');
               navigation.reset({
                 index: 0,
                 routes: [{name: 'Home'}],
