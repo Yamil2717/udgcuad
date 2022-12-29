@@ -1,83 +1,77 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
-  StyleSheet,
   View,
   Text,
+  Alert,
+  RefreshControl,
+  StyleSheet,
   Dimensions,
   FlatList,
-  RefreshControl,
   ScrollView,
 } from 'react-native';
-import {AuthContext} from '../contexts/AuthContext';
-import {AxiosContext} from '../contexts/AxiosContext';
-import Publication from '../components/Publication';
-import Navbar from '../components/Navbar/Navbar';
-import Spinner from '../components/Spinner';
-import NavigationScreens from '../components/NavigationScreens';
-
-import {SafeAreaView} from 'react-native-safe-area-context';
+import Navbar from '../../components/Navbar/Navbar';
+import Publication from '../../components/Publication';
+import Spinner from '../../components/Spinner';
+import {AxiosContext} from '../../contexts/AxiosContext';
 
 const {width, height} = Dimensions.get('window');
-function HomeScreen({navigation}) {
-  let [loading, setLoading] = useState(true);
-  let [dataPublication, setDataPublication] = useState([]);
-  let [refreshing, setRefreshing] = useState(false);
 
-  let authContext = useContext(AuthContext);
+function PublicationByID({route, navigation}) {
+  let {id} = route.params;
+  let [loading, setLoading] = useState(true);
+  let [dataPost, setDataPost] = useState([]);
+  let [refreshing, setRefreshing] = useState(false);
   const {authAxios} = useContext(AxiosContext);
 
   useEffect(() => {
-    getDataUser();
-    getDataPublications();
+    getDataPost();
   }, []);
 
-  async function getDataUser() {
+  async function getDataPost() {
     await authAxios
-      .get('/user')
-      .then(userData => {
-        authContext.setDataUser({...userData});
+      .get(`/publication/${id}`)
+      .then(data => {
+        setDataPost([data]);
         setLoading(false);
       })
-      .catch(err => {
-        console.error(err?.response?.data?.message || err.message);
-        authContext.logout();
+      .catch(() => {
+        Alert.alert(
+          'Voces',
+          'ha ocurrido un error no sé pudo obtener la información de está publicación',
+        );
+        setDataPost([]);
+        setLoading(false);
       });
   }
 
-  async function getDataPublications() {
-    await authAxios
-      .get('/publications')
-      .then(data => setDataPublication(data))
-      .catch(() => setDataPublication([]));
-    await authAxios
-      .get('/myGroups')
-      .then(data => authContext.setDataGroups(data))
-      .catch(() => authContext.setDataGroups([]));
-  }
-
-  const refreshPublications = useCallback(async () => {
+  async function getPublicationAgain() {
     setRefreshing(true);
     await authAxios
-      .get('/publications')
+      .get(`/publication/${id}`)
       .then(data => {
-        setDataPublication(data);
+        setDataPost([data]);
+        setLoading(false);
         setRefreshing(false);
       })
       .catch(() => {
-        setDataPublication([]);
+        Alert.alert(
+          'Voces',
+          'ha ocurrido un error no sé pudo obtener la información de está publicación',
+        );
+        setLoading(false);
         setRefreshing(false);
       });
-  }, []);
+  }
 
   function addCommentCounter(indexPublication) {
-    let tempDataPublication = [...dataPublication];
+    let tempDataPublication = [...dataPost];
     tempDataPublication[indexPublication].commentCount =
       tempDataPublication[indexPublication].commentCount + 1;
-    setDataPublication(tempDataPublication);
+    setDataPost(tempDataPublication);
   }
 
   async function addReactionCounter(indexPublication, action) {
-    let tempDataPublication = [...dataPublication];
+    let tempDataPublication = [...dataPost];
     let reaction = {};
     if (tempDataPublication[indexPublication].reaction.action === action) {
       switch (action) {
@@ -153,44 +147,44 @@ function HomeScreen({navigation}) {
       reaction = {action, liked: true};
     }
     tempDataPublication[indexPublication].reaction = reaction;
-    setDataPublication([...tempDataPublication]);
+    setDataPost([...tempDataPublication]);
   }
 
   return loading ? (
     <Spinner />
   ) : (
-    <SafeAreaView style={styles.container}>
+    <View>
       <Navbar navigation={navigation} />
       <View style={styles.containerPublications}>
-        {dataPublication.length <= 0 ? (
+        {dataPost.length <= 0 ? (
           <ScrollView
             refreshControl={
               <RefreshControl
                 colors={['#2A9DD8', '#2A9DD8']}
                 refreshing={refreshing}
-                onRefresh={refreshPublications}
+                onRefresh={getPublicationAgain}
               />
             }>
             <Text style={styles.textNoContainPublications}>
-              No se encontraron publicaciones.
+              Algo falló y no sé pudo obtener la información de la publicación.
             </Text>
           </ScrollView>
         ) : (
           <FlatList
-            data={dataPublication}
+            data={dataPost}
             style={styles.flatListContainer}
             refreshControl={
               <RefreshControl
                 colors={['#2A9DD8', '#2A9DD8']}
                 refreshing={refreshing}
-                onRefresh={refreshPublications}
+                onRefresh={getPublicationAgain}
               />
             }
             renderItem={({item, index}) => (
               <Publication
                 key={item.id}
                 id={index + 1}
-                length={dataPublication.length}
+                length={dataPost.length}
                 idPost={item.id}
                 title={item.title}
                 description={item.description}
@@ -209,16 +203,14 @@ function HomeScreen({navigation}) {
                 navigation={navigation}
                 addReactionCounter={addReactionCounter}
                 addCommentCounter={addCommentCounter}
+                showComments={true}
               />
             )}
             removeClippedSubviews={true}
           />
         )}
       </View>
-      <View style={styles.NavigationScreensStyle}>
-        <NavigationScreens navigation={navigation} />
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -226,6 +218,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     position: 'relative',
+    minHeight: height,
   },
   containerPublications: {
     height: height,
@@ -236,18 +229,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   flatListContainer: {
-    height: height - 115.1,
-    maxHeight: height - 115.1,
-  },
-  colorInput: {
-    color: '#000000',
-  },
-  NavigationScreensStyle: {
-    position: 'absolute',
-    top: height - 50,
-    left: 0,
-    right: 0,
+    height: height - 65.1,
+    maxHeight: height - 65.1,
   },
 });
 
-export default HomeScreen;
+export default PublicationByID;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -10,14 +10,16 @@ import {
   Image,
   Alert,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 import {launchImageLibrary} from 'react-native-image-picker';
 import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
+import {MentionInput} from 'react-native-controlled-mentions';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 function CreatePublicationStepThree({
   step,
@@ -32,6 +34,7 @@ function CreatePublicationStepThree({
   setGroup,
 }) {
   let [open, setOpen] = useState(false);
+  const refInputDescription = useRef();
 
   function choosePhoto() {
     launchImageLibrary(
@@ -73,6 +76,59 @@ function CreatePublicationStepThree({
     );
   }
 
+  const suggestions = [
+    {id: '1', name: 'David Tabaka'},
+    {id: '2', name: 'Mary'},
+    {id: '3', name: 'Tony'},
+    {id: '4', name: 'Mike'},
+    {id: '5', name: 'Grey'},
+  ];
+
+  const renderSuggestions = ({keyword, onSuggestionPress}) => {
+    if (keyword == null) {
+      return null;
+    }
+
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          zIndex: 777,
+          bottom: 15,
+          left: 15,
+          right: 15,
+        }}>
+        <Text
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 5,
+            backgroundColor: '#ccc',
+          }}>
+          Selecciona una sugerencia
+        </Text>
+        {suggestions
+          .filter(one =>
+            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
+          )
+          .slice(0, 2)
+          .map(one => (
+            <Pressable
+              key={one.id}
+              onPress={() => onSuggestionPress(one)}
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 5,
+                backgroundColor: '#f5f5f5',
+                borderBottomWidth: 2,
+                borderColor: '#ccc',
+              }}>
+              <Text>{one.name}</Text>
+            </Pressable>
+          ))}
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -81,118 +137,139 @@ function CreatePublicationStepThree({
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
       />
-      <View style={styles.containerInput}>
-        <TextInput
-          style={styles.input}
-          placeholder="Descripción de la publicación..."
-          textAlignVertical="top"
-          textColor={styles.colorInput}
-          multiline={true}
-          numberOfLines={4}
-          value={description}
-          onChangeText={onChangeDescription}
-        />
-      </View>
-      <View
-        style={[
-          styles.containerDropDownPickerMain,
-          !photos || photos.length === 0
-            ? styles.DropDownMarginBottom
-            : styles.dropDownMarginBottomNormal,
-        ]}>
-        <DropDownPicker
-          open={open}
-          setOpen={setOpen}
-          items={groupsFormatted}
-          setItems={setGroupsFormatted}
-          value={group}
-          setValue={setGroup}
-          defaultValue={group}
-          listMode="SCROLLVIEW"
-          placeholder="Seleccionar"
-          style={styles.dropDownStyle}
-          containerStyle={styles.containerDropDownPicker}
-          dropDownStyle={styles.dropDownPickerBackground}
-          labelStyle={styles.dropDownPickerLabel}
-          itemStyle={styles.dropDownPickerItem}
-        />
-      </View>
-      <ScrollView
-        style={[photos && photos.length > 0 && styles.containerImages]}
-        horizontal>
-        {photos && photos.length > 0 && (
-          <>
-            {photos.map((photo, index) => {
-              return (
-                <TouchableOpacity key={index}>
-                  <Image
-                    source={{
-                      uri: photo?.uri,
-                    }}
-                    style={styles.image}
-                  />
-                </TouchableOpacity>
-              );
-            })}
-            {photos.length < 4 && (
-              <TouchableOpacity onPress={() => choosePhoto()}>
-                <Image
-                  source={require('../../../assets/addPublication.jpg')}
-                  style={styles.image}
-                />
-              </TouchableOpacity>
+      <View style={styles.subContainer}>
+        <View style={styles.subSubContainer}>
+          <View style={styles.containerInput}>
+            <MentionInput
+              value={description}
+              onChange={onChangeDescription}
+              style={{
+                height: 100,
+                backgroundColor: '#f5f5f5',
+                color: '#164578',
+                fontSize: 16,
+                marginHorizontal: 15,
+                marginVertical: 15,
+                borderRadius: 12,
+                paddingVertical: 10,
+                paddingHorizontal: 10,
+                position: 'relative',
+              }}
+              partTypes={[
+                {
+                  trigger: '@', // Should be a single character like '@' or '#'
+                  renderSuggestions,
+                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'}, // The mention style in the input
+                },
+                {
+                  pattern: /[#][a-z0-9_]+/gi,
+                  allowedSpacesCount: 0,
+                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                },
+              ]}
+              autoFocus
+              multiline={true}
+              placeholder="Descripción de la publicación..."
+              textAlignVertical="top"
+              numberOfLines={4}
+            />
+          </View>
+          <View style={styles.containerDropDownPickerMain}>
+            <DropDownPicker
+              open={open}
+              setOpen={setOpen}
+              items={groupsFormatted}
+              setItems={setGroupsFormatted}
+              value={group}
+              setValue={setGroup}
+              defaultValue={group}
+              listMode="SCROLLVIEW"
+              placeholder="Seleccionar"
+              style={styles.dropDownStyle}
+              containerStyle={styles.containerDropDownPicker}
+              dropDownStyle={styles.dropDownPickerBackground}
+              labelStyle={styles.dropDownPickerLabel}
+              itemStyle={styles.dropDownPickerItem}
+            />
+          </View>
+          <ScrollView
+            style={[photos && photos.length > 0 && styles.containerImages]}
+            horizontal>
+            {photos && photos.length > 0 && (
+              <>
+                {photos.map((photo, index) => {
+                  return (
+                    <TouchableOpacity key={index}>
+                      <Image
+                        source={{
+                          uri: photo?.uri,
+                        }}
+                        style={styles.image}
+                      />
+                    </TouchableOpacity>
+                  );
+                })}
+                {photos.length < 4 && (
+                  <TouchableOpacity onPress={() => choosePhoto()}>
+                    <Image
+                      source={require('../../../assets/addPublication.jpg')}
+                      style={styles.image}
+                    />
+                  </TouchableOpacity>
+                )}
+              </>
             )}
-          </>
-        )}
-      </ScrollView>
-      <View style={styles.containerSec}>
-        <TouchableOpacity onPress={() => choosePhoto()}>
-          <View style={styles.listStyle}>
-            <IconsEntypo
-              name="image-inverted"
-              color="#2A9DD8"
-              size={28}
-              style={styles.iconCreatePublication}
-            />
-            <Text style={styles.textCreatePublication}>Imagen</Text>
-          </View>
-        </TouchableOpacity>
+          </ScrollView>
+        </View>
+        <View style={styles.containerSec}>
+          <TouchableOpacity onPress={() => choosePhoto()}>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="image-inverted"
+                color="#2A9DD8"
+                size={28}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Imagen</Text>
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity>
-          <View style={styles.listStyle}>
-            <IconsEntypo
-              name="video"
-              color="#2A9DD8"
-              size={28}
-              style={styles.iconCreatePublication}
-            />
-            <Text style={styles.textCreatePublication}>Video</Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="video"
+                color="#2A9DD8"
+                size={28}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Video</Text>
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity>
-          <View style={styles.listStyle}>
-            <IconsMaterial
-              name="text-recognition"
-              color="#2A9DD8"
-              size={28}
-              style={styles.iconCreatePublication}
-            />
-            <Text style={styles.textCreatePublication}>Texto</Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsMaterial
+                name="text-recognition"
+                color="#2A9DD8"
+                size={28}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Texto</Text>
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity>
-          <View style={styles.listStyle}>
-            <IconsEntypo
-              name="link"
-              color="#2A9DD8"
-              size={28}
-              style={styles.iconCreatePublication}
-            />
-            <Text style={styles.textCreatePublication}>Enlace</Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity>
+            <View style={styles.listStyle}>
+              <IconsEntypo
+                name="link"
+                color="#2A9DD8"
+                size={28}
+                style={styles.iconCreatePublication}
+              />
+              <Text style={styles.textCreatePublication}>Enlace</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -201,11 +278,21 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
   },
+  subContainer: {
+    minHeight: height - 47.5,
+    position: 'relative',
+  },
+  subSubContainer: {
+    marginBottom: '30%',
+  },
   containerSec: {
+    position: 'absolute',
     backgroundColor: '#f5f5f5',
-    paddingVertical: 10,
     height: '30%',
     justifyContent: 'center',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   navigate: {
     display: 'flex',
@@ -219,15 +306,44 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   containerInput: {
-    height: '20%',
+    maxHeight: 225,
+    position: 'relative',
+  },
+  textInput: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    position: 'absolute',
+    color: '#164578',
+    height: 200,
+    fontSize: 16,
+    backgroundColor: '#f5f5f5',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    marginHorizontal: 15,
+    marginVertical: 15,
+    borderRadius: 12,
+    overflow: 'scroll',
+    zIndex: 5,
   },
   input: {
-    paddingHorizontal: 30,
-    paddingVertical: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     color: '#164578',
-    height: '100%',
-    fontSize: 20,
+    height: 200,
+    fontSize: 16,
     textAlignVertical: 'top',
+    backgroundColor: 'red',
+    marginHorizontal: 15,
+    marginVertical: 15,
+    borderRadius: 12,
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   image: {
     width: 150,
@@ -263,13 +379,8 @@ const styles = StyleSheet.create({
   },
   containerDropDownPickerMain: {
     width: '90%',
+    marginVertical: 5,
     marginHorizontal: '5%',
-  },
-  DropDownMarginBottom: {
-    marginBottom: '72.5%',
-  },
-  dropDownMarginBottomNormal: {
-    marginBottom: '27.5%',
   },
   dropDownStyle: {
     backgroundColor: '#F5F5F5',

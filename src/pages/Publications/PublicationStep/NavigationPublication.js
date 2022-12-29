@@ -7,6 +7,7 @@ function NavigationPublication({
   previousScreenOnPress,
   afterScreenOnPress,
   incrementOnPress,
+  validateStep,
 }) {
   return (
     <View
@@ -36,7 +37,15 @@ function NavigationPublication({
       {afterScreenOnPress && (
         <TouchableOpacity
           style={styles.buttons}
-          onPress={() => afterScreenOnPress(valueScreen + incrementOnPress)}>
+          onPress={() => {
+            if (validateStep) {
+              let validateFailed = validateStep();
+              if (validateFailed === undefined || validateFailed === true) {
+                return;
+              }
+            }
+            afterScreenOnPress(valueScreen + incrementOnPress);
+          }}>
           <Text style={styles.buttonsText}>Continuar</Text>
           <IconsEntypo
             size={18}

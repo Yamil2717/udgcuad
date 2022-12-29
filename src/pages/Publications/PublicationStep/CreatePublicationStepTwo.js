@@ -9,13 +9,32 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Alert,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
 
 const {height} = Dimensions.get('window');
 
-function CreatePublicationStepTwo({step, onChangeStep, groups, setGroup}) {
+function CreatePublicationStepTwo({
+  step,
+  onChangeStep,
+  group,
+  groups,
+  setGroup,
+}) {
+  function validateStep() {
+    let failed = false;
+    if (!group) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe seleccionar un grupo para continuar',
+      );
+    }
+    return failed;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -23,6 +42,7 @@ function CreatePublicationStepTwo({step, onChangeStep, groups, setGroup}) {
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
+        validateStep={validateStep}
       />
       <ScrollView>
         <View style={styles.navigate}>

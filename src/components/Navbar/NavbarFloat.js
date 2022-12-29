@@ -48,26 +48,34 @@ function NavbarFloat({setShowNavbarFloat, navigation}) {
       </View>
 
       <View style={styles.containerGroups}>
-        <FlatList
-          data={authContext.dataGroups}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.buttonGroups}
-              onPress={() => console.log(`press ${item.name}`)}>
-              <FastImage
-                source={{
-                  uri: item.picture,
-                  priority: FastImage.priority.normal,
-                }}
-                style={styles.imageGroups}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-              <Text style={styles.textGroups}>{item.name}</Text>
-            </TouchableOpacity>
-          )}
-          removeClippedSubviews={true}
-        />
+        {console.log(authContext.dataGroups)}
+        {authContext.dataGroups?.length <= 0 ? (
+          <Text style={styles.noDataGroups}>
+            No perteneces a ningún grupo.{'\n'}¡Únete a uno o crea tu propia
+            comunidad!
+          </Text>
+        ) : (
+          <FlatList
+            data={authContext.dataGroups}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.buttonGroups}
+                onPress={() => console.log(`press ${item.name}`)}>
+                <FastImage
+                  source={{
+                    uri: item.picture,
+                    priority: FastImage.priority.normal,
+                  }}
+                  style={styles.imageGroups}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+                <Text style={styles.textGroups}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+            removeClippedSubviews={true}
+          />
+        )}
       </View>
 
       <View style={styles.containerLogout}>
@@ -167,6 +175,12 @@ const styles = StyleSheet.create({
   containerGroups: {
     justifyContent: 'center',
     marginVertical: 5,
+  },
+  noDataGroups: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '700',
   },
   buttonGroups: {
     width: '80%',

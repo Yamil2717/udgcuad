@@ -12,7 +12,7 @@ import RegisterScreen from './src/pages/UserAccess/RegisterScreen';
 import Profile from './src/pages/Profile/Profile';
 import CreateGroupScreen from './src/pages/Groups/CreateGroupScreen';
 import GroupScreen from './src/pages/Groups/GroupScreen';
-
+import PublicationByID from './src/pages/Publications/PublicationByID';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -56,6 +56,11 @@ function App() {
         <Stack.Screen
           name="CreatePublication"
           component={CreatePublicationScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Publication"
+          component={PublicationByID}
           options={{title: null, headerShown: false}}
         />
         <Stack.Screen

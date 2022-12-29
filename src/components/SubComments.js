@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useRef, useEffect} from 'react';
 import {
   View,
   TextInput,
@@ -30,8 +30,11 @@ function SubComments({
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
+  let [showSubComments, setShowSubComments] = useState(false);
   let [lock, setLock] = useState(false);
   let [subCommentInput, setSubCommentInput] = useState(null);
+
+  const refInput = useRef();
 
   function addSubComment() {
     setLock(true);
@@ -64,77 +67,95 @@ function SubComments({
       });
   }
 
+  useEffect(() => {
+    if (refInput.current && inputActive) {
+      refInput.current.focus();
+    }
+  }, [refInput, inputActive]);
+
   return (
     <View>
-      <FlatList
-        data={subComments}
-        style={[subComments.length > 0 && styles.flatListHaveComments]}
-        renderItem={({item}) => (
-          <View key={`_key${item.id.toString()}`}>
-            <View style={styles.commentContainer}>
-              <FastImage
-                source={{
-                  uri: item.user.avatar,
-                  priority: FastImage.priority.high,
-                }}
-                style={styles.imageComments}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-              <View style={styles.textsComments}>
-                <Text style={styles.nameOwnerComment}>{item.user.name}</Text>
-                <Text style={styles.descriptionComment}>{item.comment}</Text>
+      {!showSubComments ? (
+        subComments?.length > 0 && (
+          <TouchableOpacity onPress={() => setShowSubComments(true)}>
+            <Text style={styles.showsSubComments}>
+              Mostrar {subComments?.length}{' '}
+              {subComments?.length > 1 ? 'comentarios' : 'comentario'}
+            </Text>
+          </TouchableOpacity>
+        )
+      ) : (
+        <FlatList
+          data={subComments}
+          style={[subComments.length > 0 && styles.flatListHaveComments]}
+          renderItem={({item}) => (
+            <View key={`_key${item.id.toString()}`}>
+              <View style={styles.commentContainer}>
+                <FastImage
+                  source={{
+                    uri: item.user.avatar,
+                    priority: FastImage.priority.high,
+                  }}
+                  style={styles.imageComments}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+                <View style={styles.textsComments}>
+                  <Text style={styles.nameOwnerComment}>{item.user.name}</Text>
+                  <Text style={styles.descriptionComment}>{item.comment}</Text>
 
-                <View style={styles.containerReactionComments}>
-                  <View style={styles.containerTimeAndReply}>
-                    <Text style={styles.textTime} numberOfLines={1}>
-                      {Moment(item.createdAt).startOf('minute').fromNow()}
-                    </Text>
-                  </View>
-                  <View style={styles.reactionsCommentsContainer}>
-                    <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#30D34B"
-                      />
-                      <Text style={styles.semaphoreNumber}>
-                        {item.likeNegative}
+                  <View style={styles.containerReactionComments}>
+                    <View style={styles.containerTimeAndReply}>
+                      <Text style={styles.textTime} numberOfLines={1}>
+                        {Moment(item.createdAt).startOf('minute').fromNow()}
                       </Text>
                     </View>
-                    <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#FFBD12"
-                      />
-                      <Text style={styles.semaphoreNumber}>
-                        {item.likeNeutral}
-                      </Text>
-                    </View>
-                    <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#EB4237"
-                      />
-                      <Text style={styles.semaphoreNumber}>
-                        {item.likePositive}
-                      </Text>
+                    <View style={styles.reactionsCommentsContainer}>
+                      <View style={styles.reactionsComments}>
+                        <IconFontAwesome
+                          name="circle-thin"
+                          size={20}
+                          color="#30D34B"
+                        />
+                        <Text style={styles.semaphoreNumber}>
+                          {item.likeNegative}
+                        </Text>
+                      </View>
+                      <View style={styles.reactionsComments}>
+                        <IconFontAwesome
+                          name="circle-thin"
+                          size={20}
+                          color="#FFBD12"
+                        />
+                        <Text style={styles.semaphoreNumber}>
+                          {item.likeNeutral}
+                        </Text>
+                      </View>
+                      <View style={styles.reactionsComments}>
+                        <IconFontAwesome
+                          name="circle-thin"
+                          size={20}
+                          color="#EB4237"
+                        />
+                        <Text style={styles.semaphoreNumber}>
+                          {item.likePositive}
+                        </Text>
+                      </View>
                     </View>
                   </View>
                 </View>
               </View>
             </View>
-          </View>
-        )}
-        listKey={item => `_key${item.id.toString()}`}
-        keyExtractor={item => `_key${item.id.toString()}`}
-        nestedScrollEnabled={true}
-      />
+          )}
+          listKey={item => `_key${item.id.toString()}`}
+          keyExtractor={item => `_key${item.id.toString()}`}
+          nestedScrollEnabled={true}
+        />
+      )}
       {inputActive && (
         <>
           <View style={styles.containerCommentInput}>
             <TextInput
+              ref={refInput}
               placeholder="Comentar"
               style={styles.input}
               value={subCommentInput}
@@ -154,6 +175,12 @@ function SubComments({
 }
 
 const styles = StyleSheet.create({
+  showsSubComments: {
+    marginVertical: 5,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '600',
+  },
   flatListHaveComments: {
     paddingTop: 10,
     paddingBottom: 5,

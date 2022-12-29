@@ -19,6 +19,7 @@ const DataUserDefault = {
   postalCode: null,
   interestIds: null,
   tagsIds: null,
+  groups: null,
 };
 
 const AuthContext = createContext();

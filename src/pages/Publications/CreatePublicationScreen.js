@@ -138,7 +138,6 @@ function CreatePublicationScreen({navigation}) {
             title={title}
             onChangeTitle={onChangeTitle}
           />
-          {/* <NavigationScreens navigation={navigation} /> */}
         </SafeAreaView>
       );
     case 1:
@@ -147,10 +146,10 @@ function CreatePublicationScreen({navigation}) {
           <CreatePublicationStepTwo
             step={step}
             onChangeStep={onChangeStep}
+            group={group}
             groups={groups}
             setGroup={setGroup}
           />
-          {/* <NavigationScreens navigation={navigation} /> */}
         </SafeAreaView>
       );
     case 2:
@@ -168,7 +167,6 @@ function CreatePublicationScreen({navigation}) {
             group={group}
             setGroup={setGroup}
           />
-          {/* <NavigationScreens navigation={navigation} /> */}
         </SafeAreaView>
       );
     case 3:
@@ -187,7 +185,6 @@ function CreatePublicationScreen({navigation}) {
             lock={lock}
             createPost={createPost}
           />
-          {/* <NavigationScreens navigation={navigation} /> */}
         </SafeAreaView>
       );
   }

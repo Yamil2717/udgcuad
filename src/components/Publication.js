@@ -19,7 +19,7 @@ import ES from 'moment/locale/es';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 function Publication({
   id,
@@ -42,10 +42,14 @@ function Publication({
   navigation,
   addReactionCounter,
   addCommentCounter,
+  showComments,
 }) {
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
+
+  let [toggleComments, setToggleComments] = useState(true);
+  let [modalImage, setModalImage] = useState({active: false, image: ''});
 
   async function addReaction(idPublication, action) {
     await authAxios
@@ -58,9 +62,17 @@ function Publication({
       .catch(err => console.log(err));
   }
 
+  const mentionHashtagClick = text => {
+    console.log('Clicked to + ' + text);
+  };
+
   return (
     <SafeAreaView
-      style={[styles.container, id !== length && styles.marginBottom]}>
+      style={[
+        styles.container,
+        showComments && styles.containerPublicationById,
+        id !== length && styles.marginBottom,
+      ]}>
       <View style={styles.groupData}>
         <FastImage
           source={{
@@ -71,55 +83,86 @@ function Publication({
           resizeMode={FastImage.resizeMode.cover}
         />
         <View style={styles.textsGroup}>
-          <Text style={styles.nameGroup}>{groupName}</Text>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.navigate('Group', {id: groupID})}>
+            <Text style={styles.nameGroup}>{groupName}</Text>
+          </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => navigation.navigate('Profile', {id: ownerID})}>
             <Text style={styles.username}>@{ownerName}</Text>
           </TouchableWithoutFeedback>
         </View>
-      </View>
-      <View style={styles.descriptionContainer}>
-        <View>
-          <Text style={styles.titleText}>{title}</Text>
-          {description && (
-            <Text style={styles.descriptionText}>{description}</Text>
-          )}
-          {/*<View style={styles.hashtagsContainer}>
-            <Text style={styles.hashtags}>#hashtagTest1</Text>
-          </View>*/}
+        <View style={styles.buttonGroup}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Group', {id: groupID})}>
+            <Text
+              style={[
+                authContext.dataUser.groups[groupID]
+                  ? styles.buttonGroupMember
+                  : styles.buttonGroupNoMember,
+              ]}>
+              {authContext.dataUser.groups[groupID] ? 'Tu grupo' : 'Unirse'}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.textTime} numberOfLines={1}>
-          {Moment(createdAt).startOf('minute').fromNow()}
-        </Text>
       </View>
-      <FlatList
-        data={pictures}
-        style={[
-          styles.imagesContainer,
-          pictures.length === 3 && styles.flexDirectionColumn,
-        ]}
-        renderItem={({item, index}) => (
-          <FastImage
-            key={index}
-            source={{
-              uri: item,
-              priority: FastImage.priority.high,
-            }}
+      <TouchableWithoutFeedback
+        onPress={() => {
+          if (showComments) {
+            return;
+          }
+          navigation.navigate('Publication', {id: idPost});
+        }}>
+        <View>
+          <View style={styles.descriptionContainer}>
+            <View>
+              <Text style={styles.titleText}>{title}</Text>
+              {description && (
+                <Text style={styles.descriptionText}>{description}</Text>
+              )}
+            </View>
+            <Text style={styles.textTime} numberOfLines={1}>
+              {Moment(createdAt).startOf('minute').fromNow()}
+            </Text>
+          </View>
+          <FlatList
+            data={pictures}
             style={[
-              pictures.length === 1
-                ? styles.oneImage
-                : pictures.length === 2
-                ? styles.twoImages
-                : pictures.length === 4
-                ? styles.fourImages
-                : index === 0
-                ? styles.threeImages
-                : styles.threeImages2,
+              styles.imagesContainer,
+              pictures.length === 3 && styles.flexDirectionColumn,
             ]}
-            resizeMode={FastImage.resizeMode.cover}
+            renderItem={({item, index}) => (
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  if (!showComments) {
+                    return navigation.navigate('Publication', {id: idPost});
+                  }
+                  setModalImage({active: true, image: item});
+                }}>
+                <FastImage
+                  key={index}
+                  source={{
+                    uri: item,
+                    priority: FastImage.priority.high,
+                  }}
+                  style={[
+                    pictures.length === 1
+                      ? styles.oneImage
+                      : pictures.length === 2
+                      ? styles.twoImages
+                      : pictures.length === 4
+                      ? styles.fourImages
+                      : index === 0
+                      ? styles.threeImages
+                      : styles.threeImages2,
+                  ]}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              </TouchableWithoutFeedback>
+            )}
           />
-        )}
-      />
+        </View>
+      </TouchableWithoutFeedback>
       <View style={styles.reactionsContainer}>
         <View style={styles.reaction}>
           <TouchableOpacity onPress={() => addReaction(idPost, 1)}>
@@ -163,13 +206,13 @@ function Publication({
           </TouchableOpacity>
           <Text style={styles.semaphoreNumber}>{likeNegative}</Text>
         </View>
-        {
-          //circle
-        }
         <TouchableOpacity
           style={styles.reaction}
           onPress={() => {
-            //xd
+            if (showComments) {
+              return setToggleComments(!toggleComments);
+            }
+            navigation.navigate('Publication', {id: idPost});
           }}>
           <IconFeather name="message-circle" size={30} color="#828282" />
           <Text style={styles.semaphoreNumber}>{commentCount}</Text>
@@ -181,22 +224,42 @@ function Publication({
           <IconFeather name="bookmark" size={20} color="#2A9DD8" />
         </View>
       </View>
-      {false && (
+      {showComments && toggleComments && (
         <Comments
           indexPublication={id - 1}
           idPublication={idPost}
           addCommentCounter={addCommentCounter}
         />
       )}
+      {showComments && modalImage.active && (
+        <View style={styles.containerModal}>
+          <TouchableOpacity
+            style={styles.buttonCloseModal}
+            onPress={() => setModalImage({active: false, image: ''})}
+          />
+          <FastImage
+            source={{
+              uri: modalImage.image,
+              priority: FastImage.priority.high,
+            }}
+            style={styles.imageModal}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  containerPublicationById: {
+    minHeight: height,
+  },
   container: {
     backgroundColor: '#fff',
     width: width,
     maxWidth: width,
+    position: 'relative',
   },
   marginBottom: {
     marginBottom: 20,
@@ -207,6 +270,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 5,
+    paddingRight: '35%',
+    position: 'relative',
   },
   imageGroup: {
     width: 35,
@@ -228,6 +293,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 14,
   },
+  buttonGroup: {
+    position: 'absolute',
+    top: 0,
+    right: 5,
+    width: '40%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonGroupMember: {
+    backgroundColor: '#2A9DD8',
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    fontSize: 14,
+    color: 'white',
+    borderRadius: 24,
+    borderColor: '#2A9DD8',
+    borderWidth: 1,
+  },
+  buttonGroupNoMember: {
+    backgroundColor: 'transparent',
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    fontSize: 14,
+    color: '#2A9DD8',
+    borderRadius: 24,
+    borderColor: '#2A9DD8',
+    borderWidth: 1,
+  },
   textTime: {
     color: '#828282',
     fontSize: 13,
@@ -246,15 +340,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#828282',
     textAlign: 'justify',
-  },
-  hashtagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    backgroundColor: '#F5F5F5',
-  },
-  hashtags: {
-    color: '#2A9DD8',
-    marginRight: 5,
   },
   imagesContainer: {
     flexDirection: 'row',
@@ -315,6 +400,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 5,
     borderRadius: 50,
+  },
+  containerModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+    backgroundColor: 'rgba(0,0,0,.5)',
+    zIndex: 5,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  buttonCloseModal: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+    zIndex: 15,
+  },
+  imageModal: {
+    width: '90%',
+    height: '90%',
+    zIndex: 10,
   },
 });
 

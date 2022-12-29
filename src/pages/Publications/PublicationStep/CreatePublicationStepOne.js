@@ -5,12 +5,25 @@ import {
   TextInput,
   View,
   Dimensions,
+  Alert,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 
 const {width, height} = Dimensions.get('window');
 
 function CreatePublicationStepOne({step, onChangeStep, title, onChangeTitle}) {
+  function validateStep() {
+    let failed = false;
+    if (!title) {
+      failed = true;
+      return Alert.alert(
+        'Datos faltantes',
+        'Debe ingresar un titulo para continuar.',
+      );
+    }
+    return failed;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -18,6 +31,7 @@ function CreatePublicationStepOne({step, onChangeStep, title, onChangeTitle}) {
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
+        validateStep={validateStep}
       />
       <View style={styles.containerInput}>
         <TextInput

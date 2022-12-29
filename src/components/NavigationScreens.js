@@ -1,13 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Dimensions, TouchableOpacity} from 'react-native';
+import React, {useContext} from 'react';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {AuthContext} from '../contexts/AuthContext';
 const {width, height} = Dimensions.get('window');
 function NavigationScreens({navigation}) {
   /* -------------------------- STATE PARA NAVIGATION -------------------------- */
+
+  let authContext = useContext(AuthContext);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,6 +50,12 @@ function NavigationScreens({navigation}) {
 
       <TouchableOpacity
         onPress={() => {
+          if (authContext.dataGroups.length <= 0) {
+            return Alert.alert(
+              'Voces',
+              'No perteneces a ningún grupo.\n¡Únete a uno o crea tu propia comunidad!\n\n\nEs necesario para crear una publicación.',
+            );
+          }
           navigation.navigate('CreatePublication');
         }}>
         <View style={styles.iconFormNormal}>
