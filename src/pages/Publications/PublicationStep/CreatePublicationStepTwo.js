@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,6 +9,7 @@ import {
   Image,
   Dimensions,
   Alert,
+  FlatList,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 import IconFontisto from 'react-native-vector-icons/Fontisto';
@@ -23,6 +23,8 @@ function CreatePublicationStepTwo({
   groups,
   setGroup,
 }) {
+  let [currentPage, setCurrentPage] = useState(6);
+
   function validateStep() {
     let failed = false;
     if (!group) {
@@ -44,63 +46,70 @@ function CreatePublicationStepTwo({
         incrementOnPress={1}
         validateStep={validateStep}
       />
-      <ScrollView>
-        <View style={styles.navigate}>
-          <View style={styles.formsStyle}>
-            <TextInput
-              placeholder="Busca temas de tu interés"
-              style={styles.input}
-              textColor={styles.colorInput}
-              theme={{
-                colors: {
-                  placeholder: '#000000',
-                  text: '#000000',
-                  primary: '#000000',
-                },
-              }}
-              selectionColor="#000000"
-              accessibilityIgnoresInvertColors={true}
-            />
-            <IconFontisto
-              name="search"
-              color="#2A9DD8"
-              size={16}
-              style={styles.iconForm}
-            />
+      <FlatList
+        data={groups}
+        ListHeaderComponent={
+          <View>
+            <View style={styles.navigate}>
+              <View style={styles.formsStyle}>
+                <TextInput
+                  placeholder="Busca temas de tu interés"
+                  style={styles.input}
+                  textColor={styles.colorInput}
+                  theme={{
+                    colors: {
+                      placeholder: '#000000',
+                      text: '#000000',
+                      primary: '#000000',
+                    },
+                  }}
+                  selectionColor="#000000"
+                  accessibilityIgnoresInvertColors={true}
+                />
+                <IconFontisto
+                  name="search"
+                  color="#2A9DD8"
+                  size={16}
+                  style={styles.iconForm}
+                />
+              </View>
+            </View>
+            <Text style={styles.textTooltip}>
+              Por favor selecciona una de tus comunidades
+            </Text>
           </View>
-        </View>
-
-        {groups.length > 0 &&
-          groups.map(groupMap => {
+        }
+        renderItem={({item, index}) => {
+          if (index + 1 <= Number(currentPage)) {
             return (
               <TouchableOpacity
                 style={styles.listStyle}
-                key={groupMap.id}
+                key={item.id}
                 onPress={() => {
-                  setGroup(groupMap.id.toString());
+                  setGroup(item.id.toString());
                   onChangeStep(Number(step) + 1);
                 }}>
-                <Image source={{uri: groupMap.picture}} style={styles.image} />
+                <Image source={{uri: item.picture}} style={styles.image} />
                 <View>
-                  <Text style={styles.textCreatePublication}>
-                    {groupMap.name}
-                  </Text>
+                  <Text style={styles.textCreatePublication}>{item.name}</Text>
                   <Text style={styles.subTextCreatePublication}>
-                    {groupMap.membersCount} Miembros
+                    {item.membersCount} Miembros
                   </Text>
                 </View>
               </TouchableOpacity>
             );
-          })}
-
-        <View style={styles.containerButton}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => console.log('crear comunidad')}>
-            <Text style={styles.textButton}>Ver mas</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          }
+        }}
+        ListFooterComponent={
+          <View style={styles.containerButton}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setCurrentPage(Number(currentPage + 3))}>
+              <Text style={styles.textButton}>Ver mas</Text>
+            </TouchableOpacity>
+          </View>
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -145,6 +154,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  textTooltip: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '700',
   },
   listStyle: {
     display: 'flex',

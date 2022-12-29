@@ -50,7 +50,7 @@ function CreatePublicationScreen({navigation}) {
         'Debe seleccionar el grupo en donde desea publicar el post.',
       );
     }
-    if (description.length <= 0 && !photos) {
+    if (description?.length <= 0 && !photos) {
       return Alert.alert(
         'Error',
         'Debe ingresar al menos la descripción o una fotografía para poder crear un post.',

@@ -48,7 +48,6 @@ function NavbarFloat({setShowNavbarFloat, navigation}) {
       </View>
 
       <View style={styles.containerGroups}>
-        {console.log(authContext.dataGroups)}
         {authContext.dataGroups?.length <= 0 ? (
           <Text style={styles.noDataGroups}>
             No perteneces a ningún grupo.{'\n'}¡Únete a uno o crea tu propia
@@ -61,7 +60,7 @@ function NavbarFloat({setShowNavbarFloat, navigation}) {
               <TouchableOpacity
                 key={item.id}
                 style={styles.buttonGroups}
-                onPress={() => console.log(`press ${item.name}`)}>
+                onPress={() => navigation.navigate('Group', {id: item.id})}>
                 <FastImage
                   source={{
                     uri: item.picture,

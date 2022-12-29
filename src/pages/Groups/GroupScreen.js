@@ -35,7 +35,8 @@ function GroupScreen({route, navigation}) {
 
   useEffect(() => {
     getGroupData();
-  }, []);
+    getPublications();
+  }, [id]);
 
   async function getGroupData() {
     await authAxios
@@ -52,13 +53,35 @@ function GroupScreen({route, navigation}) {
       });
   }
 
+  async function getPublications() {
+    await authAxios
+      .get(`/publications/group/${id}`)
+      .then(data => {
+        setDataGroupPublications([...data]);
+      })
+      .catch(error => {
+        console.log(error);
+        setDataGroupPublications([]);
+      });
+  }
+
   async function refreshGroup() {
     setRefreshing(true);
     await authAxios
       .get(`/group/${id}`)
-      .then(data => {
+      .then(async data => {
         setDataGroup(data);
-        setRefreshing(false);
+        await authAxios
+          .get(`/publications/group/${id}`)
+          .then(publications => {
+            setDataGroupPublications([...publications]);
+            setRefreshing(false);
+          })
+          .catch(error => {
+            console.log(error);
+            setDataGroupPublications([]);
+            setRefreshing(false);
+          });
       })
       .catch(() => {
         Alert.alert(
@@ -284,10 +307,19 @@ function GroupScreen({route, navigation}) {
               <View style={styles.containerTextUserInfo}>
                 <Text style={styles.name}>{dataGroup.name}</Text>
                 <Text style={styles.role}>
-                  {dataGroup.membersCount} miembros
+                  {`${dataGroup.membersCount} ${
+                    dataGroup.membersCount > 1 ? 'miembros' : 'miembro'
+                  }`}
                 </Text>
               </View>
             </View>
+            {dataGroup.description && (
+              <View style={styles.containerDescription}>
+                <Text style={styles.textDescription}>
+                  {dataGroup.description}
+                </Text>
+              </View>
+            )}
           </View>
         }
         renderItem={({item, index}) => (
@@ -409,6 +441,17 @@ const styles = StyleSheet.create({
   role: {
     fontSize: 14,
     color: '#828282',
+  },
+  containerDescription: {
+    paddingHorizontal: '5%',
+    paddingVertical: 10,
+    position: 'relative',
+    top: -15,
+  },
+  textDescription: {
+    textAlign: 'justify',
+    color: '#555555',
+    fontSize: 14,
   },
   textNoContainPublications: {
     textAlign: 'center',

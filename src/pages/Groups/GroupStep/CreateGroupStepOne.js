@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   input: {
-    color: '#D4D4D4',
+    color: '#858585',
     fontSize: 16,
     alignItems: 'center',
     paddingVertical: 5,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   inputDescription: {
     paddingVertical: 10,
     paddingHorizontal: 15,
-    color: '#D4D4D4',
+    color: '#858585',
     height: 90,
     maxHeight: 90,
     textAlignVertical: 'top',

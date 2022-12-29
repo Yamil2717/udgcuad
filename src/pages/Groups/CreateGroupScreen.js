@@ -47,13 +47,29 @@ function CreateGroupScreen({navigation}) {
               picture: url,
               ownerID: authContext.dataUser.id,
             })
-            .then(data => {
-              console.log(data);
-              Alert.alert('Voces', 'Se ha creado su grupo correctamente.');
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Home'}],
-              });
+            .then(async group => {
+              await authAxios
+                .put(`/user/addGroup/${group.id}`)
+                .then(async success => {
+                  if (success) {
+                    let tempAuthContext = {...authContext.dataUser};
+                    tempAuthContext.groups[group.id] = new Date().toISOString();
+                    authContext.setDataUser({...tempAuthContext});
+                    await authAxios
+                      .get('/myGroups')
+                      .then(myGroups =>
+                        authContext.setDataGroups([...myGroups]),
+                      );
+                    Alert.alert(
+                      'Voces',
+                      'Se ha creado su grupo correctamente.',
+                    );
+                    navigation.reset({
+                      index: 0,
+                      routes: [{name: 'Home'}],
+                    });
+                  }
+                });
             });
         });
     } catch (error) {
