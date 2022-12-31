@@ -20,24 +20,37 @@ import IconEntypo from 'react-native-vector-icons/Entypo';
 import Publication from '../../components/Publication';
 import env from '../../env';
 import tools from '../../tools/tools';
+import Modal from '../../components/Modal';
+import ModalEditInfo from '../../components/ModalEditInfo';
+import Share from 'react-native-share';
 
 const {width, height} = Dimensions.get('window');
 
 function Profile({route, navigation}) {
   let {id} = route.params;
   let [loading, setLoading] = useState(true);
-  let [modalImage, setModalImage] = useState({active: false, image: ''});
   let [follow, setFollow] = useState(false);
   let [profileInfo, setProfileInfo] = useState({});
   let [dataPublications, setDataPublications] = useState([]);
   let [refreshing, setRefreshing] = useState(false);
+  let [textHeaderButton, setTextHeaderButton] = useState('');
+  let [lock, setLock] = useState(false);
+  let [modalVisible, setModalVisible] = useState(false);
+  let [modalConfig, setModalConfig] = useState({});
+  let [modalUserInfoVisible, setModalUserInfoVisible] = useState(false);
+  let [modalUserInfoConfig, setModalUserInfoConfig] = useState({});
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
+
+  /* edit info */
+  let [typesUser, setTypesUser] = useState([]);
 
   const refreshPublications = async () => {
     setRefreshing(true);
     if (id !== authContext.dataUser.id) {
       getDataUser();
+    } else {
+      setProfileInfo(authContext.dataUser);
     }
     await authAxios
       .get(`/publications/${id}`)
@@ -52,25 +65,380 @@ function Profile({route, navigation}) {
   };
 
   async function followHandle() {
-    setFollow(!follow);
-    console.log(authContext.dataUser);
+    if (lock) {
+      return;
+    }
+    setLock(true);
     await authAxios
       .put(`/user/follow/${id}`)
-      .then(data => console.log(data))
-      .catch(err => console.log(err));
+      .then(data => {
+        setFollow(!follow);
+        setModalConfig({
+          description: `Has ${!follow ? 'comenzado' : 'dejado'} a seguir a ${
+            profileInfo.name
+          }`,
+          textButton1: 'Aceptar',
+        });
+        setModalVisible(true);
+        setLock(false);
+      })
+      .catch(err => {
+        setLock(false);
+        console.error(err?.response?.data?.message || err.message);
+      });
   }
 
-  function getTextHeaderButton() {
-    if (id === authContext.dataUser.id) {
-      return 'Editar perfil';
+  async function handleButtonAddFriend() {
+    if (lock) {
+      return;
+    }
+    setLock(true);
+    if (authContext.dataUser.friends[id]) {
+      if (textHeaderButton === 'Enviar solicitud de mensaje') {
+        await authAxios
+          .post('/request/user/message', {id})
+          .then(() => {
+            setTextHeaderButton('Cancelar solicitud');
+            setModalConfig({
+              description: `Se ha enviado la solicitud de mensaje a ${profileInfo.name} correctamente.`,
+              icon: 'wp',
+              textButton1: 'Cerrar',
+            });
+            setModalVisible(true);
+            setLock(false);
+          })
+          .catch(err => {
+            setLock(false);
+            Alert.alert(
+              'Voces error',
+              err?.response?.data?.message || err.message,
+            );
+            refreshPublications();
+            console.error(err?.response?.data?.message || err.message);
+          });
+      } else if (textHeaderButton === 'Aceptar mensaje') {
+        await authAxios
+          .put(`/user/acceptMessage/${id}`)
+          .then(async success => {
+            refreshPublications();
+            setTextHeaderButton('Enviar mensaje');
+            setModalConfig({
+              description: `Has aceptado la solicitud de mensaje de ${profileInfo.name}`,
+              icon: 'wp',
+              textButton1: 'Cerrar',
+            });
+            setModalVisible(true);
+            setLock(false);
+          })
+          .catch(err => {
+            setLock(false);
+            Alert.alert(
+              'Voces error',
+              err?.response?.data?.message || err.message,
+            );
+            refreshPublications();
+            console.error(err?.response?.data?.message || err.message);
+          });
+        setLock(false);
+      } else if (textHeaderButton === 'Cancelar solicitud') {
+        await authAxios
+          .delete(`/request/user/${id}`)
+          .then(async success => {
+            await getMyDataUser();
+            setTextHeaderButton('Enviar solicitud de mensaje');
+            setModalConfig({
+              description: `Has cancelado la solicitud de mensaje de ${profileInfo.name}`,
+              icon: 'wp',
+              textButton1: 'Cerrar',
+            });
+            setModalVisible(true);
+            setLock(false);
+          })
+          .catch(err => {
+            setLock(false);
+            console.error(err?.response?.data?.message || err.message);
+          });
+      } else {
+        const shareOptions = {
+          title: 'Mensaje via Voces',
+          message: `Hola, soy ${authContext.dataUser.name} de Voces.`,
+          social: Share.Social.WHATSAPP,
+          whatsAppNumber: profileInfo.countryIndicator + profileInfo.phone,
+        };
+        try {
+          setLock(false);
+          await Share.shareSingle(shareOptions);
+        } catch (error) {
+          setLock(false);
+          console.error(error);
+          Alert.alert(
+            'Voces',
+            'algo fallo y no pudimos enviar un mensaje en WhatsApp.',
+          );
+        }
+      }
     } else {
-      return 'Enviar solicitud de amistad';
+      if (textHeaderButton === 'Aceptar') {
+        await authAxios
+          .put(`/user/addFriend/${id}`)
+          .then(async data => {
+            await authAxios
+              .delete(`/request/user/${id}`)
+              .then(async success => {
+                await getMyDataUser();
+                setTextHeaderButton('Enviar solicitud de mensaje');
+                setModalConfig({
+                  description: `Has aceptado la solicitud de amistad de ${profileInfo.name}`,
+                  icon: 'addFriend',
+                  textButton1: 'Cerrar',
+                });
+                setModalVisible(true);
+                setLock(false);
+              })
+              .catch(err => {
+                setLock(false);
+                console.error(err?.response?.data?.message || err.message);
+              });
+          })
+          .catch(err => {
+            setLock(false);
+            Alert.alert(
+              'Voces error',
+              err?.response?.data?.message || err.message,
+            );
+            refreshPublications();
+            console.error(err?.response?.data?.message || err.message);
+          });
+      } else {
+        if (id === authContext.dataUser.id) {
+          setModalUserInfoConfig({
+            type: 'profile',
+            typesUser,
+            setTypesUser,
+            setProfileInfo,
+            refreshPublications,
+            textButton1: 'Actualizar',
+            textButton2: 'Cancelar',
+          });
+          setModalUserInfoVisible(true);
+
+          setLock(false);
+        } else if (textHeaderButton === 'Enviar solicitud de amistad') {
+          await authAxios
+            .post('/request/user/friend', {id})
+            .then(() => {
+              setTextHeaderButton('Cancelar solicitud');
+              setModalConfig({
+                description: `Has enviado tu solicitud de amistad a ${profileInfo.name} correctamente.`,
+                icon: 'addFriend',
+                textButton1: 'Cerrar',
+              });
+              setModalVisible(true);
+              setLock(false);
+            })
+            .catch(err => {
+              setLock(false);
+              Alert.alert(
+                'Voces error',
+                err?.response?.data?.message || err.message,
+              );
+              refreshPublications();
+              console.error(err?.response?.data?.message || err.message);
+            });
+        } else {
+          await authAxios
+            .delete(`/request/user/${id}`)
+            .then(success => {
+              setModalConfig({
+                description: `Has cancelado tu solicitud de amistad a ${profileInfo.name} correctamente.`,
+                icon: 'addFriend',
+                textButton1: 'Cerrar',
+              });
+              setModalVisible(true);
+              setLock(false);
+              setTextHeaderButton('Enviar solicitud de amistad');
+            })
+            .catch(err => {
+              setLock(false);
+              console.error(err?.response?.data?.message || err.message);
+            });
+        }
+      }
     }
   }
 
+  async function declineRequestFriend() {
+    await authAxios
+      .delete(`/request/user/${id}`)
+      .then(success => {
+        setLock(false);
+        setModalConfig({
+          description: `Has rechazado la solicitud de amistad de ${profileInfo.name}.`,
+          icon: 'removeFriend',
+          textButton1: 'Cerrar',
+        });
+        setModalVisible(true);
+        setTextHeaderButton('Enviar solicitud de amistad');
+      })
+      .catch(err => {
+        setLock(false);
+        console.error(err?.response?.data?.message || err.message);
+      });
+  }
+
+  async function declineRequestMessage() {
+    await authAxios
+      .delete(`/request/user/${id}`)
+      .then(success => {
+        setModalConfig({
+          description: `Has rechazado la solicitud de mensaje de ${profileInfo.name}.`,
+          icon: 'wp',
+          textButton1: 'Cerrar',
+        });
+        setModalVisible(true);
+        setLock(false);
+        setTextHeaderButton('Enviar solicitud de mensaje');
+      })
+      .catch(err => {
+        setLock(false);
+        console.error(err?.response?.data?.message || err.message);
+      });
+  }
+
+  async function removeFriend() {
+    setModalConfig({
+      description: `¿Seguro desea eliminar de amigo a ${profileInfo.name}?`,
+      icon: 'wp',
+      textButton1: 'Aceptar',
+      handleButton1: async () => {
+        await authAxios
+          .delete(`/user/deleteFriend/${id}`)
+          .then(async data => {
+            await getMyDataUser();
+            setLock(false);
+            setTextHeaderButton('Enviar solicitud de amistad');
+          })
+          .catch(err => {
+            setLock(false);
+            Alert.alert(
+              'Voces error',
+              err?.response?.data?.message || err.message,
+            );
+            refreshPublications();
+            console.error(err?.response?.data?.message || err.message);
+          });
+      },
+      textButton2: 'Cancelar',
+      //handleButton2
+    });
+    setModalVisible(true);
+  }
+
+  useEffect(() => {
+    if (id === authContext.dataUser.id) {
+      setProfileInfo(authContext.dataUser);
+      setTextHeaderButton('Editar perfil');
+      getUserTypes();
+      setLoading(false);
+    } else {
+      getDataUser();
+    }
+    getPublications();
+  }, [id]);
+
+  async function getUserTypes() {
+    await authAxios
+      .get(`${env.api}/user/types`)
+      .then(types => {
+        setTypesUser(types);
+      })
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+        Alert.alert('Voces', err?.response?.data?.message || err.message);
+      });
+  }
+
+  async function getMyDataUser() {
+    await authAxios
+      .get('/user')
+      .then(userData => {
+        authContext.setDataUser({...userData});
+      })
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+      });
+  }
+
+  async function getDataUser() {
+    await getMyDataUser();
+    await authAxios
+      .get(`/user/${id}`)
+      .then(async userData => {
+        setProfileInfo(userData);
+        if (authContext.dataUser.friends[id]) {
+          if (authContext.dataUser.friends[id].allowMessage) {
+            setTextHeaderButton('Enviar mensaje');
+            setLoading(false);
+          } else {
+            await authAxios
+              .get(`/request/user/${id}`)
+              .then(requestUser => {
+                if (requestUser.type === 2) {
+                  setTextHeaderButton('Aceptar mensaje');
+                } else {
+                  setTextHeaderButton('Cancelar solicitud');
+                }
+                setLoading(false);
+              })
+              .catch(() => {
+                setTextHeaderButton('Enviar solicitud de mensaje');
+                setLoading(false);
+              });
+          }
+        } else {
+          await authAxios
+            .get(`/request/user/${id}`)
+            .then(requestUser => {
+              if (requestUser.type === 2) {
+                setTextHeaderButton('Aceptar');
+              } else {
+                setTextHeaderButton('Cancelar solicitud');
+              }
+              setLoading(false);
+            })
+            .catch(() => {
+              setTextHeaderButton('Enviar solicitud de amistad');
+              setLoading(false);
+            });
+        }
+      })
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+      });
+  }
+
+  async function getPublications() {
+    await authAxios
+      .get(`/publications/${id}`)
+      .then(data => {
+        setDataPublications(data);
+      })
+      .catch(() => {
+        setDataPublications([]);
+      });
+  }
+
   async function choosePhoto(type) {
+    if (lock) {
+      return;
+    }
+    setLock(true);
     if (id !== authContext.dataUser.id) {
-      setModalImage({active: true, image: type});
+      setModalConfig({
+        photoUrl: profileInfo[type],
+      });
+      setModalVisible(true);
+      setLock(false);
     } else {
       await launchImageLibrary(
         {
@@ -84,8 +452,12 @@ function Profile({route, navigation}) {
           },
         },
         response => {
+          if (response.didCancel) {
+            setLock(false);
+          }
           if (response.assets) {
             if (response.assets[0].fileSize > 4 * 1024 * 1024) {
+              setLock(false);
               return Alert.alert(
                 'Error',
                 'La imagen no puede superar los 4MB, por favor escoja otra.',
@@ -124,46 +496,14 @@ function Profile({route, navigation}) {
               tempDataUser[type] = url;
               authContext.setDataUser({...tempDataUser});
               setProfileInfo({...tempDataUser});
+              setLock(false);
               await authAxios.delete(`${env.api}/images/${deletePhoto}`);
             });
         });
     } catch (error) {
       console.log(error);
+      setLock(false);
     }
-  }
-
-  useEffect(() => {
-    if (id === authContext.dataUser.id) {
-      setProfileInfo(authContext.dataUser);
-      setLoading(false);
-    } else {
-      getDataUser();
-    }
-    getPublications();
-  }, [id]);
-
-  async function getDataUser() {
-    await authAxios
-      .get(`/user/${id}`)
-      .then(userData => {
-        setProfileInfo(userData);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err?.response?.data?.message || err.message);
-        authContext.logout();
-      });
-  }
-
-  async function getPublications() {
-    await authAxios
-      .get(`/publications/${id}`)
-      .then(data => {
-        setDataPublications(data);
-      })
-      .catch(() => {
-        setDataPublications([]);
-      });
   }
 
   function addCommentCounter(indexPublication) {
@@ -291,11 +631,39 @@ function Profile({route, navigation}) {
                       />
                     </TouchableOpacity>
                   )}
-                  <TouchableOpacity style={styles.headerButton}>
+                  {authContext.dataUser.friends[id] && (
+                    <TouchableOpacity
+                      style={styles.headerButtonRemoveFriend}
+                      onPress={removeFriend}>
+                      <IconEntypo
+                        name="cross"
+                        color="#2A9DD8"
+                        size={24}
+                        style={styles.headerIcon}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={handleButtonAddFriend}>
                     <Text style={styles.headerTextButton}>
-                      {getTextHeaderButton()}
+                      {textHeaderButton}
                     </Text>
                   </TouchableOpacity>
+                  {(textHeaderButton === 'Aceptar' ||
+                    textHeaderButton === 'Aceptar mensaje') && (
+                    <TouchableOpacity
+                      style={[styles.headerButton, styles.marginLeft]}
+                      onPress={() => {
+                        if (authContext.dataUser.friends[id]) {
+                          declineRequestMessage();
+                        } else {
+                          declineRequestFriend();
+                        }
+                      }}>
+                      <Text style={styles.headerTextButton}>Rechazar</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </FastImage>
             </TouchableOpacity>
@@ -351,21 +719,19 @@ function Profile({route, navigation}) {
         }
         removeClippedSubviews={true}
       />
-      {modalImage.active && (
-        <View style={styles.containerModal}>
-          <TouchableOpacity
-            style={styles.buttonCloseModal}
-            onPress={() => setModalImage({active: false, image: ''})}
-          />
-          <FastImage
-            source={{
-              uri: profileInfo[modalImage.image],
-              priority: FastImage.priority.high,
-            }}
-            style={styles.imageModal}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        </View>
+      {modalVisible && (
+        <Modal
+          {...modalConfig}
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
+      )}
+      {modalUserInfoVisible && (
+        <ModalEditInfo
+          {...modalUserInfoConfig}
+          modalVisible={modalUserInfoVisible}
+          setModalVisible={setModalUserInfoVisible}
+        />
       )}
     </SafeAreaView>
   );
@@ -398,12 +764,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
   },
+  marginLeft: {
+    marginLeft: 5,
+  },
   headerTextButton: {
     fontSize: 14,
     color: '#2A9DD8',
     fontWeight: '500',
   },
   headerButtonFollow: {
+    padding: 4,
+    backgroundColor: 'white',
+    marginRight: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 75 / 2,
+    flexDirection: 'row',
+  },
+  headerButtonRemoveFriend: {
     padding: 4,
     backgroundColor: 'white',
     marginRight: 5,
@@ -443,35 +821,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
-  },
-  containerModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    backgroundColor: 'rgba(0,0,0,.5)',
-    zIndex: 5,
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  buttonCloseModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    zIndex: 15,
-  },
-  imageModal: {
-    width: '90%',
-    height: '90%',
-    zIndex: 10,
   },
 });
 

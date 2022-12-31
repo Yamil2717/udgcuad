@@ -8,6 +8,7 @@ import {
   Alert,
   FlatList,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {AuthContext} from '../contexts/AuthContext';
@@ -26,6 +27,7 @@ function SubComments({
   getAllComments,
   indexPublication,
   addCommentCounter,
+  navigation,
 }) {
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
@@ -41,6 +43,13 @@ function SubComments({
     if (!subCommentInput || subCommentInput.length <= 0) {
       setLock(false);
       return Alert.alert('Voces', 'Error, debe ingresar un comentario.');
+    }
+    if (subCommentInput.length > 280) {
+      setLock(false);
+      return Alert.alert(
+        'Voces',
+        'Solo se puede comentar un máximo de 280 caracteres.',
+      );
     }
     authAxios
       .post('/comment', {
@@ -91,16 +100,28 @@ function SubComments({
           renderItem={({item}) => (
             <View key={`_key${item.id.toString()}`}>
               <View style={styles.commentContainer}>
-                <FastImage
-                  source={{
-                    uri: item.user.avatar,
-                    priority: FastImage.priority.high,
-                  }}
-                  style={styles.imageComments}
-                  resizeMode={FastImage.resizeMode.cover}
-                />
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    navigation.navigate('Profile', {id: item.ownerID})
+                  }>
+                  <FastImage
+                    source={{
+                      uri: item.user.avatar,
+                      priority: FastImage.priority.high,
+                    }}
+                    style={styles.imageComments}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                </TouchableWithoutFeedback>
                 <View style={styles.textsComments}>
-                  <Text style={styles.nameOwnerComment}>{item.user.name}</Text>
+                  <TouchableWithoutFeedback
+                    onPress={() =>
+                      navigation.navigate('Profile', {id: item.ownerID})
+                    }>
+                    <Text style={styles.nameOwnerComment}>
+                      {item.user.name}
+                    </Text>
+                  </TouchableWithoutFeedback>
                   <Text style={styles.descriptionComment}>{item.comment}</Text>
 
                   <View style={styles.containerReactionComments}>

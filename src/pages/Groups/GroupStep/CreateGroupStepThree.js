@@ -1,63 +1,38 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
   View,
-  TouchableOpacity,
-  Image,
+  Text,
   Alert,
+  TouchableOpacity,
+  ScrollView,
   Dimensions,
+  StyleSheet,
+  SafeAreaView,
   Pressable,
 } from 'react-native';
-import NavigationPublication from './NavigationPublication';
 import {launchImageLibrary} from 'react-native-image-picker';
 import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {MentionInput} from 'react-native-controlled-mentions';
+import FastImage from 'react-native-fast-image';
+import NavigationGroups from './NavigationGroups';
 
 const {width, height} = Dimensions.get('window');
 
-function CreatePublicationStepThree({
+function CreateGroupStepThree({
   step,
   onChangeStep,
+  dataGroup,
   title,
   description,
-  onChangeDescription,
+  setDescription,
   photos,
   setPhotos,
-  groupsFormatted,
-  setGroupsFormatted,
-  group,
-  setGroup,
+  createPost,
 }) {
   let [open, setOpen] = useState(false);
-  const refInputDescription = useRef();
 
-  function validateStep() {
-    let failed = false;
-    if (description) {
-      let countCharacters = title.length + description.length;
-      if (countCharacters > 280) {
-        failed = true;
-        return Alert.alert(
-          'Voces',
-          'La descripción y el titulo no pueden superar los 280 caracteres',
-        );
-      }
-    }
-    if (!photos && !description) {
-      failed = true;
-      return Alert.alert(
-        'Voces',
-        'Debes ingresar una descripción o seleccionar 1 fotografía como mínimo para crear una publicación.',
-      );
-    }
-    return failed;
-  }
   function choosePhoto() {
     launchImageLibrary(
       {
@@ -152,21 +127,44 @@ function CreatePublicationStepThree({
     );
   };
 
+  function validateStep() {
+    let failed = false;
+    if (description) {
+      let countCharacters = title.length + description.length;
+      if (countCharacters > 280) {
+        failed = true;
+        return Alert.alert(
+          'Voces',
+          'La descripción y el titulo no pueden superar los 280 caracteres',
+        );
+      }
+    }
+    if (!photos && !description) {
+      failed = true;
+      return Alert.alert(
+        'Voces',
+        'Debes ingresar una descripción o seleccionar 1 fotografía como mínimo para crear una publicación.',
+      );
+    }
+    return failed;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationPublication
+      <NavigationGroups
         valueScreen={step}
         previousScreenOnPress={onChangeStep}
         afterScreenOnPress={onChangeStep}
         incrementOnPress={1}
         validateStep={validateStep}
+        createPost={createPost}
       />
       <View style={styles.subContainer}>
         <View style={styles.subSubContainer}>
           <View style={styles.containerInput}>
             <MentionInput
               value={description}
-              onChange={onChangeDescription}
+              onChange={setDescription}
               style={{
                 height: 100,
                 backgroundColor: '#f5f5f5',
@@ -202,11 +200,11 @@ function CreatePublicationStepThree({
             <DropDownPicker
               open={open}
               setOpen={setOpen}
-              items={groupsFormatted}
-              setItems={setGroupsFormatted}
-              value={group}
-              setValue={setGroup}
-              defaultValue={group}
+              items={[{value: dataGroup.id, label: dataGroup.name}]}
+              setItems={() => {}}
+              value={dataGroup.id}
+              setValue={() => {}}
+              defaultValue={dataGroup.id}
               listMode="SCROLLVIEW"
               placeholder="Seleccionar"
               style={styles.dropDownStyle}
@@ -224,10 +222,12 @@ function CreatePublicationStepThree({
                 {photos.map((photo, index) => {
                   return (
                     <TouchableOpacity key={index}>
-                      <Image
+                      <FastImage
                         source={{
                           uri: photo?.uri,
+                          priority: FastImage.priority.normal,
                         }}
+                        resizeMode={FastImage.resizeMode.cover}
                         style={styles.image}
                       />
                     </TouchableOpacity>
@@ -235,8 +235,9 @@ function CreatePublicationStepThree({
                 })}
                 {photos.length < 4 && (
                   <TouchableOpacity onPress={() => choosePhoto()}>
-                    <Image
+                    <FastImage
                       source={require('../../../assets/addPublication.jpg')}
+                      resizeMode={FastImage.resizeMode.contain}
                       style={styles.image}
                     />
                   </TouchableOpacity>
@@ -298,6 +299,7 @@ function CreatePublicationStepThree({
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -426,4 +428,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreatePublicationStepThree;
+export default CreateGroupStepThree;

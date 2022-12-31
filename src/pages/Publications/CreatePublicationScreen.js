@@ -6,7 +6,7 @@ import CreatePublicationStepOne from './PublicationStep/CreatePublicationStepOne
 import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo';
 import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepThree';
 import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
-import {Alert, Linking, Platform} from 'react-native';
+import {Alert} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import tools from '../../tools/tools';
 
@@ -158,6 +158,7 @@ function CreatePublicationScreen({navigation}) {
           <CreatePublicationStepThree
             step={step}
             onChangeStep={onChangeStep}
+            title={title}
             description={description}
             onChangeDescription={onChangeDescription}
             photos={photos}

@@ -16,6 +16,7 @@ import NavigationRegister from './NavigationRegister';
 import IconsAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import IconsFoundation from 'react-native-vector-icons/Foundation';
+import IconsIonicons from 'react-native-vector-icons/Ionicons';
 
 function RegisterStepOne({
   step,
@@ -28,6 +29,8 @@ function RegisterStepOne({
   onChangePassword,
   rePassword,
   onChangeRePassword,
+  countryIndicator,
+  onChangeCountryIndicator,
   phone,
   onChangePhone,
   postalCode,
@@ -60,6 +63,17 @@ function RegisterStepOne({
       return Alert.alert(
         'Datos faltantes',
         'Debe ingresar una contraseña segura (mínimo 8 caracteres).',
+      );
+    }
+    if (!countryIndicator) {
+      failed = true;
+      return Alert.alert('Datos faltantes', 'Debe ingresar el código de país.');
+    }
+    if (countryIndicator.length <= 0 || countryIndicator.length > 3) {
+      failed = true;
+      return Alert.alert(
+        'Datos incorrectos',
+        'Debe ingresar un código de país de teléfono válido.',
       );
     }
     if (!phone) {
@@ -199,6 +213,32 @@ function RegisterStepOne({
               accessibilityIgnoresInvertColors={true}
             />
           </View>
+          <Text style={styles.textSubTitle}>Código de país</Text>
+          <View style={styles.formsStyle}>
+            <IconsIonicons
+              name="ios-add-sharp"
+              color="#2A9DD8"
+              size={15}
+              style={styles.iconForm}
+            />
+            <TextInput
+              placeholder="52"
+              style={styles.input}
+              value={countryIndicator}
+              onChangeText={onChangeCountryIndicator}
+              keyboardType="numeric"
+              textColor={styles.colorInput}
+              theme={{
+                colors: {
+                  placeholder: '#000000',
+                  text: '#000000',
+                  primary: '#000000',
+                },
+              }}
+              selectionColor="#000000"
+              accessibilityIgnoresInvertColors={true}
+            />
+          </View>
           <Text style={styles.textSubTitle}>Teléfono</Text>
           <View style={styles.formsStyle}>
             <IconsMaterial
@@ -239,16 +279,6 @@ function RegisterStepOne({
               style={styles.input}
               value={postalCode}
               onChangeText={onChangePostalCode}
-              textColor={styles.colorInput}
-              theme={{
-                colors: {
-                  placeholder: '#000000',
-                  text: '#000000',
-                  primary: '#000000',
-                },
-              }}
-              selectionColor="#000000"
-              accessibilityIgnoresInvertColors={true}
             />
           </View>
         </View>

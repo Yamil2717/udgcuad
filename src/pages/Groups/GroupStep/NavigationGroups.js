@@ -7,6 +7,9 @@ function NavigationGroups({
   previousScreenOnPress,
   afterScreenOnPress,
   incrementOnPress,
+  validateStep,
+  navigation,
+  createPost,
 }) {
   return (
     <View
@@ -21,7 +24,15 @@ function NavigationGroups({
       {previousScreenOnPress && (
         <TouchableOpacity
           style={styles.buttons}
-          onPress={() => previousScreenOnPress(valueScreen - incrementOnPress)}>
+          onPress={() => {
+            if (valueScreen === 1) {
+              return navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+              });
+            }
+            previousScreenOnPress(valueScreen - incrementOnPress);
+          }}>
           <IconsEntypo
             size={18}
             name="arrow-with-circle-left"
@@ -29,14 +40,29 @@ function NavigationGroups({
             style={styles.icon}
           />
           <Text style={styles.buttonsText}>
-            {valueScreen === 0 ? 'Cancelar' : 'Volver'}
+            {valueScreen === 0
+              ? 'Cancelar'
+              : valueScreen === 1
+              ? 'No publicar'
+              : 'Volver'}
           </Text>
         </TouchableOpacity>
       )}
       {afterScreenOnPress && (
         <TouchableOpacity
           style={styles.buttons}
-          onPress={() => afterScreenOnPress(valueScreen + incrementOnPress)}>
+          onPress={() => {
+            if (validateStep) {
+              let validateFailed = validateStep();
+              if (validateFailed === undefined || validateFailed === true) {
+                return;
+              }
+            }
+            if (valueScreen === 2) {
+              return createPost();
+            }
+            afterScreenOnPress(valueScreen + incrementOnPress);
+          }}>
           <Text style={styles.buttonsText}>Continuar</Text>
           <IconsEntypo
             size={18}

@@ -8,12 +8,12 @@ import {
   Image,
   Switch,
   Dimensions,
-  Linking,
   Alert,
 } from 'react-native';
 import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Share from 'react-native-share';
 
 const {height} = Dimensions.get('window');
 
@@ -38,21 +38,31 @@ function CreatePublicationStepFour({
     setIsEnabled(previousState => !previousState);
   };
 
-  function shareTwitter() {
-    if (isEnabled && description !== '') {
-      let twitterParameters = [];
-      twitterParameters[0] = 'text=' + encodeURI(description);
-      twitterParameters[1] = 'via=' + encodeURI('Voces');
-      const url =
-        'https://twitter.com/intent/tweet?' + twitterParameters.join('&');
-      Linking.openURL(url)
-        .then(() => console.log('Se abrió twitter correctamente.'))
-        .catch(() =>
+  async function shareTwitter() {
+    if (isEnabled) {
+      if (photos || description) {
+        let base64ImagesInclude = [];
+        photos.map(photo => {
+          base64ImagesInclude.push(
+            `data:image/${photo.type.split('/')[1]};base64,${photo.base64}`,
+          );
+        });
+        const shareOptions = {
+          title: 'Compartir vía Voces',
+          message: `${title}\n${description || ''}`,
+          social: Share.Social.TWITTER,
+          urls: base64ImagesInclude,
+        };
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (error) {
+          console.error(error);
           Alert.alert(
             'Voces',
-            'Algo fallo y no pudimos redireccionar hacía twitter.',
-          ),
-        );
+            'algo fallo y no pudimos compartir tu publicación con twitter.',
+          );
+        }
+      }
     }
   }
 
@@ -87,8 +97,8 @@ function CreatePublicationStepFour({
 
         <View style={styles.containerPublicationSub}>
           <View>
+            <Text style={styles.title}>{title}</Text>
             <Text style={photos && styles.postHaveImageAndDescription}>
-              {`${title}\n`}
               {description}
             </Text>
             <Text>@{authContext.dataUser.name}</Text>
@@ -172,6 +182,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  title: {
+    fontWeight: '800',
   },
   postHaveImageAndDescription: {
     maxWidth: '80%',

@@ -22,6 +22,7 @@ function RegisterScreen({navigation}) {
   let [email, onChangeEmail] = useState(null);
   let [password, onChangePassword] = useState(null);
   let [rePassword, onChangeRePassword] = useState(null);
+  let [countryIndicator, onChangeCountryIndicator] = useState(null);
   let [phone, onChangePhone] = useState(null);
   let [postalCode, onChangePostalCode] = useState(null);
   let [photo, setPhoto] = useState(null);
@@ -142,6 +143,7 @@ function RegisterScreen({navigation}) {
       email,
       password,
       rePassword,
+      countryIndicator,
       phone,
       postalCode,
       roleId: selectTypeUser,
@@ -255,6 +257,8 @@ function RegisterScreen({navigation}) {
           onChangePassword={onChangePassword}
           rePassword={rePassword}
           onChangeRePassword={onChangeRePassword}
+          countryIndicator={countryIndicator}
+          onChangeCountryIndicator={onChangeCountryIndicator}
           phone={phone}
           onChangePhone={onChangePhone}
           postalCode={postalCode}

@@ -18,6 +18,7 @@ import Moment from 'moment';
 import ES from 'moment/locale/es';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
+import Modal from './Modal';
 
 const {width, height} = Dimensions.get('window');
 
@@ -49,7 +50,8 @@ function Publication({
   const {authAxios} = useContext(AxiosContext);
 
   let [toggleComments, setToggleComments] = useState(true);
-  let [modalImage, setModalImage] = useState({active: false, image: ''});
+  let [modalVisible, setModalVisible] = useState(false);
+  let [modalConfig, setModalConfig] = useState({});
 
   async function addReaction(idPublication, action) {
     await authAxios
@@ -74,14 +76,17 @@ function Publication({
         id !== length && styles.marginBottom,
       ]}>
       <View style={styles.groupData}>
-        <FastImage
-          source={{
-            uri: pictureGroup,
-            priority: FastImage.priority.high,
-          }}
-          style={styles.imageGroup}
-          resizeMode={FastImage.resizeMode.cover}
-        />
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate('Group', {id: groupID})}>
+          <FastImage
+            source={{
+              uri: pictureGroup,
+              priority: FastImage.priority.high,
+            }}
+            style={styles.imageGroup}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+        </TouchableWithoutFeedback>
         <View style={styles.textsGroup}>
           <TouchableWithoutFeedback
             onPress={() => navigation.navigate('Group', {id: groupID})}>
@@ -137,7 +142,10 @@ function Publication({
                   if (!showComments) {
                     return navigation.navigate('Publication', {id: idPost});
                   }
-                  setModalImage({active: true, image: item});
+                  setModalConfig({
+                    photoUrl: item,
+                  });
+                  setModalVisible(true);
                 }}>
                 <FastImage
                   key={index}
@@ -229,23 +237,15 @@ function Publication({
           indexPublication={id - 1}
           idPublication={idPost}
           addCommentCounter={addCommentCounter}
+          navigation={navigation}
         />
       )}
-      {showComments && modalImage.active && (
-        <View style={styles.containerModal}>
-          <TouchableOpacity
-            style={styles.buttonCloseModal}
-            onPress={() => setModalImage({active: false, image: ''})}
-          />
-          <FastImage
-            source={{
-              uri: modalImage.image,
-              priority: FastImage.priority.high,
-            }}
-            style={styles.imageModal}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        </View>
+      {showComments && modalVisible && (
+        <Modal
+          photoUrl={modalConfig?.photoUrl}
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
       )}
     </SafeAreaView>
   );
@@ -400,35 +400,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 5,
     borderRadius: 50,
-  },
-  containerModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    backgroundColor: 'rgba(0,0,0,.5)',
-    zIndex: 5,
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  buttonCloseModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    zIndex: 15,
-  },
-  imageModal: {
-    width: '90%',
-    height: '90%',
-    zIndex: 10,
   },
 });
 

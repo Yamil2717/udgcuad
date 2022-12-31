@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {launchImageLibrary} from 'react-native-image-picker';
+import Modal from '../../components/Modal';
+import ModalEditInfo from '../../components/ModalEditInfo';
 import Navbar from '../../components/Navbar/Navbar';
 import Publication from '../../components/Publication';
 import Spinner from '../../components/Spinner';
@@ -25,10 +27,15 @@ const {width, height} = Dimensions.get('window');
 function GroupScreen({route, navigation}) {
   let {id} = route.params;
   let [loading, setLoading] = useState(true);
-  let [modalImage, setModalImage] = useState({active: false, image: ''});
   let [refreshing, setRefreshing] = useState(false);
   let [dataGroup, setDataGroup] = useState({});
   let [dataGroupPublications, setDataGroupPublications] = useState([]);
+  let [textHeaderButton, setTextHeaderButton] = useState('');
+  let [modalVisible, setModalVisible] = useState(false);
+  let [modalConfig, setModalConfig] = useState({});
+  let [modalUserInfoVisible, setModalUserInfoVisible] = useState(false);
+  let [modalUserInfoConfig, setModalUserInfoConfig] = useState({});
+  let [lock, setLock] = useState(false);
 
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -43,6 +50,13 @@ function GroupScreen({route, navigation}) {
       .get(`/group/${id}`)
       .then(data => {
         setDataGroup(data);
+        if (data.ownerID === authContext.dataUser.id) {
+          setTextHeaderButton('Editar grupo');
+        } else if (authContext.dataUser.groups[dataGroup.id]) {
+          setTextHeaderButton('Perteneces a este grupo');
+        } else {
+          setTextHeaderButton('Unirse');
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -51,6 +65,18 @@ function GroupScreen({route, navigation}) {
           'Ha ocurrido un error, no se pudo obtener la información del grupo',
         );
       });
+  }
+
+  async function handleAskJoinGroup() {
+    if (textHeaderButton === 'Editar grupo') {
+      console.log('editar grupo');
+      setModalUserInfoConfig({
+        type: 'group',
+        textButton2: 'Cancelar',
+        textButton1: 'Actualizar',
+      });
+      setModalUserInfoVisible(true);
+    }
   }
 
   async function getPublications() {
@@ -93,8 +119,16 @@ function GroupScreen({route, navigation}) {
   }
 
   async function choosePhoto(type) {
+    if (lock) {
+      return;
+    }
+    setLock(true);
     if (dataGroup.ownerID !== authContext.dataUser.id) {
-      setModalImage({active: true, image: type});
+      setModalConfig({
+        photoUrl: dataGroup[type],
+      });
+      setModalVisible(true);
+      setLock(false);
     } else {
       await launchImageLibrary(
         {
@@ -108,8 +142,12 @@ function GroupScreen({route, navigation}) {
           },
         },
         response => {
+          if (response.didCancel) {
+            setLock(false);
+          }
           if (response.assets) {
             if (response.assets[0].fileSize > 4 * 1024 * 1024) {
+              setLock(false);
               return Alert.alert(
                 'Error',
                 'La imagen no puede superar los 4MB, por favor escoja otra.',
@@ -154,19 +192,13 @@ function GroupScreen({route, navigation}) {
               tempDataGroups[indexGroup][type] = url;
               authContext.setDataGroups([...tempDataGroups]);
               setDataGroup({...tempDataGroups[indexGroup]});
+              setLock(false);
               await authAxios.delete(`${env.api}/images/${deletePhoto}`);
             });
         });
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  function getTextHeaderButton() {
-    if (authContext.dataUser.groups[dataGroup.id]) {
-      return 'Tu grupo';
-    } else {
-      return 'Unirse';
+      setLock(false);
     }
   }
 
@@ -283,11 +315,34 @@ function GroupScreen({route, navigation}) {
                 style={styles.imageHeader}
                 resizeMode={FastImage.resizeMode.cover}>
                 <View style={styles.containerHeaderButtons}>
-                  <TouchableOpacity style={styles.headerButton}>
+                  {textHeaderButton === 'Editar grupo' && (
+                    <TouchableOpacity
+                      style={[styles.headerButton, styles.marginRight]}>
+                      <Text style={styles.headerTextButton}>
+                        Gestionar solicitudes
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    style={styles.headerButton}
+                    onPress={handleAskJoinGroup}>
                     <Text style={styles.headerTextButton}>
-                      {getTextHeaderButton()}
+                      {textHeaderButton}
                     </Text>
                   </TouchableOpacity>
+                  {/*textHeaderButton === 'Aceptar' && (
+                    <TouchableOpacity
+                      style={[styles.headerButton, styles.marginLeft]}
+                      onPress={() => {
+                        if (authContext.dataUser.friends[id]) {
+                          console.log('aaaa');
+                        } else {
+                          console.log('bbbb');
+                        }
+                      }}>
+                      <Text style={styles.headerTextButton}>Rechazar</Text>
+                    </TouchableOpacity>
+                    )*/}
                 </View>
               </FastImage>
             </TouchableOpacity>
@@ -354,21 +409,19 @@ function GroupScreen({route, navigation}) {
         }
         removeClippedSubviews={true}
       />
-      {modalImage.active && (
-        <View style={styles.containerModal}>
-          <TouchableOpacity
-            style={styles.buttonCloseModal}
-            onPress={() => setModalImage({active: false, image: ''})}
-          />
-          <FastImage
-            source={{
-              uri: modalImage.image,
-              priority: FastImage.priority.high,
-            }}
-            style={styles.imageModal}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        </View>
+      {modalVisible && (
+        <Modal
+          photoUrl={modalConfig?.photoUrl}
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
+      )}
+      {modalUserInfoVisible && (
+        <ModalEditInfo
+          {...modalUserInfoConfig}
+          modalVisible={modalUserInfoVisible}
+          setModalVisible={setModalUserInfoVisible}
+        />
       )}
     </SafeAreaView>
   );
@@ -424,6 +477,12 @@ const styles = StyleSheet.create({
     top: -37.5,
     marginLeft: '5%',
   },
+  marginRight: {
+    marginRight: 5,
+  },
+  marginLeft: {
+    marginLeft: 5,
+  },
   imageAvatar: {
     width: 75,
     height: 75,
@@ -457,35 +516,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
-  },
-  containerModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    backgroundColor: 'rgba(0,0,0,.5)',
-    zIndex: 5,
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
-  buttonCloseModal: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: width,
-    height: height,
-    zIndex: 15,
-  },
-  imageModal: {
-    width: '90%',
-    height: '90%',
-    zIndex: 10,
   },
 });
 

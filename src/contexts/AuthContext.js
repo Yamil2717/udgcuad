@@ -15,11 +15,13 @@ const DataUserDefault = {
   avatar: null,
   header: null,
   location: null,
+  countryIndicator: null,
   phone: null,
   postalCode: null,
   interestIds: null,
   tagsIds: null,
   groups: null,
+  friends: null,
 };
 
 const AuthContext = createContext();

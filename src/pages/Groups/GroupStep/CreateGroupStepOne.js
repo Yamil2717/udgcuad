@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,6 +14,10 @@ import NavigationGroups from './NavigationGroups';
 import IconsFeather from 'react-native-vector-icons/Feather';
 import {launchImageLibrary} from 'react-native-image-picker';
 import FastImage from 'react-native-fast-image';
+import DropDownPicker from 'react-native-dropdown-picker';
+import {AxiosContext} from '../../../contexts/AxiosContext';
+import env from '../../../env';
+import Spinner from '../../../components/Spinner';
 
 const {height} = Dimensions.get('window');
 
@@ -24,10 +28,37 @@ function CreateGroupStepOne({
   setPhotoGroup,
   name,
   setName,
+  selectCategories,
+  onChangeSelectCategories,
   description,
   setDescription,
   createGroup,
 }) {
+  let [loading, setLoading] = useState(false);
+  let [open, setOpen] = useState(false);
+  let [categories, setCategories] = useState([]);
+  const {publicAxios} = useContext(AxiosContext);
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  async function getCategories() {
+    await publicAxios
+      .get(`${env.api}/interest`)
+      .then(interests => {
+        let tempInterest = [];
+        interests.map(interest => {
+          tempInterest.push({label: interest.name, value: interest.id});
+        });
+        setCategories([...tempInterest]);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err?.response?.data?.message || err.message);
+        Alert.alert('Voces', err?.response?.data?.message || err.message);
+      });
+  }
+
   async function choosePhoto() {
     await launchImageLibrary(
       {
@@ -55,7 +86,9 @@ function CreateGroupStepOne({
     );
   }
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <SafeAreaView style={styles.container}>
       <NavigationGroups
         valueScreen={step}
@@ -95,6 +128,22 @@ function CreateGroupStepOne({
                 value={name}
               />
             </View>
+            <Text style={styles.textTitle}>Seleccione una categoría</Text>
+            <DropDownPicker
+              open={open}
+              setOpen={setOpen}
+              items={categories}
+              setItems={setCategories}
+              value={selectCategories}
+              setValue={onChangeSelectCategories}
+              listMode="SCROLLVIEW"
+              placeholder="Seleccionar"
+              style={styles.dropDownStyle}
+              containerStyle={styles.containerDropDownPicker}
+              dropDownStyle={styles.dropDownPickerBackground}
+              labelStyle={styles.dropDownPickerLabel}
+              itemStyle={styles.dropDownPickerItem}
+            />
             <Text style={styles.textTitle}>Descripción</Text>
             <View style={styles.formsStyleTwo}>
               <TextInput
@@ -111,7 +160,7 @@ function CreateGroupStepOne({
       <View style={styles.containerButtonBottom}>
         <TouchableOpacity
           onPress={() => {
-            if (!photoGroup || !name || !description) {
+            if (!photoGroup || !name || !description || !selectCategories) {
               return;
             }
             createGroup();
@@ -119,7 +168,7 @@ function CreateGroupStepOne({
           <Text
             style={[
               styles.textButtonBottom,
-              !photoGroup || !name || !description
+              !photoGroup || !name || !description || !selectCategories
                 ? styles.textButtonDisable
                 : styles.textButtonActive,
             ]}>
@@ -134,6 +183,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     height: height,
+  },
+  navigate: {
+    height: height - 47.6,
   },
   title: {
     textAlign: 'center',
@@ -183,6 +235,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 5,
     paddingHorizontal: 10,
+    width: '100%',
   },
   formsStyleTwo: {
     display: 'flex',
@@ -191,6 +244,25 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
   },
+  dropDownStyle: {
+    backgroundColor: '#F5F5F5',
+    minHeight: 35,
+    borderRadius: 24,
+    borderColor: 'transparent',
+  },
+  containerDropDownPicker: {
+    width: '100%',
+  },
+  dropDownPickerBackground: {
+    backgroundColor: '#fafafa',
+  },
+  dropDownPickerLabel: {
+    fontSize: 14,
+  },
+  dropDownPickerItem: {
+    justifyContent: 'flex-start',
+    height: 15,
+  },
   inputDescription: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -198,6 +270,7 @@ const styles = StyleSheet.create({
     height: 90,
     maxHeight: 90,
     textAlignVertical: 'top',
+    width: '100%',
   },
   noPhoto: {
     width: 100,
