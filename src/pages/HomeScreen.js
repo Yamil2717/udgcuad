@@ -159,7 +159,7 @@ function HomeScreen({navigation}) {
   return loading ? (
     <Spinner />
   ) : (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Navbar navigation={navigation} />
       <View style={styles.containerPublications}>
         {dataPublication.length <= 0 ? (
@@ -218,7 +218,7 @@ function HomeScreen({navigation}) {
       <View style={styles.NavigationScreensStyle}>
         <NavigationScreens navigation={navigation} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

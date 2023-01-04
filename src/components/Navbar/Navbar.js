@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import {AuthContext} from '../../contexts/AuthContext';
 import FastImage from 'react-native-fast-image';
@@ -17,17 +18,21 @@ const {width, height} = Dimensions.get('window');
 function Navbar({navigation, title = ''}) {
   let authContext = useContext(AuthContext);
   let {avatar, id} = authContext.dataUser;
-  let [showNavbarFloat, setShowNavbarFloat] = useState(false);
+  let [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <>
-      {showNavbarFloat && (
-        <NavbarFloat setShowNavbarFloat={setShowNavbarFloat} navigation={navigation} />
+    <SafeAreaView>
+      {modalVisible && (
+        <NavbarFloat
+          showNavbarFloat={modalVisible}
+          setModalVisible={setModalVisible}
+          navigation={navigation}
+        />
       )}
       <View style={styles.navigate}>
         <TouchableOpacity
           style={styles.menu}
-          onPress={() => setShowNavbarFloat(true)}>
+          onPress={() => setModalVisible(true)}>
           <IconEntypo
             name="menu"
             color="#2A9DD8"
@@ -65,13 +70,14 @@ function Navbar({navigation, title = ''}) {
           />
         </TouchableOpacity>
       </View>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   navigate: {
-    width: width,
+    width: '100%',
+    maxWidth: width,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 35,
     marginVertical: 10,
-    width: 280,
+    width: '70%',
     backgroundColor: '#F8F8F8',
     borderRadius: 24,
   },
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: 24,
     marginVertical: 10,
-    width: 280,
+    width: '70%',
   },
   iconForm: {
     width: 15,

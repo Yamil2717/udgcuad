@@ -4,114 +4,154 @@ import {
   Text,
   View,
   TouchableOpacity,
-  SafeAreaView,
   Dimensions,
   FlatList,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {AuthContext} from '../../contexts/AuthContext';
 import FastImage from 'react-native-fast-image';
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
 
-const {height} = Dimensions.get('window');
-function NavbarFloat({setShowNavbarFloat, navigation}) {
+const {height, width} = Dimensions.get('window');
+function NavbarFloat({modalVisible, setModalVisible, navigation}) {
   let authContext = useContext(AuthContext);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => setShowNavbarFloat(false)}>
-        <View style={styles.containerClose}>
-          <IconIonicons
-            name="md-close-circle-outline"
-            color="#2A9DD8"
-            size={22}
-            style={styles.iconClose}
-          />
-          <Text style={styles.textClose}>Cerrar</Text>
-        </View>
-      </TouchableOpacity>
-
-      <Text style={styles.textTitle}>Tus comunidades</Text>
-
-      <View style={styles.containerButton}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('CreateGroup')}>
-          <IconIonicons
-            name="ios-add-circle-outline"
-            color="#2A9DD8"
-            size={26}
-            style={styles.iconButton}
-          />
-          <Text style={styles.textButton}>Crear comunidad</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.containerGroups}>
-        {authContext.dataGroups?.length <= 0 ? (
-          <Text style={styles.noDataGroups}>
-            No perteneces a ningún grupo.{'\n'}¡Únete a uno o crea tu propia
-            comunidad!
-          </Text>
-        ) : (
-          <FlatList
-            data={authContext.dataGroups}
-            renderItem={({item}) => (
+    <View>
+      <Modal
+        animationType="slide"
+        isVisible={true}
+        visible={modalVisible}
+        swipeDirection={'left'}
+        onSwipeComplete={() => setModalVisible(false)}
+        animationIn="slideInLeft"
+        animationOut="slideOutLeft"
+        hideModalContentWhileAnimating={true}
+        style={{margin: 0}}
+        propagateSwipe
+        onRequestClose={() => setModalVisible(!modalVisible)}>
+        <View style={styles.centeredView}>
+          <View style={styles.container}>
+            <View style={styles.subContainer}>
               <TouchableOpacity
-                key={item.id}
-                style={styles.buttonGroups}
-                onPress={() => navigation.navigate('Group', {id: item.id})}>
-                <FastImage
-                  source={{
-                    uri: item.picture,
-                    priority: FastImage.priority.normal,
-                  }}
-                  style={styles.imageGroups}
-                  resizeMode={FastImage.resizeMode.cover}
+                onPress={() => setModalVisible(false)}
+                style={styles.containerClose}>
+                <IconIonicons
+                  name="md-close-circle-outline"
+                  color="#2A9DD8"
+                  size={22}
+                  style={styles.iconClose}
                 />
-                <Text style={styles.textGroups}>{item.name}</Text>
+                <Text style={styles.textClose}>Cerrar</Text>
               </TouchableOpacity>
-            )}
-            removeClippedSubviews={true}
-          />
-        )}
-      </View>
+              <Text style={styles.textTitle}>Tus comunidades</Text>
 
-      <View style={styles.containerLogout}>
-        <TouchableOpacity
-          style={styles.logout}
-          onPress={() => authContext.logout()}>
-          <Text style={styles.textLogout}>Cerrar sesión</Text>
-          <IconFeather
-            name="log-out"
-            color="#699DB8"
-            size={22}
-            style={styles.iconLogout}
-          />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+              <View style={styles.containerButton}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => navigation.navigate('CreateGroup')}>
+                  <IconIonicons
+                    name="ios-add-circle-outline"
+                    color="#2A9DD8"
+                    size={26}
+                    style={styles.iconButton}
+                  />
+                  <Text style={styles.textButton}>Crear comunidad</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.containerGroups}>
+                {authContext.dataGroups?.length <= 0 ? (
+                  <Text style={styles.noDataGroups}>
+                    No perteneces a ningún grupo.{'\n'}¡Únete a uno o crea tu
+                    propia comunidad!
+                  </Text>
+                ) : (
+                  <FlatList
+                    data={authContext.dataGroups}
+                    renderItem={({item}) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={styles.buttonGroups}
+                        onPress={() => {
+                          navigation.navigate('Group', {id: item.id});
+                          setModalVisible(false);
+                        }}>
+                        <FastImage
+                          source={{
+                            uri: item.picture,
+                            priority: FastImage.priority.normal,
+                          }}
+                          style={styles.imageGroups}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                        <Text style={styles.textGroups}>{item.name}</Text>
+                      </TouchableOpacity>
+                    )}
+                    removeClippedSubviews={true}
+                  />
+                )}
+              </View>
+
+              <View style={styles.containerLogout}>
+                <TouchableOpacity
+                  style={styles.logout}
+                  onPress={() => authContext.logout()}>
+                  <Text style={styles.textLogout}>Cerrar sesión</Text>
+                  <IconFeather
+                    name="log-out"
+                    color="#699DB8"
+                    size={22}
+                    style={styles.iconLogout}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  centeredView: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    width: '78.5%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  container: {
+    width: '100%',
     height: height,
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    zIndex: 1000,
-    paddingBottom: '10%',
+    paddingRight: width * 0.2,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    position: 'relative',
+  },
+  subContainer: {
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    width: '100%',
+    height: height,
+    paddingTop: 60,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+    maxWidth: width - width * 0.2,
   },
   containerClose: {
-    marginVertical: 10,
-    marginHorizontal: 15,
-    display: 'flex',
+    position: 'absolute',
+    top: 20,
+    right: 20,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
   },
   iconClose: {
     color: '#164578',
@@ -133,12 +173,11 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   button: {
-    width: '70%',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     paddingVertical: 2.5,
-    paddingHorizontal: 5,
+    paddingHorizontal: '15%',
     borderColor: '#2A9DD8',
     borderWidth: 2,
     borderRadius: 24,

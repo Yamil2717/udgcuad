@@ -19,83 +19,80 @@ function NavigationScreens({navigation}) {
   let authContext = useContext(AuthContext);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Home');
-        }}>
-        <View style={styles.iconFormNormal}>
+    <View style={styles.container}>
+      <View style={styles.subContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Home');
+          }}
+          style={styles.iconFormNormal}>
           <IconMaterialCommunityIcons
             name="home-city"
             color="#2A9DD8"
             size={28}
             style={styles.iconForm}
           />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          console.log('Hashtag');
-        }}>
-        <View style={styles.iconFormNormal}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Hashtag');
+          }}
+          style={styles.iconFormNormal}>
           <IconFontAwesome
             name="hashtag"
             color="#2A9DD8"
             size={28}
             style={styles.iconForm}
           />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          if (authContext.dataGroups.length <= 0) {
-            return Alert.alert(
-              'Voces',
-              'No perteneces a ningún grupo.\n¡Únete a uno o crea tu propia comunidad!\n\n\nEs necesario para crear una publicación.',
-            );
-          }
-          navigation.navigate('CreatePublication');
-        }}>
-        <View style={styles.iconFormNormal}>
+        <TouchableOpacity
+          onPress={() => {
+            if (authContext.dataGroups.length <= 0) {
+              return Alert.alert(
+                'Voces',
+                'No perteneces a ningún grupo.\n¡Únete a uno o crea tu propia comunidad!\n\n\nEs necesario para crear una publicación.',
+              );
+            }
+            navigation.navigate('CreatePublication');
+          }}
+          style={styles.iconFormNormal}>
           <IconMaterialIcons
             name="add-circle-outline"
             color="#2A9DD8"
             size={28}
             style={styles.iconForm}
           />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          console.log('Chat');
-        }}>
-        <View style={styles.iconFormNormal}>
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Chat');
+          }}
+          style={styles.iconFormNormal}>
           <IconFontAwesome
             name="whatsapp"
             color="#2A9DD8"
             size={28}
             style={styles.iconForm}
           />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('Notifications');
-        }}>
-        <View style={styles.iconFormNormal}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Notifications');
+          }}
+          style={styles.iconFormNormal}>
           <IconIonicons
             name="notifications"
             color="#2A9DD8"
             size={28}
             style={styles.iconForm}
           />
-        </View>
-      </TouchableOpacity>
-    </SafeAreaView>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -103,16 +100,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: width,
     maxWidth: width,
-    minWidth: width,
     height: 50,
     maxHeight: 50,
+  },
+  subContainer: {
+    backgroundColor: '#fff',
+    marginHorizontal: '3.75%',
+    width: '92.5%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   iconForm: {
-    marginHorizontal: 25,
+    marginHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
