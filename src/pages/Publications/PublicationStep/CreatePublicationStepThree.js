@@ -18,6 +18,7 @@ import IconsEntypo from 'react-native-vector-icons/Entypo';
 import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {MentionInput} from 'react-native-controlled-mentions';
+import useKeyboard from '../../../tools/useKeyboard';
 
 const {width, height} = Dimensions.get('window');
 
@@ -35,11 +36,12 @@ function CreatePublicationStepThree({
   setGroup,
 }) {
   let [open, setOpen] = useState(false);
+  const isKeyboardOpen = useKeyboard();
   const refInputDescription = useRef();
 
   function validateStep() {
     let failed = false;
-    if (description) {
+    /*if (description) {
       let countCharacters = title.length + description.length;
       if (countCharacters > 280) {
         failed = true;
@@ -48,7 +50,7 @@ function CreatePublicationStepThree({
           'La descripción y el titulo no pueden superar los 280 caracteres',
         );
       }
-    }
+    }*/
     if (!photos && !description) {
       failed = true;
       return Alert.alert(
@@ -84,14 +86,7 @@ function CreatePublicationStepThree({
             );
           }
           response.assets.map(image => {
-            if (image.fileSize > 4 * 1024 * 1024) {
-              return Alert.alert(
-                'Error',
-                'La imagen no puede superar los 4MB, por favor escoja otra.',
-              );
-            } else {
-              tempPhotos.push(image);
-            }
+            tempPhotos.push(image);
           });
           setPhotos([...tempPhotos]);
         }
@@ -161,29 +156,32 @@ function CreatePublicationStepThree({
         incrementOnPress={1}
         validateStep={validateStep}
       />
-      <View style={styles.subContainer}>
+      <View
+        style={[
+          styles.subContainer,
+          isKeyboardOpen.active
+            ? photos
+              ? {
+                  height:
+                    height - 47.5 - isKeyboardOpen.height + height * 0.355,
+                }
+              : {
+                  height:
+                    height - 47.5 - isKeyboardOpen.height + height * 0.355,
+                }
+            : {minHeight: height - 47.5},
+        ]}>
         <View style={styles.subSubContainer}>
           <View style={styles.containerInput}>
             <MentionInput
               value={description}
               onChange={onChangeDescription}
-              style={{
-                height: 100,
-                backgroundColor: '#f5f5f5',
-                color: '#164578',
-                fontSize: 16,
-                marginHorizontal: 15,
-                marginVertical: 15,
-                borderRadius: 12,
-                paddingVertical: 10,
-                paddingHorizontal: 10,
-                position: 'relative',
-              }}
+              style={styles.input}
               partTypes={[
                 {
-                  trigger: '@', // Should be a single character like '@' or '#'
+                  trigger: '@',
                   renderSuggestions,
-                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'}, // The mention style in the input
+                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
                 },
                 {
                   pattern: /[#][a-z0-9_]+/gi,
@@ -245,7 +243,13 @@ function CreatePublicationStepThree({
             )}
           </ScrollView>
         </View>
-        <View style={styles.containerSec}>
+
+        <View
+          style={[
+            isKeyboardOpen.active
+              ? styles.containerSecIcons
+              : styles.containerSec,
+          ]}>
           <TouchableOpacity onPress={() => choosePhoto()}>
             <View style={styles.listStyle}>
               <IconsEntypo
@@ -254,7 +258,9 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              <Text style={styles.textCreatePublication}>Imagen</Text>
+              {!isKeyboardOpen.active && (
+                <Text style={styles.textCreatePublication}>Imagen</Text>
+              )}
             </View>
           </TouchableOpacity>
 
@@ -266,7 +272,9 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              <Text style={styles.textCreatePublication}>Video</Text>
+              {!isKeyboardOpen.active && (
+                <Text style={styles.textCreatePublication}>Video</Text>
+              )}
             </View>
           </TouchableOpacity>
 
@@ -278,7 +286,9 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              <Text style={styles.textCreatePublication}>Texto</Text>
+              {!isKeyboardOpen.active && (
+                <Text style={styles.textCreatePublication}>Texto</Text>
+              )}
             </View>
           </TouchableOpacity>
 
@@ -290,10 +300,15 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              <Text style={styles.textCreatePublication}>Enlace</Text>
+              {!isKeyboardOpen.active && (
+                <Text style={styles.textCreatePublication}>Enlace</Text>
+              )}
             </View>
           </TouchableOpacity>
         </View>
+        {/*isKeyboardOpen.active && (
+          <View style={{height: isKeyboardOpen.height}} />
+        )*/}
       </View>
     </SafeAreaView>
   );
@@ -301,13 +316,24 @@ function CreatePublicationStepThree({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    minHeight: height,
   },
   subContainer: {
-    minHeight: height - 47.5,
     position: 'relative',
   },
   subSubContainer: {
     marginBottom: '30%',
+  },
+  containerSecIcons: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    //backgroundColor: '',
   },
   containerSec: {
     position: 'absolute',
@@ -330,44 +356,19 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   containerInput: {
-    maxHeight: 225,
-    position: 'relative',
-  },
-  textInput: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    position: 'absolute',
-    color: '#164578',
-    height: 200,
-    fontSize: 16,
-    backgroundColor: '#f5f5f5',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    marginHorizontal: 15,
-    marginVertical: 15,
-    borderRadius: 12,
-    overflow: 'scroll',
-    zIndex: 5,
+    maxHeight: 160,
   },
   input: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    height: 140,
+    backgroundColor: '#f5f5f5',
     color: '#164578',
-    height: 200,
     fontSize: 16,
-    textAlignVertical: 'top',
-    backgroundColor: 'red',
     marginHorizontal: 15,
     marginVertical: 15,
     borderRadius: 12,
-    opacity: 0,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    position: 'relative',
   },
   image: {
     width: 150,

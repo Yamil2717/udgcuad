@@ -24,7 +24,7 @@ function NavbarFloat({modalVisible, setModalVisible, navigation}) {
         isVisible={true}
         visible={modalVisible}
         swipeDirection={'left'}
-        onSwipeComplete={() => setModalVisible(false)}
+        onSwipeComplete={() => setModalVisible(!modalVisible)}
         animationIn="slideInLeft"
         animationOut="slideOutLeft"
         hideModalContentWhileAnimating={true}

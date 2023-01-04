@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   TextInput,
   TouchableOpacity,
@@ -24,7 +24,7 @@ function Navbar({navigation, title = ''}) {
     <SafeAreaView>
       {modalVisible && (
         <NavbarFloat
-          showNavbarFloat={modalVisible}
+          modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           navigation={navigation}
         />

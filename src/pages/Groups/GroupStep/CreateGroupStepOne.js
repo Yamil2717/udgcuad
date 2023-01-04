@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,16 +8,11 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  Alert,
 } from 'react-native';
 import NavigationGroups from './NavigationGroups';
 import IconsFeather from 'react-native-vector-icons/Feather';
 import {launchImageLibrary} from 'react-native-image-picker';
 import FastImage from 'react-native-fast-image';
-import DropDownPicker from 'react-native-dropdown-picker';
-import {AxiosContext} from '../../../contexts/AxiosContext';
-import env from '../../../env';
-import Spinner from '../../../components/Spinner';
 
 const {height} = Dimensions.get('window');
 
@@ -28,37 +23,10 @@ function CreateGroupStepOne({
   setPhotoGroup,
   name,
   setName,
-  selectCategories,
-  onChangeSelectCategories,
   description,
   setDescription,
   createGroup,
 }) {
-  let [loading, setLoading] = useState(false);
-  let [open, setOpen] = useState(false);
-  let [categories, setCategories] = useState([]);
-  const {publicAxios} = useContext(AxiosContext);
-  useEffect(() => {
-    getCategories();
-  }, []);
-
-  async function getCategories() {
-    await publicAxios
-      .get(`${env.api}/interest`)
-      .then(interests => {
-        let tempInterest = [];
-        interests.map(interest => {
-          tempInterest.push({label: interest.name, value: interest.id});
-        });
-        setCategories([...tempInterest]);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err?.response?.data?.message || err.message);
-        Alert.alert('Voces', err?.response?.data?.message || err.message);
-      });
-  }
-
   async function choosePhoto() {
     await launchImageLibrary(
       {
@@ -73,22 +41,13 @@ function CreateGroupStepOne({
       },
       response => {
         if (response.assets) {
-          if (response.assets[0].fileSize > 4 * 1024 * 1024) {
-            return Alert.alert(
-              'Error',
-              'La imagen no puede superar los 4MB, por favor escoja otra.',
-            );
-          } else {
-            setPhotoGroup(response.assets[0]);
-          }
+          setPhotoGroup(response.assets[0]);
         }
       },
     );
   }
 
-  return loading ? (
-    <Spinner />
-  ) : (
+  return (
     <SafeAreaView style={styles.container}>
       <NavigationGroups
         valueScreen={step}
@@ -128,22 +87,6 @@ function CreateGroupStepOne({
                 value={name}
               />
             </View>
-            <Text style={styles.textTitle}>Seleccione una categoría</Text>
-            <DropDownPicker
-              open={open}
-              setOpen={setOpen}
-              items={categories}
-              setItems={setCategories}
-              value={selectCategories}
-              setValue={onChangeSelectCategories}
-              listMode="SCROLLVIEW"
-              placeholder="Seleccionar"
-              style={styles.dropDownStyle}
-              containerStyle={styles.containerDropDownPicker}
-              dropDownStyle={styles.dropDownPickerBackground}
-              labelStyle={styles.dropDownPickerLabel}
-              itemStyle={styles.dropDownPickerItem}
-            />
             <Text style={styles.textTitle}>Descripción</Text>
             <View style={styles.formsStyleTwo}>
               <TextInput
@@ -160,7 +103,7 @@ function CreateGroupStepOne({
       <View style={styles.containerButtonBottom}>
         <TouchableOpacity
           onPress={() => {
-            if (!photoGroup || !name || !description || !selectCategories) {
+            if (!photoGroup || !name || !description) {
               return;
             }
             createGroup();
@@ -168,7 +111,7 @@ function CreateGroupStepOne({
           <Text
             style={[
               styles.textButtonBottom,
-              !photoGroup || !name || !description || !selectCategories
+              !photoGroup || !name || !description
                 ? styles.textButtonDisable
                 : styles.textButtonActive,
             ]}>
@@ -243,25 +186,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     borderRadius: 12,
     marginBottom: 10,
-  },
-  dropDownStyle: {
-    backgroundColor: '#F5F5F5',
-    minHeight: 35,
-    borderRadius: 24,
-    borderColor: 'transparent',
-  },
-  containerDropDownPicker: {
-    width: '100%',
-  },
-  dropDownPickerBackground: {
-    backgroundColor: '#fafafa',
-  },
-  dropDownPickerLabel: {
-    fontSize: 14,
-  },
-  dropDownPickerItem: {
-    justifyContent: 'flex-start',
-    height: 15,
   },
   inputDescription: {
     paddingVertical: 10,

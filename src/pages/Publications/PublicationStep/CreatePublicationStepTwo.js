@@ -24,6 +24,8 @@ function CreatePublicationStepTwo({
   setGroup,
 }) {
   let [currentPage, setCurrentPage] = useState(6);
+  let [searchGroups, onChangeSearchGroups] = useState(null);
+  let [filtersSearchGroups, setFiltersSearchGroups] = useState([]);
 
   function validateStep() {
     let failed = false;
@@ -37,6 +39,15 @@ function CreatePublicationStepTwo({
     return failed;
   }
 
+  function filterGroups(text) {
+    let dataFilter = [];
+    groups
+      .filter(groupF => groupF.name.toLowerCase().includes(text.toLowerCase()))
+      .map(groupF => dataFilter.push(groupF));
+    onChangeSearchGroups(text);
+    setFiltersSearchGroups(dataFilter);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <NavigationPublication
@@ -47,24 +58,16 @@ function CreatePublicationStepTwo({
         validateStep={validateStep}
       />
       <FlatList
-        data={groups}
+        data={filtersSearchGroups.length > 0 ? filtersSearchGroups : groups}
         ListHeaderComponent={
           <View>
             <View style={styles.navigate}>
               <View style={styles.formsStyle}>
                 <TextInput
-                  placeholder="Busca temas de tu interés"
+                  placeholder="Búsqueda de grupo"
                   style={styles.input}
-                  textColor={styles.colorInput}
-                  theme={{
-                    colors: {
-                      placeholder: '#000000',
-                      text: '#000000',
-                      primary: '#000000',
-                    },
-                  }}
-                  selectionColor="#000000"
-                  accessibilityIgnoresInvertColors={true}
+                  value={searchGroups}
+                  onChangeText={text => filterGroups(text)}
                 />
                 <IconFontisto
                   name="search"
@@ -101,13 +104,15 @@ function CreatePublicationStepTwo({
           }
         }}
         ListFooterComponent={
-          <View style={styles.containerButton}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setCurrentPage(Number(currentPage + 3))}>
-              <Text style={styles.textButton}>Ver mas</Text>
-            </TouchableOpacity>
-          </View>
+          groups.length > 6 && (
+            <View style={styles.containerButton}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setCurrentPage(Number(currentPage + 3))}>
+                <Text style={styles.textButton}>Ver mas</Text>
+              </TouchableOpacity>
+            </View>
+          )
         }
       />
     </SafeAreaView>

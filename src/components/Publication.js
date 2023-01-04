@@ -123,7 +123,9 @@ function Publication({
             <View>
               <Text style={styles.titleText}>{title}</Text>
               {description && (
-                <Text style={styles.descriptionText}>{description}</Text>
+                <Text style={styles.descriptionText} numberOfLines={4}>
+                  {description}
+                </Text>
               )}
             </View>
             <Text style={styles.textTime} numberOfLines={1}>

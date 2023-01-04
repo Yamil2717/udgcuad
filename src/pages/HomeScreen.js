@@ -7,6 +7,7 @@ import {
   FlatList,
   RefreshControl,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
@@ -14,8 +15,6 @@ import Publication from '../components/Publication';
 import Navbar from '../components/Navbar/Navbar';
 import Spinner from '../components/Spinner';
 import NavigationScreens from '../components/NavigationScreens';
-
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 const {width, height} = Dimensions.get('window');
 function HomeScreen({navigation}) {
@@ -159,7 +158,7 @@ function HomeScreen({navigation}) {
   return loading ? (
     <Spinner />
   ) : (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Navbar navigation={navigation} />
       <View style={styles.containerPublications}>
         {dataPublication.length <= 0 ? (
@@ -218,7 +217,7 @@ function HomeScreen({navigation}) {
       <View style={styles.NavigationScreensStyle}>
         <NavigationScreens navigation={navigation} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -94,88 +94,22 @@ function Profile({route, navigation}) {
     }
     setLock(true);
     if (authContext.dataUser.friends[id]) {
-      if (textHeaderButton === 'Enviar solicitud de mensaje') {
-        await authAxios
-          .post('/request/user/message', {id})
-          .then(() => {
-            setTextHeaderButton('Cancelar solicitud');
-            setModalConfig({
-              description: `Se ha enviado la solicitud de mensaje a ${profileInfo.name} correctamente.`,
-              icon: 'wp',
-              textButton1: 'Cerrar',
-            });
-            setModalVisible(true);
-            setLock(false);
-          })
-          .catch(err => {
-            setLock(false);
-            Alert.alert(
-              'Voces error',
-              err?.response?.data?.message || err.message,
-            );
-            refreshPublications();
-            console.error(err?.response?.data?.message || err.message);
-          });
-      } else if (textHeaderButton === 'Aceptar mensaje') {
-        await authAxios
-          .put(`/user/acceptMessage/${id}`)
-          .then(async success => {
-            refreshPublications();
-            setTextHeaderButton('Enviar mensaje');
-            setModalConfig({
-              description: `Has aceptado la solicitud de mensaje de ${profileInfo.name}`,
-              icon: 'wp',
-              textButton1: 'Cerrar',
-            });
-            setModalVisible(true);
-            setLock(false);
-          })
-          .catch(err => {
-            setLock(false);
-            Alert.alert(
-              'Voces error',
-              err?.response?.data?.message || err.message,
-            );
-            refreshPublications();
-            console.error(err?.response?.data?.message || err.message);
-          });
+      const shareOptions = {
+        title: 'Mensaje via Voces',
+        message: `Hola, soy ${authContext.dataUser.name} de Voces.`,
+        social: Share.Social.WHATSAPP,
+        whatsAppNumber: profileInfo.countryIndicator + profileInfo.phone,
+      };
+      try {
         setLock(false);
-      } else if (textHeaderButton === 'Cancelar solicitud') {
-        await authAxios
-          .delete(`/request/user/${id}`)
-          .then(async success => {
-            await getMyDataUser();
-            setTextHeaderButton('Enviar solicitud de mensaje');
-            setModalConfig({
-              description: `Has cancelado la solicitud de mensaje de ${profileInfo.name}`,
-              icon: 'wp',
-              textButton1: 'Cerrar',
-            });
-            setModalVisible(true);
-            setLock(false);
-          })
-          .catch(err => {
-            setLock(false);
-            console.error(err?.response?.data?.message || err.message);
-          });
-      } else {
-        const shareOptions = {
-          title: 'Mensaje via Voces',
-          message: `Hola, soy ${authContext.dataUser.name} de Voces.`,
-          social: Share.Social.WHATSAPP,
-          whatsAppNumber: profileInfo.countryIndicator + profileInfo.phone,
-        };
-        try {
-          setLock(false);
-          await Share.shareSingle(shareOptions);
-        } catch (error) {
-          setLock(false);
-          console.error(error);
-          Alert.alert(
-            'Voces',
-            'algo fallo y no pudimos enviar un mensaje en WhatsApp.',
-          );
-        }
+        await Share.shareSingle(shareOptions);
+      } catch (error) {
+        setLock(false);
+        console.error(error);
+        Alert.alert(
+          'Voces',
+          'algo fallo y no pudimos enviar un mensaje en WhatsApp.',
+        );
       }
     } else {
       if (textHeaderButton === 'Aceptar') {
@@ -186,7 +120,7 @@ function Profile({route, navigation}) {
               .delete(`/request/user/${id}`)
               .then(async success => {
                 await getMyDataUser();
-                setTextHeaderButton('Enviar solicitud de mensaje');
+                setTextHeaderButton('Enviar mensaje');
                 setModalConfig({
                   description: `Has aceptado la solicitud de amistad de ${profileInfo.name}`,
                   icon: 'addFriend',
@@ -286,25 +220,6 @@ function Profile({route, navigation}) {
       });
   }
 
-  async function declineRequestMessage() {
-    await authAxios
-      .delete(`/request/user/${id}`)
-      .then(success => {
-        setModalConfig({
-          description: `Has rechazado la solicitud de mensaje de ${profileInfo.name}.`,
-          icon: 'wp',
-          textButton1: 'Cerrar',
-        });
-        setModalVisible(true);
-        setLock(false);
-        setTextHeaderButton('Enviar solicitud de mensaje');
-      })
-      .catch(err => {
-        setLock(false);
-        console.error(err?.response?.data?.message || err.message);
-      });
-  }
-
   async function removeFriend() {
     setModalConfig({
       description: `¿Seguro desea eliminar de amigo a ${profileInfo.name}?`,
@@ -376,25 +291,8 @@ function Profile({route, navigation}) {
       .then(async userData => {
         setProfileInfo(userData);
         if (authContext.dataUser.friends[id]) {
-          if (authContext.dataUser.friends[id].allowMessage) {
-            setTextHeaderButton('Enviar mensaje');
-            setLoading(false);
-          } else {
-            await authAxios
-              .get(`/request/user/${id}`)
-              .then(requestUser => {
-                if (requestUser.type === 2) {
-                  setTextHeaderButton('Aceptar mensaje');
-                } else {
-                  setTextHeaderButton('Cancelar solicitud');
-                }
-                setLoading(false);
-              })
-              .catch(() => {
-                setTextHeaderButton('Enviar solicitud de mensaje');
-                setLoading(false);
-              });
-          }
+          setTextHeaderButton('Enviar mensaje');
+          setLoading(false);
         } else {
           await authAxios
             .get(`/request/user/${id}`)
@@ -456,15 +354,8 @@ function Profile({route, navigation}) {
             setLock(false);
           }
           if (response.assets) {
-            if (response.assets[0].fileSize > 4 * 1024 * 1024) {
-              setLock(false);
-              return Alert.alert(
-                'Error',
-                'La imagen no puede superar los 4MB, por favor escoja otra.',
-              );
-            } else {
-              uploadPhoto(response.assets[0], type);
-            }
+            setLock(false);
+            uploadPhoto(response.assets[0], type);
           }
         },
       );
@@ -654,13 +545,7 @@ function Profile({route, navigation}) {
                     textHeaderButton === 'Aceptar mensaje') && (
                     <TouchableOpacity
                       style={[styles.headerButton, styles.marginLeft]}
-                      onPress={() => {
-                        if (authContext.dataUser.friends[id]) {
-                          declineRequestMessage();
-                        } else {
-                          declineRequestFriend();
-                        }
-                      }}>
+                      onPress={() => declineRequestFriend()}>
                       <Text style={styles.headerTextButton}>Rechazar</Text>
                     </TouchableOpacity>
                   )}

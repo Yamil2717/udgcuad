@@ -146,15 +146,8 @@ function GroupScreen({route, navigation}) {
             setLock(false);
           }
           if (response.assets) {
-            if (response.assets[0].fileSize > 4 * 1024 * 1024) {
-              setLock(false);
-              return Alert.alert(
-                'Error',
-                'La imagen no puede superar los 4MB, por favor escoja otra.',
-              );
-            } else {
-              uploadPhoto(response.assets[0], type);
-            }
+            uploadPhoto(response.assets[0], type);
+            setLock(false);
           }
         },
       );

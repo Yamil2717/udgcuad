@@ -15,7 +15,6 @@ function CreateGroupScreen({navigation}) {
   let [step, onChangeStep] = useState(0);
   let [photoGroup, setPhotoGroup] = useState(null);
   let [name, setName] = useState(null);
-  let [selectCategories, onChangeSelectCategories] = useState(null);
   let [description, setDescription] = useState(null);
   let [dataGroupFirst, setDataGroupFirst] = useState(null);
   let [titleFirst, setTitleFirst] = useState(null);
@@ -30,7 +29,7 @@ function CreateGroupScreen({navigation}) {
   }, [step, navigation]);
 
   async function createGroup() {
-    if (!name || !photoGroup || !description || !selectCategories) {
+    if (!name || !photoGroup || !description) {
       return Alert.alert(
         'Voces',
         'Debe rellenar todos los campos y elegir una imagen para está nueva comunidad.',
@@ -67,7 +66,6 @@ function CreateGroupScreen({navigation}) {
             description,
             picture: url,
             ownerID: authContext.dataUser.id,
-            idCategory: selectCategories,
           })
           .then(async group => {
             setDataGroupFirst(group);
@@ -137,7 +135,6 @@ function CreateGroupScreen({navigation}) {
       title: titleFirst,
       description: descriptionFirst || '',
       groupID: dataGroupFirst.id,
-      categoryID: dataGroupFirst.idInterest,
       ownerID: authContext.dataUser.id,
       pictures: [],
     };
@@ -202,8 +199,6 @@ function CreateGroupScreen({navigation}) {
             setPhotoGroup={setPhotoGroup}
             name={name}
             setName={setName}
-            selectCategories={selectCategories}
-            onChangeSelectCategories={onChangeSelectCategories}
             description={description}
             setDescription={setDescription}
             createGroup={createGroup}

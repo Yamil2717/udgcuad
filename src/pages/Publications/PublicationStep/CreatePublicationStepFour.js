@@ -98,7 +98,9 @@ function CreatePublicationStepFour({
         <View style={styles.containerPublicationSub}>
           <View>
             <Text style={styles.title}>{title}</Text>
-            <Text style={photos && styles.postHaveImageAndDescription}>
+            <Text
+              style={photos && styles.postHaveImageAndDescription}
+              numberOfLines={3}>
               {description}
             </Text>
             <Text>@{authContext.dataUser.name}</Text>

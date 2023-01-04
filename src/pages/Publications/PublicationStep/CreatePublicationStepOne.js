@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -21,13 +21,13 @@ function CreatePublicationStepOne({step, onChangeStep, title, onChangeTitle}) {
         'Debe ingresar un titulo para continuar.',
       );
     }
-    if (title.length > 100) {
+    /*if (title.length > 100) {
       failed = true;
       return Alert.alert(
         'Demasiado largo',
         'El titulo no puede superar los 100 caracteres de largo',
       );
-    }
+    }*/
     return failed;
   }
 
