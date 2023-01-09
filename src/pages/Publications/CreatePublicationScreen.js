@@ -37,7 +37,21 @@ function CreatePublicationScreen({navigation}) {
       });
     });
     setGroupsFormatted([...tempGroups]);
-    setLoading(false);
+    await authAxios
+      .get('/user/friends')
+      .then(dataFriends => {
+        let tempFriends = [];
+        dataFriends.map(friend => {
+          let {id, name, avatar} = friend;
+          tempFriends.push({id, avatar, name});
+        });
+        authContext.setFriends([...tempFriends]);
+        setLoading(false);
+      })
+      .catch(err => {
+        Alert.alert('Voces error', err?.response?.data?.message || err.message);
+        console.error(err?.response?.data?.message || err.message);
+      });
   }
 
   async function createPost() {
@@ -98,14 +112,16 @@ function CreatePublicationScreen({navigation}) {
         })
         .catch(err => {
           setLock(false);
+          console.log('xd');
           Alert.alert('Voces', err?.response?.data?.message || err.message);
-          //console.error(err?.response?.data?.message || err.message);
+          console.error(err?.response?.data?.message || err.message);
         });
     } else {
       await authAxios
         .post('/publication', {...dataCreate})
         .then(data => {
           Alert.alert('Voces', data.message);
+          console.log('xd');
           navigation.reset({
             index: 0,
             routes: [{name: 'Home'}],

@@ -1,16 +1,17 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   Image,
   Alert,
   Dimensions,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import NavigationPublication from './NavigationPublication';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -19,6 +20,8 @@ import IconsMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {MentionInput} from 'react-native-controlled-mentions';
 import useKeyboard from '../../../tools/useKeyboard';
+import {AuthContext} from '../../../contexts/AuthContext';
+import FastImage from 'react-native-fast-image';
 
 const {width, height} = Dimensions.get('window');
 
@@ -35,9 +38,10 @@ function CreatePublicationStepThree({
   group,
   setGroup,
 }) {
+  let authContext = useContext(AuthContext);
   let [open, setOpen] = useState(false);
-  const isKeyboardOpen = useKeyboard();
-  const refInputDescription = useRef();
+  let [suggestions, setSuggestions] = useState([]);
+  let isUseKeyboard = useKeyboard();
 
   function validateStep() {
     let failed = false;
@@ -94,13 +98,9 @@ function CreatePublicationStepThree({
     );
   }
 
-  const suggestions = [
-    {id: '1', name: 'David Tabaka'},
-    {id: '2', name: 'Mary'},
-    {id: '3', name: 'Tony'},
-    {id: '4', name: 'Mike'},
-    {id: '5', name: 'Grey'},
-  ];
+  useEffect(() => {
+    setSuggestions(authContext.friends);
+  }, []);
 
   const renderSuggestions = ({keyword, onSuggestionPress}) => {
     if (keyword == null) {
@@ -108,41 +108,37 @@ function CreatePublicationStepThree({
     }
 
     return (
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 777,
-          bottom: 15,
-          left: 15,
-          right: 15,
-        }}>
-        <Text
-          style={{
-            paddingHorizontal: 12,
-            paddingVertical: 5,
-            backgroundColor: '#ccc',
-          }}>
-          Selecciona una sugerencia
+      <View style={styles.containerSuggestions}>
+        <Text style={styles.titleSuggestions}>
+          Selecciona entre las sugerencias:
         </Text>
-        {suggestions
-          .filter(one =>
-            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
-          )
-          .slice(0, 2)
-          .map(one => (
-            <Pressable
-              key={one.id}
-              onPress={() => onSuggestionPress(one)}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 5,
-                backgroundColor: '#f5f5f5',
-                borderBottomWidth: 2,
-                borderColor: '#ccc',
-              }}>
-              <Text>{one.name}</Text>
-            </Pressable>
-          ))}
+        <View style={styles.paddingInternalSuggestions}>
+          {suggestions
+            .filter(user =>
+              user.name
+                .toLocaleLowerCase()
+                .includes(keyword.toLocaleLowerCase()),
+            )
+            .slice(0, 3)
+            .map(user => (
+              <Pressable
+                key={user.id}
+                onPress={() => onSuggestionPress(user)}
+                style={styles.containerSuggestion}>
+                <View style={styles.subContainerSuggestion}>
+                  <FastImage
+                    source={{
+                      uri: user.avatar,
+                      priority: FastImage.priority.high,
+                    }}
+                    style={styles.avatarSuggestion}
+                    resizeMode={FastImage.resizeMode.contain}
+                  />
+                  <Text style={styles.nameSuggestion}>{user.name}</Text>
+                </View>
+              </Pressable>
+            ))}
+        </View>
       </View>
     );
   };
@@ -156,46 +152,35 @@ function CreatePublicationStepThree({
         incrementOnPress={1}
         validateStep={validateStep}
       />
-      <View
-        style={[
-          styles.subContainer,
-          isKeyboardOpen.active
-            ? photos
-              ? {
-                  height:
-                    height - 47.5 - isKeyboardOpen.height + height * 0.355,
-                }
-              : {
-                  height:
-                    height - 47.5 - isKeyboardOpen.height + height * 0.355,
-                }
-            : {minHeight: height - 47.5},
-        ]}>
-        <View style={styles.subSubContainer}>
-          <View style={styles.containerInput}>
-            <MentionInput
-              value={description}
-              onChange={onChangeDescription}
-              style={styles.input}
-              partTypes={[
-                {
-                  trigger: '@',
-                  renderSuggestions,
-                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
-                },
-                {
-                  pattern: /[#][a-z0-9_]+/gi,
-                  allowedSpacesCount: 0,
-                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
-                },
-              ]}
-              autoFocus
-              multiline={true}
-              placeholder="Descripción de la publicación..."
-              textAlignVertical="top"
-              numberOfLines={4}
-            />
-          </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : height}
+        style={styles.keyboardContainer}>
+        <ScrollView>
+          <MentionInput
+            value={description}
+            onChange={onChangeDescription}
+            style={styles.inputDescription}
+            partTypes={[
+              {
+                trigger: '@',
+                renderSuggestions,
+                isBottomMentionSuggestionsRender: true,
+                isInsertSpaceAfterMention: true,
+                textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+              },
+              {
+                pattern: /[#][a-z0-9_]+/gi,
+                allowedSpacesCount: 0,
+                textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+              },
+            ]}
+            autoFocus
+            placeholder="Descripción de la publicación..."
+            textAlignVertical="top"
+            multiline={true}
+            numberOfLines={4}
+          />
           <View style={styles.containerDropDownPickerMain}>
             <DropDownPicker
               open={open}
@@ -214,41 +199,34 @@ function CreatePublicationStepThree({
               itemStyle={styles.dropDownPickerItem}
             />
           </View>
-          <ScrollView
-            style={[photos && photos.length > 0 && styles.containerImages]}
-            horizontal>
-            {photos && photos.length > 0 && (
-              <>
-                {photos.map((photo, index) => {
-                  return (
-                    <TouchableOpacity key={index}>
-                      <Image
-                        source={{
-                          uri: photo?.uri,
-                        }}
-                        style={styles.image}
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-                {photos.length < 4 && (
-                  <TouchableOpacity onPress={() => choosePhoto()}>
+          {photos && photos.length > 0 && (
+            <ScrollView style={styles.containerImages} horizontal>
+              {photos.map((photo, index) => {
+                return (
+                  <TouchableOpacity key={index}>
                     <Image
-                      source={require('../../../assets/addPublication.jpg')}
+                      source={{
+                        uri: photo?.uri,
+                      }}
                       style={styles.image}
                     />
                   </TouchableOpacity>
-                )}
-              </>
-            )}
-          </ScrollView>
-        </View>
-
+                );
+              })}
+              {photos.length < 4 && (
+                <TouchableOpacity onPress={() => choosePhoto()}>
+                  <Image
+                    source={require('../../../assets/addPublication.jpg')}
+                    style={styles.image}
+                  />
+                </TouchableOpacity>
+              )}
+            </ScrollView>
+          )}
+        </ScrollView>
         <View
           style={[
-            isKeyboardOpen.active
-              ? styles.containerSecIcons
-              : styles.containerSec,
+            isUseKeyboard ? styles.containerSecIcons : styles.containerSec,
           ]}>
           <TouchableOpacity onPress={() => choosePhoto()}>
             <View style={styles.listStyle}>
@@ -258,7 +236,7 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              {!isKeyboardOpen.active && (
+              {!isUseKeyboard && (
                 <Text style={styles.textCreatePublication}>Imagen</Text>
               )}
             </View>
@@ -272,7 +250,7 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              {!isKeyboardOpen.active && (
+              {!isUseKeyboard && (
                 <Text style={styles.textCreatePublication}>Video</Text>
               )}
             </View>
@@ -286,7 +264,7 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              {!isKeyboardOpen.active && (
+              {!isUseKeyboard && (
                 <Text style={styles.textCreatePublication}>Texto</Text>
               )}
             </View>
@@ -300,111 +278,40 @@ function CreatePublicationStepThree({
                 size={28}
                 style={styles.iconCreatePublication}
               />
-              {!isKeyboardOpen.active && (
+              {!isUseKeyboard && (
                 <Text style={styles.textCreatePublication}>Enlace</Text>
               )}
             </View>
           </TouchableOpacity>
         </View>
-        {/*isKeyboardOpen.active && (
-          <View style={{height: isKeyboardOpen.height}} />
-        )*/}
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    minHeight: height,
+    backgroundColor: 'white',
+    height: '100%',
   },
-  subContainer: {
+  keyboardContainer: {
+    flex: 1,
+    height: '100%',
+    justifyContent: 'space-between',
     position: 'relative',
   },
-  subSubContainer: {
-    marginBottom: '30%',
-  },
-  containerSecIcons: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    //backgroundColor: '',
-  },
-  containerSec: {
-    position: 'absolute',
-    backgroundColor: '#f5f5f5',
-    height: '30%',
-    justifyContent: 'center',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navigate: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  IconNav: {
-    width: 20,
-    height: 20,
-    margin: 10,
-  },
-  containerInput: {
-    maxHeight: 160,
-  },
-  input: {
-    height: 140,
+  inputDescription: {
+    height: 120,
     backgroundColor: '#f5f5f5',
     color: '#164578',
     fontSize: 16,
-    marginHorizontal: 15,
-    marginVertical: 15,
+    padding: 10,
+    margin: 15,
     borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    position: 'relative',
-  },
-  image: {
-    width: 150,
-    height: 150,
-    margin: 10,
-  },
-  containerImages: {
-    maxWidth: width,
-    width: width,
-    minHeight: 180,
-  },
-  colorInput: {
-    color: '#000000',
-  },
-  listAdd: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 5,
-    marginHorizontal: 10,
-  },
-  iconCreatePublication: {
-    marginHorizontal: 15,
-  },
-  textCreatePublication: {
-    fontSize: 16,
   },
   containerDropDownPickerMain: {
     width: '90%',
-    marginVertical: 5,
+    marginBottom: 5,
     marginHorizontal: '5%',
   },
   dropDownStyle: {
@@ -424,6 +331,84 @@ const styles = StyleSheet.create({
   dropDownPickerItem: {
     justifyContent: 'flex-start',
     height: 15,
+  },
+  containerImages: {
+    maxWidth: width,
+    width: width,
+    maxHeight: 170,
+  },
+  image: {
+    width: 150,
+    height: 150,
+    margin: 10,
+  },
+  containerSec: {
+    elevation: 2,
+    backgroundColor: '#f5f5f5',
+    height: 200,
+    justifyContent: 'center',
+  },
+  containerSecIcons: {
+    elevation: 2,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+  },
+  listStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 10,
+  },
+  iconCreatePublication: {
+    marginHorizontal: 15,
+  },
+  textCreatePublication: {
+    fontSize: 16,
+  },
+  containerSuggestions: {
+    position: 'relative',
+    top: -20,
+    marginHorizontal: 15,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    overflow: 'hidden',
+  },
+  titleSuggestions: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    fontSize: 16,
+    fontWeight: '500',
+    backgroundColor: '#f5f5f5',
+  },
+  paddingInternalSuggestions: {
+    paddingTop: 5,
+    paddingBottom: 10,
+    backgroundColor: '#f5f5f5',
+  },
+  containerSuggestion: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  subContainerSuggestion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarSuggestion: {
+    height: 30,
+    width: 30,
+    borderRadius: 30 / 2,
+    marginHorizontal: 10,
+  },
+  nameSuggestion: {
+    fontSize: 16,
+    fontWeight: '400',
   },
 });
 

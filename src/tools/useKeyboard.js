@@ -3,23 +3,15 @@ import {Keyboard} from 'react-native';
 
 const useKeyboard = () => {
   let [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  let [heightKeyboard, setHeightKeyboard] = useState(0);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      e => {
-        setHeightKeyboard(e.endCoordinates.screenY);
-        setKeyboardVisible(true);
-      },
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', e =>
+      setKeyboardVisible(true),
     );
 
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
-      () => {
-        setHeightKeyboard(0);
-        setKeyboardVisible(false);
-      },
+      () => setKeyboardVisible(false),
     );
 
     return () => {
@@ -28,7 +20,7 @@ const useKeyboard = () => {
     };
   }, []);
 
-  return {active: isKeyboardVisible, height: heightKeyboard};
+  return isKeyboardVisible;
 };
 
 export default useKeyboard;

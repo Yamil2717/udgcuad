@@ -19,6 +19,10 @@ import ES from 'moment/locale/es';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 import Modal from './Modal';
+import {
+  MentionInput,
+  replaceMentionValues,
+} from 'react-native-controlled-mentions';
 
 const {width, height} = Dimensions.get('window');
 
@@ -123,9 +127,28 @@ function Publication({
             <View>
               <Text style={styles.titleText}>{title}</Text>
               {description && (
-                <Text style={styles.descriptionText} numberOfLines={4}>
-                  {description}
-                </Text>
+                <MentionInput
+                  value={replaceMentionValues(
+                    description,
+                    ({name}) => `@${name}`,
+                  )}
+                  style={styles.descriptionText}
+                  numberOfLines={4}
+                  editable={false}
+                  partTypes={[
+                    {
+                      //trigger: '@',
+                      pattern: /[@][a-z]+[\s][a-z]+/gi,
+                      allowedSpacesCount: 1,
+                      textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                    },
+                    {
+                      pattern: /[#][a-z0-9_]+/gi,
+                      allowedSpacesCount: 0,
+                      textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                    },
+                  ]}
+                />
               )}
             </View>
             <Text style={styles.textTime} numberOfLines={1}>
@@ -342,6 +365,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#828282',
     textAlign: 'justify',
+    margin: 0,
+    padding: 0,
+    border: 'none',
   },
   imagesContainer: {
     flexDirection: 'row',

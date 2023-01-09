@@ -30,7 +30,7 @@ const {Provider} = AuthContext;
 function AuthProvider({children}) {
   let [dataUser, setDataUser] = useState({...DataUserDefault});
   let [dataGroups, setDataGroups] = useState([]);
-  let [friends, setFriends] = useState({});
+  let [friends, setFriends] = useState([]);
   let [follows, setFollows] = useState({});
   let [authState, setAuthState] = useState({...AuthStateDefault});
 

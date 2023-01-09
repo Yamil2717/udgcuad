@@ -14,6 +14,10 @@ import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Share from 'react-native-share';
+import {
+  MentionInput,
+  replaceMentionValues,
+} from 'react-native-controlled-mentions';
 
 const {height} = Dimensions.get('window');
 
@@ -49,7 +53,11 @@ function CreatePublicationStepFour({
         });
         const shareOptions = {
           title: 'Compartir vía Voces',
-          message: `${title}\n${description || ''}`,
+          message: `${title}\n${
+            description
+              ? replaceMentionValues(description, ({name}) => `@${name}`)
+              : ''
+          }`,
           social: Share.Social.TWITTER,
           urls: base64ImagesInclude,
         };
@@ -98,12 +106,26 @@ function CreatePublicationStepFour({
         <View style={styles.containerPublicationSub}>
           <View>
             <Text style={styles.title}>{title}</Text>
-            <Text
+            <MentionInput
+              value={replaceMentionValues(description, ({name}) => `@${name}`)}
               style={photos && styles.postHaveImageAndDescription}
-              numberOfLines={3}>
-              {description}
-            </Text>
-            <Text>@{authContext.dataUser.name}</Text>
+              numberOfLines={3}
+              editable={false}
+              partTypes={[
+                {
+                  //trigger: '@',
+                  pattern: /[@][a-z]+[\s][a-z]+/gi,
+                  allowedSpacesCount: 1,
+                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                },
+                {
+                  pattern: /[#][a-z0-9_]+/gi,
+                  allowedSpacesCount: 0,
+                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                },
+              ]}
+            />
+            <Text style={styles.nameAuthor}>@{authContext.dataUser.name}</Text>
           </View>
           {photos && photos.length > 0 && (
             <Image
@@ -187,9 +209,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: '800',
+    marginLeft: 5,
   },
   postHaveImageAndDescription: {
     maxWidth: '80%',
+  },
+  nameAuthor: {
+    marginLeft: 5,
   },
   listStyle: {
     display: 'flex',
