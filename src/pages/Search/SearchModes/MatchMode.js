@@ -1,12 +1,12 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 
-function GroupsMode() {
+function MatchMode() {
   return (
     <View>
-      <Text>GroupsMode</Text>
+      <Text>MatchMode</Text>
     </View>
   );
 }
 
-export default GroupsMode;
+export default MatchMode;

@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   TextInput,
   TouchableOpacity,
@@ -19,6 +19,7 @@ function Navbar({navigation, title = ''}) {
   let authContext = useContext(AuthContext);
   let {avatar, id} = authContext.dataUser;
   let [modalVisible, setModalVisible] = useState(false);
+  let [search, onChangeSearch] = useState(null);
 
   return (
     <SafeAreaView>
@@ -43,15 +44,29 @@ function Navbar({navigation, title = ''}) {
         {title.length === 0 ? (
           <View style={styles.formsStyle}>
             <TextInput
-              placeholder="Busca temas de tu interés"
+              placeholder="Busca en voces"
               style={styles.input}
               textColor={styles.colorInput}
+              value={search}
+              onChangeText={onChangeSearch}
+              onSubmitEditing={() => {
+                if (search && search.length > 0) {
+                  navigation.navigate('Search', {search});
+                  onChangeSearch(null);
+                }
+              }}
             />
             <IconFontisto
               name="search"
               color="#2A9DD8"
               size={16}
               style={styles.iconForm}
+              onPress={() => {
+                if (search && search.length > 0) {
+                  navigation.navigate('Search', {search});
+                  onChangeSearch(null);
+                }
+              }}
             />
           </View>
         ) : (

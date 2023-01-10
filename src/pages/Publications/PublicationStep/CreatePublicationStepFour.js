@@ -9,6 +9,7 @@ import {
   Switch,
   Dimensions,
   Alert,
+  ScrollView,
 } from 'react-native';
 import {AuthContext} from '../../../contexts/AuthContext';
 import NavigationPublication from './NavigationPublication';
@@ -83,96 +84,113 @@ function CreatePublicationStepFour({
         previousScreenOnPress={onChangeStep}
         incrementOnPress={1}
       />
-      <View style={styles.navigate}>
-        <View style={styles.containerDropDownPickerMain}>
-          <DropDownPicker
-            open={open}
-            setOpen={setOpen}
-            items={groupsFormatted}
-            setItems={setGroupsFormatted}
-            value={group}
-            setValue={setGroup}
-            defaultValue={group}
-            listMode="SCROLLVIEW"
-            placeholder="Seleccionar"
-            style={styles.dropDownStyle}
-            containerStyle={styles.containerDropDownPicker}
-            dropDownStyle={styles.dropDownPickerBackground}
-            labelStyle={styles.dropDownPickerLabel}
-            itemStyle={styles.dropDownPickerItem}
-          />
-        </View>
-
-        <View style={styles.containerPublicationSub}>
-          <View>
-            <Text style={styles.title}>{title}</Text>
-            <MentionInput
-              value={replaceMentionValues(description, ({name}) => `@${name}`)}
-              style={photos && styles.postHaveImageAndDescription}
-              numberOfLines={3}
-              editable={false}
-              partTypes={[
-                {
-                  //trigger: '@',
-                  pattern: /[@][a-z]+[\s][a-z]+/gi,
-                  allowedSpacesCount: 1,
-                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
-                },
-                {
-                  pattern: /[#][a-z0-9_]+/gi,
-                  allowedSpacesCount: 0,
-                  textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
-                },
-              ]}
+      <ScrollView style={styles.containerScrollView}>
+        <View style={styles.navigate}>
+          <View style={styles.containerDropDownPickerMain}>
+            <DropDownPicker
+              open={open}
+              setOpen={setOpen}
+              items={groupsFormatted}
+              setItems={setGroupsFormatted}
+              value={group}
+              setValue={setGroup}
+              defaultValue={group}
+              listMode="SCROLLVIEW"
+              placeholder="Seleccionar"
+              style={styles.dropDownStyle}
+              containerStyle={styles.containerDropDownPicker}
+              dropDownStyle={styles.dropDownPickerBackground}
+              labelStyle={styles.dropDownPickerLabel}
+              itemStyle={styles.dropDownPickerItem}
             />
-            <Text style={styles.nameAuthor}>@{authContext.dataUser.name}</Text>
           </View>
-          {photos && photos.length > 0 && (
-            <Image
-              source={{uri: photos[0].uri}}
-              style={styles.ImagePublication}
-            />
-          )}
-        </View>
-      </View>
 
-      <View style={styles.listStyle}>
-        <Image
-          source={require('../../../assets/twitter.png')}
-          style={styles.ImageProfile}
-        />
-        <View>
-          <Text style={styles.textCreatePublication}>Publicar en Twitter</Text>
-          <Switch
-            trackColor={{false: '#767577', true: '#2A9DD8'}}
-            thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-            style={styles.switch}
+          <View style={styles.containerPublicationSub}>
+            <View>
+              <Text style={styles.title}>{title}</Text>
+              <MentionInput
+                value={replaceMentionValues(
+                  description,
+                  ({name}) => `@${name}`,
+                )}
+                style={photos && styles.postHaveImageAndDescription}
+                numberOfLines={3}
+                editable={false}
+                partTypes={[
+                  {
+                    //trigger: '@',
+                    pattern: /[@][a-z]+[\s][a-z]+/gi,
+                    allowedSpacesCount: 1,
+                    textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                  },
+                  {
+                    pattern: /[#][a-z0-9_]+/gi,
+                    allowedSpacesCount: 0,
+                    textStyle: {fontWeight: 'bold', color: '#2A9DD8'},
+                  },
+                ]}
+              />
+              <Text style={styles.nameAuthor}>
+                @{authContext.dataUser.name}
+              </Text>
+            </View>
+            {photos && photos.length > 0 && (
+              <Image
+                source={{uri: photos[0].uri}}
+                style={styles.ImagePublication}
+              />
+            )}
+          </View>
+        </View>
+
+        <View style={styles.listStyle}>
+          <Image
+            source={require('../../../assets/twitter.png')}
+            style={styles.ImageProfile}
           />
+          <View>
+            <Text style={styles.textCreatePublication}>
+              Publicar en Twitter
+            </Text>
+            <Switch
+              trackColor={{false: '#767577', true: '#2A9DD8'}}
+              thumbColor={isEnabled ? '#2A9DD8' : '#767577'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+              style={styles.switch}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.containerButton}>
-        <TouchableOpacity
-          style={[lock ? styles.buttonLock : styles.button]}
-          onPress={() => {
-            createPost();
-            isEnabled && shareTwitter();
-          }}>
-          <Text style={styles.textButton}>
-            {lock ? 'Enviando...' : 'Publicar'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.containerButton}>
+          <TouchableOpacity
+            style={[lock ? styles.buttonLock : styles.button]}
+            onPress={() => {
+              if (description.length > 5000) {
+                return Alert.alert(
+                  'Voces',
+                  'Lo sentimos, no permitimos publicaciones con más de 5000 caracteres.',
+                );
+              }
+              createPost();
+              isEnabled && shareTwitter();
+            }}>
+            <Text style={styles.textButton}>
+              {lock ? 'Enviando...' : 'Publicar'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    minHeight: height,
+  },
+  containerScrollView: {
+    height: height - 47.5,
   },
   navigate: {
     justifyContent: 'center',
@@ -264,7 +282,8 @@ const styles = StyleSheet.create({
   },
   containerButton: {
     alignItems: 'center',
-    marginVertical: 5,
+    marginTop: 5,
+    marginBottom: 50,
   },
   buttonLock: {
     width: '40%',
@@ -336,6 +355,7 @@ const styles = StyleSheet.create({
     height: 50,
     margin: 10,
     borderRadius: 10,
+    alignSelf: 'flex-start',
   },
   dropDownStyle: {
     backgroundColor: '#F5F5F5',

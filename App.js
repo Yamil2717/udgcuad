@@ -13,6 +13,7 @@ import Profile from './src/pages/Profile/Profile';
 import CreateGroupScreen from './src/pages/Groups/CreateGroupScreen';
 import GroupScreen from './src/pages/Groups/GroupScreen';
 import PublicationByID from './src/pages/Publications/PublicationByID';
+import Search from './src/pages/Search/SearchScreen';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -81,6 +82,11 @@ function App() {
         <Stack.Screen
           name="CreateGroup"
           component={CreateGroupScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Search"
+          component={Search}
           options={{title: null, headerShown: false}}
         />
       </Stack.Navigator>

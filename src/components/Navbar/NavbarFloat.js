@@ -35,7 +35,7 @@ function NavbarFloat({modalVisible, setModalVisible, navigation}) {
           <View style={styles.container}>
             <View style={styles.subContainer}>
               <TouchableOpacity
-                onPress={() => setModalVisible(false)}
+                onPress={() => setModalVisible(!modalVisible)}
                 style={styles.containerClose}>
                 <IconIonicons
                   name="md-close-circle-outline"
@@ -50,7 +50,10 @@ function NavbarFloat({modalVisible, setModalVisible, navigation}) {
               <View style={styles.containerButton}>
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => navigation.navigate('CreateGroup')}>
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    navigation.navigate('CreateGroup');
+                  }}>
                   <IconIonicons
                     name="ios-add-circle-outline"
                     color="#2A9DD8"
@@ -161,6 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#164578',
     marginLeft: 5,
+    alignSelf: 'center',
   },
   textTitle: {
     fontSize: 18,
@@ -213,6 +217,7 @@ const styles = StyleSheet.create({
   containerGroups: {
     justifyContent: 'center',
     marginVertical: 5,
+    height: '72.5%',
   },
   noDataGroups: {
     marginTop: 20,

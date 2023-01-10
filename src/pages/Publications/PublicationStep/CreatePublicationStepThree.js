@@ -113,31 +113,37 @@ function CreatePublicationStepThree({
           Selecciona entre las sugerencias:
         </Text>
         <View style={styles.paddingInternalSuggestions}>
-          {suggestions
-            .filter(user =>
-              user.name
-                .toLocaleLowerCase()
-                .includes(keyword.toLocaleLowerCase()),
-            )
-            .slice(0, 3)
-            .map(user => (
-              <Pressable
-                key={user.id}
-                onPress={() => onSuggestionPress(user)}
-                style={styles.containerSuggestion}>
-                <View style={styles.subContainerSuggestion}>
-                  <FastImage
-                    source={{
-                      uri: user.avatar,
-                      priority: FastImage.priority.high,
-                    }}
-                    style={styles.avatarSuggestion}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
-                  <Text style={styles.nameSuggestion}>{user.name}</Text>
-                </View>
-              </Pressable>
-            ))}
+          {suggestions.length > 0 ? (
+            suggestions
+              .filter(user =>
+                user.name
+                  .toLocaleLowerCase()
+                  .includes(keyword.toLocaleLowerCase()),
+              )
+              .slice(0, 3)
+              .map(user => (
+                <Pressable
+                  key={user.id}
+                  onPress={() => onSuggestionPress(user)}
+                  style={styles.containerSuggestion}>
+                  <View style={styles.subContainerSuggestion}>
+                    <FastImage
+                      source={{
+                        uri: user.avatar,
+                        priority: FastImage.priority.high,
+                      }}
+                      style={styles.avatarSuggestion}
+                      resizeMode={FastImage.resizeMode.contain}
+                    />
+                    <Text style={styles.nameSuggestion}>{user.name}</Text>
+                  </View>
+                </Pressable>
+              ))
+          ) : (
+            <Text style={styles.titleSuggestions}>
+              No tiene amigos agregados.
+            </Text>
+          )}
         </View>
       </View>
     );
@@ -156,7 +162,7 @@ function CreatePublicationStepThree({
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : height}
         style={styles.keyboardContainer}>
-        <ScrollView>
+        <View>
           <MentionInput
             value={description}
             onChange={onChangeDescription}
@@ -223,7 +229,7 @@ function CreatePublicationStepThree({
               )}
             </ScrollView>
           )}
-        </ScrollView>
+        </View>
         <View
           style={[
             isUseKeyboard ? styles.containerSecIcons : styles.containerSec,

@@ -6,7 +6,7 @@ import CreatePublicationStepOne from './PublicationStep/CreatePublicationStepOne
 import CreatePublicationStepTwo from './PublicationStep/CreatePublicationStepTwo';
 import CreatePublicationStepThree from './PublicationStep/CreatePublicationStepThree';
 import CreatePublicationStepFour from './PublicationStep/CreatePublicationStepFour';
-import {Alert} from 'react-native';
+import {Alert, BackHandler} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import tools from '../../tools/tools';
 
@@ -112,7 +112,6 @@ function CreatePublicationScreen({navigation}) {
         })
         .catch(err => {
           setLock(false);
-          console.log('xd');
           Alert.alert('Voces', err?.response?.data?.message || err.message);
           console.error(err?.response?.data?.message || err.message);
         });
@@ -138,6 +137,14 @@ function CreatePublicationScreen({navigation}) {
     if (step === -1) {
       navigation.navigate('Home');
     }
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        onChangeStep(Number(step) - 1);
+        return true;
+      },
+    );
+    return () => backHandler.remove();
   }, [step, navigation]);
 
   if (loading) {

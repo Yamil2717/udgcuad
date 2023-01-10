@@ -10,7 +10,6 @@ import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommun
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconMaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import IconIonicons from 'react-native-vector-icons/Ionicons';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {AuthContext} from '../contexts/AuthContext';
 const {width, height} = Dimensions.get('window');
 function NavigationScreens({navigation}) {
