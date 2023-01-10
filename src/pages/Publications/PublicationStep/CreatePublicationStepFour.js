@@ -113,8 +113,11 @@ function CreatePublicationStepFour({
                   description,
                   ({name}) => `@${name}`,
                 )}
-                style={photos && styles.postHaveImageAndDescription}
-                numberOfLines={3}
+                style={[
+                  styles.description,
+                  photos && styles.postHaveImageAndDescription,
+                ]}
+                numberOfLines={description.length > 150 ? 3 : null}
                 editable={false}
                 partTypes={[
                   {
@@ -227,13 +230,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: '800',
-    marginLeft: 5,
+  },
+  description: {
+    height: 'auto',
+    border: 'none',
+    margin: 0,
+    padding: 0,
   },
   postHaveImageAndDescription: {
     maxWidth: '80%',
   },
   nameAuthor: {
-    marginLeft: 5,
+    fontWeight: '700',
   },
   listStyle: {
     display: 'flex',

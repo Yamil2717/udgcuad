@@ -68,10 +68,6 @@ function Publication({
       .catch(err => console.log(err));
   }
 
-  const mentionHashtagClick = text => {
-    console.log('Clicked to + ' + text);
-  };
-
   return (
     <SafeAreaView
       style={[
@@ -80,26 +76,32 @@ function Publication({
         id !== length && styles.marginBottom,
       ]}>
       <View style={styles.groupData}>
-        <TouchableWithoutFeedback
-          onPress={() => navigation.navigate('Group', {id: groupID})}>
-          <FastImage
-            source={{
-              uri: pictureGroup,
-              priority: FastImage.priority.high,
-            }}
-            style={styles.imageGroup}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-        </TouchableWithoutFeedback>
-        <View style={styles.textsGroup}>
+        <View style={styles.flexDirectionRow}>
           <TouchableWithoutFeedback
             onPress={() => navigation.navigate('Group', {id: groupID})}>
-            <Text style={styles.nameGroup}>{groupName}</Text>
+            <FastImage
+              source={{
+                uri: pictureGroup,
+                priority: FastImage.priority.high,
+              }}
+              style={styles.imageGroup}
+              resizeMode={FastImage.resizeMode.cover}
+            />
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => navigation.navigate('Profile', {id: ownerID})}>
-            <Text style={styles.username}>@{ownerName}</Text>
-          </TouchableWithoutFeedback>
+          <View style={styles.textsGroup}>
+            <TouchableWithoutFeedback
+              onPress={() => navigation.navigate('Group', {id: groupID})}>
+              <Text style={styles.nameGroup} numberOfLines={1}>
+                {groupName}
+              </Text>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => navigation.navigate('Profile', {id: ownerID})}>
+              <Text style={styles.username} numberOfLines={1}>
+                @{ownerName}
+              </Text>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
         <View style={styles.buttonGroup}>
           <TouchableOpacity
@@ -133,7 +135,9 @@ function Publication({
                     ({name}) => `@${name}`,
                   )}
                   style={styles.descriptionText}
-                  numberOfLines={4}
+                  numberOfLines={
+                    !showComments && description.length > 150 ? 4 : null
+                  }
                   editable={false}
                   partTypes={[
                     {
@@ -294,38 +298,43 @@ const styles = StyleSheet.create({
   groupData: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 5,
-    paddingRight: '35%',
     position: 'relative',
+  },
+  flexDirectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   imageGroup: {
     width: 35,
     height: 35,
     borderRadius: 35 / 2,
     marginLeft: 25,
+    alignSelf: 'flex-start',
   },
   textsGroup: {
     marginLeft: 20,
+    maxWidth: width / 2.25,
   },
   nameGroup: {
     fontSize: 16,
     color: '#2A9DD8',
     fontWeight: '600',
     lineHeight: 16,
+    width: '100%',
   },
   username: {
     color: '#828282',
     fontSize: 14,
     lineHeight: 14,
+    width: '100%',
   },
   buttonGroup: {
-    position: 'absolute',
-    top: 0,
-    right: 5,
-    width: '40%',
-    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 20,
+    alignSelf: 'flex-start',
   },
   buttonGroupMember: {
     backgroundColor: '#2A9DD8',
@@ -362,6 +371,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   descriptionText: {
+    height: 'auto',
     fontSize: 14,
     color: '#828282',
     textAlign: 'justify',

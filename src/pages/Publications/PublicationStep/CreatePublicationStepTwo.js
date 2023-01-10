@@ -57,72 +57,83 @@ function CreatePublicationStepTwo({
         incrementOnPress={1}
         validateStep={validateStep}
       />
-      <FlatList
-        data={filtersSearchGroups.length > 0 ? filtersSearchGroups : groups}
-        ListHeaderComponent={
-          <View>
-            <View style={styles.navigate}>
-              <View style={styles.formsStyle}>
-                <TextInput
-                  placeholder="Búsqueda de grupo"
-                  style={styles.input}
-                  value={searchGroups}
-                  onChangeText={text => filterGroups(text)}
-                />
-                <IconFontisto
-                  name="search"
-                  color="#2A9DD8"
-                  size={16}
-                  style={styles.iconForm}
-                />
-              </View>
-            </View>
-            <Text style={styles.textTooltip}>
-              Por favor selecciona una de tus comunidades
-            </Text>
-          </View>
-        }
-        renderItem={({item, index}) => {
-          if (index + 1 <= Number(currentPage)) {
-            return (
-              <TouchableOpacity
-                style={styles.listStyle}
-                key={item.id}
-                onPress={() => {
-                  setGroup(item.id.toString());
-                  onChangeStep(Number(step) + 1);
-                }}>
-                <Image source={{uri: item.picture}} style={styles.image} />
-                <View>
-                  <Text style={styles.textCreatePublication}>{item.name}</Text>
-                  <Text style={styles.subTextCreatePublication}>
-                    {item.membersCount} Miembros
-                  </Text>
+      <View style={styles.containerFlastList}>
+        <FlatList
+          data={filtersSearchGroups.length > 0 ? filtersSearchGroups : groups}
+          ListHeaderComponent={
+            <View>
+              <View style={styles.navigate}>
+                <View style={styles.formsStyle}>
+                  <TextInput
+                    placeholder="Búsqueda de grupo"
+                    style={styles.input}
+                    value={searchGroups}
+                    onChangeText={text => filterGroups(text)}
+                  />
+                  <IconFontisto
+                    name="search"
+                    color="#2A9DD8"
+                    size={16}
+                    style={styles.iconForm}
+                  />
                 </View>
-              </TouchableOpacity>
-            );
-          }
-        }}
-        ListFooterComponent={
-          groups.length > 6 && (
-            <View style={styles.containerButton}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => setCurrentPage(Number(currentPage + 3))}>
-                <Text style={styles.textButton}>Ver mas</Text>
-              </TouchableOpacity>
+              </View>
+              <Text style={styles.textTooltip}>
+                Por favor selecciona una de tus comunidades
+              </Text>
             </View>
-          )
-        }
-      />
+          }
+          renderItem={({item, index}) => {
+            if (index + 1 <= Number(currentPage)) {
+              return (
+                <TouchableOpacity
+                  style={styles.listStyle}
+                  key={item.id}
+                  onPress={() => {
+                    setGroup(item.id.toString());
+                    onChangeStep(Number(step) + 1);
+                  }}>
+                  <Image source={{uri: item.picture}} style={styles.image} />
+                  <View>
+                    <Text style={styles.textCreatePublication}>
+                      {item.name}
+                    </Text>
+                    <Text style={styles.subTextCreatePublication}>
+                      {item.membersCount} Miembros
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }
+          }}
+          ListFooterComponent={
+            groups.length > 6 && (
+              <View style={styles.containerButton}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => setCurrentPage(Number(currentPage + 3))}>
+                  <Text style={styles.textButton}>Ver mas</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
+          style={styles.flatList}
+          scrollEnabled={true}
+        />
+      </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    flex: 1,
-    minHeight: height,
+    height: height,
+  },
+  containerFlatList: {
+    maxHeight: height - 124.5,
+  },
+  flatList: {
+    maxHeight: '100%',
   },
   navigate: {
     display: 'flex',

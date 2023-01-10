@@ -25,12 +25,12 @@ import SpinnerWithoutLogo from '../../components/SpinnerWithoutLogo';
 const {width, height} = Dimensions.get('window');
 
 function Search({route, navigation}) {
-  let {search} = route.params;
+  let {search, modeSelect} = route.params;
   let authContext = useContext(AuthContext);
   let {avatar, id} = authContext.dataUser;
   let [modalVisible, setModalVisible] = useState(false);
   let [searchInput, onChangeSearchInput] = useState(search || null);
-  let [searchMode, setSearchMode] = useState('users');
+  let [searchMode, setSearchMode] = useState(modeSelect || 'users');
 
   const searchModes = [
     {
@@ -85,8 +85,8 @@ function Search({route, navigation}) {
 
   useEffect(() => {
     setSearchMode('');
-    setTimeout(() => setSearchMode('users'), 250);
-  }, [search]);
+    setTimeout(() => setSearchMode(modeSelect || 'users'), 250);
+  }, [search, modeSelect]);
 
   function getModeRender() {
     switch (searchMode) {
@@ -134,7 +134,10 @@ function Search({route, navigation}) {
               onChangeText={onChangeSearchInput}
               onSubmitEditing={() => {
                 if (searchInput && searchInput.length > 0) {
-                  navigation.navigate('Search', {search: searchInput});
+                  navigation.navigate('Search', {
+                    search: searchInput,
+                    modeSelect: searchMode,
+                  });
                 }
               }}
             />
@@ -145,7 +148,10 @@ function Search({route, navigation}) {
               style={styles.iconSearch}
               onPress={() => {
                 if (search && search.length > 0) {
-                  navigation.navigate('Search', {search: searchInput});
+                  navigation.navigate('Search', {
+                    search: searchInput,
+                    modeSelect: searchMode,
+                  });
                 }
               }}
             />

@@ -52,7 +52,7 @@ function GroupScreen({route, navigation}) {
         setDataGroup(data);
         if (data.ownerID === authContext.dataUser.id) {
           setTextHeaderButton('Editar grupo');
-        } else if (authContext.dataUser.groups[dataGroup.id]) {
+        } else if (data.membersIDS.includes(authContext.dataUser.id)) {
           setTextHeaderButton('Perteneces a este grupo');
         } else {
           setTextHeaderButton('Unirse');
@@ -69,13 +69,14 @@ function GroupScreen({route, navigation}) {
 
   async function handleAskJoinGroup() {
     if (textHeaderButton === 'Editar grupo') {
-      console.log('editar grupo');
       setModalUserInfoConfig({
         type: 'group',
         textButton2: 'Cancelar',
         textButton1: 'Actualizar',
       });
       setModalUserInfoVisible(true);
+    } else if (textHeaderButton === 'Unirse') {
+      console.log('unirse');
     }
   }
 
