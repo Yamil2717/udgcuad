@@ -76,6 +76,25 @@ function SubComments({
       });
   }
 
+  async function addReactionSubComments(idComment, action) {
+    setLock(true);
+    await authAxios
+      .post('/comment/reaction', {
+        idComment,
+        ownerID: authContext.dataUser.id,
+        action,
+      })
+      .then(() => {
+        Alert.alert('Voces', 'Le has dado like a ese comentario exitosamente.');
+        getAllComments();
+        setLock(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLock(false);
+      });
+  }
+
   useEffect(() => {
     if (refInput.current && inputActive) {
       refInput.current.focus();
@@ -132,33 +151,60 @@ function SubComments({
                     </View>
                     <View style={styles.reactionsCommentsContainer}>
                       <View style={styles.reactionsComments}>
-                        <IconFontAwesome
-                          name="circle-thin"
-                          size={20}
-                          color="#30D34B"
-                        />
+                        <TouchableOpacity
+                          onPress={() =>
+                            !lock && addReactionSubComments(item.id, 1)
+                          }>
+                          <IconFontAwesome
+                            name={
+                              item.reaction.liked && item.reaction.action === 1
+                                ? 'circle'
+                                : 'circle-thin'
+                            }
+                            size={20}
+                            color="#30D34B"
+                          />
+                        </TouchableOpacity>
                         <Text style={styles.semaphoreNumber}>
-                          {item.likeNegative}
+                          {item.likePositive}
                         </Text>
                       </View>
                       <View style={styles.reactionsComments}>
-                        <IconFontAwesome
-                          name="circle-thin"
-                          size={20}
-                          color="#FFBD12"
-                        />
+                        <TouchableOpacity
+                          onPress={() =>
+                            !lock && addReactionSubComments(item.id, 2)
+                          }>
+                          <IconFontAwesome
+                            name={
+                              item.reaction.liked && item.reaction.action === 2
+                                ? 'circle'
+                                : 'circle-thin'
+                            }
+                            size={20}
+                            color="#FFBD12"
+                          />
+                        </TouchableOpacity>
                         <Text style={styles.semaphoreNumber}>
                           {item.likeNeutral}
                         </Text>
                       </View>
                       <View style={styles.reactionsComments}>
-                        <IconFontAwesome
-                          name="circle-thin"
-                          size={20}
-                          color="#EB4237"
-                        />
+                        <TouchableOpacity
+                          onPress={() =>
+                            !lock && addReactionSubComments(item.id, 3)
+                          }>
+                          <IconFontAwesome
+                            name={
+                              item.reaction.liked && item.reaction.action === 3
+                                ? 'circle'
+                                : 'circle-thin'
+                            }
+                            size={20}
+                            color="#EB4237"
+                          />
+                        </TouchableOpacity>
                         <Text style={styles.semaphoreNumber}>
-                          {item.likePositive}
+                          {item.likeNegative}
                         </Text>
                       </View>
                     </View>

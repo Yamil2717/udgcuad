@@ -18,6 +18,7 @@ import ES from 'moment/locale/es';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 import SubComments from './SubComments';
+import SpinnerWithoutLogo from './SpinnerWithoutLogo';
 
 const {width, height} = Dimensions.get('window');
 
@@ -30,6 +31,7 @@ function Comments({
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
+  let [loading, setLoading] = useState(true);
   let [commentInput, onChangeCommentInput] = useState('');
   let [commentsList, setCommentsList] = useState([]);
   let [lock, setLock] = useState(false);
@@ -44,9 +46,11 @@ function Comments({
       .get(`/comments/${idPublication}`)
       .then(data => {
         setCommentsList(data);
+        setLoading(false);
       })
       .catch(() => {
         setCommentsList([]);
+        setLoading(false);
       });
   }
 
@@ -87,6 +91,36 @@ function Comments({
       });
   }
 
+  async function addReactionComment(idComment, action) {
+    setLock(true);
+    await authAxios
+      .post('/comment/reaction', {
+        idComment,
+        ownerID: authContext.dataUser.id,
+        action,
+      })
+      .then(async () => {
+        authAxios
+          .get(`/comments/${idPublication}`)
+          .then(data => {
+            Alert.alert(
+              'Voces',
+              'Le has dado like a ese comentario exitosamente.',
+            );
+            setCommentsList(data);
+            setLock(false);
+          })
+          .catch(() => {
+            setCommentsList([]);
+            setLock(false);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+        setLock(false);
+      });
+  }
+
   function activeInputSubComment(id) {
     let tempActiveSubComment = {...inputSubComment};
     tempActiveSubComment[id] = {
@@ -95,7 +129,9 @@ function Comments({
     setInputSubComment(tempActiveSubComment);
   }
 
-  return (
+  return loading ? (
+    <SpinnerWithoutLogo />
+  ) : (
     <>
       <FlatList
         data={commentsList}
@@ -144,33 +180,54 @@ function Comments({
                   </View>
                   <View style={styles.reactionsCommentsContainer}>
                     <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#30D34B"
-                      />
+                      <TouchableOpacity
+                        onPress={() => !lock && addReactionComment(item.id, 1)}>
+                        <IconFontAwesome
+                          name={
+                            item.reaction.liked && item.reaction.action === 1
+                              ? 'circle'
+                              : 'circle-thin'
+                          }
+                          size={20}
+                          color="#30D34B"
+                        />
+                      </TouchableOpacity>
                       <Text style={styles.semaphoreNumber}>
-                        {item.likeNegative}
+                        {item.likePositive}
                       </Text>
                     </View>
                     <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#FFBD12"
-                      />
+                      <TouchableOpacity
+                        onPress={() => !lock && addReactionComment(item.id, 2)}>
+                        <IconFontAwesome
+                          name={
+                            item.reaction.liked && item.reaction.action === 2
+                              ? 'circle'
+                              : 'circle-thin'
+                          }
+                          size={20}
+                          color="#FFBD12"
+                        />
+                      </TouchableOpacity>
                       <Text style={styles.semaphoreNumber}>
                         {item.likeNeutral}
                       </Text>
                     </View>
                     <View style={styles.reactionsComments}>
-                      <IconFontAwesome
-                        name="circle-thin"
-                        size={20}
-                        color="#EB4237"
-                      />
+                      <TouchableOpacity
+                        onPress={() => !lock && addReactionComment(item.id, 3)}>
+                        <IconFontAwesome
+                          name={
+                            item.reaction.liked && item.reaction.action === 3
+                              ? 'circle'
+                              : 'circle-thin'
+                          }
+                          size={20}
+                          color="#EB4237"
+                        />
+                      </TouchableOpacity>
                       <Text style={styles.semaphoreNumber}>
-                        {item.likePositive}
+                        {item.likeNegative}
                       </Text>
                     </View>
                   </View>
