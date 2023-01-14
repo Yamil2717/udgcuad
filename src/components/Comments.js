@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Alert,
   TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import IconOcticons from 'react-native-vector-icons/Octicons';
@@ -19,6 +20,7 @@ import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 import SubComments from './SubComments';
 import SpinnerWithoutLogo from './SpinnerWithoutLogo';
+import useKeyboard from '../tools/useKeyboard';
 
 const {width, height} = Dimensions.get('window');
 
@@ -36,6 +38,7 @@ function Comments({
   let [commentsList, setCommentsList] = useState([]);
   let [lock, setLock] = useState(false);
   let [inputSubComment, setInputSubComment] = useState({});
+  let isUseKeyboard = useKeyboard();
 
   useEffect(() => {
     getAllComments();
@@ -45,7 +48,7 @@ function Comments({
     authAxios
       .get(`/comments/${idPublication}`)
       .then(data => {
-        setCommentsList(data);
+        setCommentsList([...data]);
         setLoading(false);
       })
       .catch(() => {
@@ -91,7 +94,7 @@ function Comments({
       });
   }
 
-  async function addReactionComment(idComment, action) {
+  async function addReactionComment(idComment, action, index) {
     setLock(true);
     await authAxios
       .post('/comment/reaction', {
@@ -100,20 +103,9 @@ function Comments({
         action,
       })
       .then(async () => {
-        authAxios
-          .get(`/comments/${idPublication}`)
-          .then(data => {
-            Alert.alert(
-              'Voces',
-              'Le has dado like a ese comentario exitosamente.',
-            );
-            setCommentsList(data);
-            setLock(false);
-          })
-          .catch(() => {
-            setCommentsList([]);
-            setLock(false);
-          });
+        addReactionCounter(index, action);
+        Alert.alert('Voces', 'Le has dado like a ese comentario exitosamente.');
+        setLock(false);
       })
       .catch(err => {
         console.log(err);
@@ -129,14 +121,229 @@ function Comments({
     setInputSubComment(tempActiveSubComment);
   }
 
+  async function addReactionCounter(indexComment, action) {
+    let tempDataComments = [...commentsList];
+    let reaction = {};
+    if (tempDataComments[indexComment].reaction.action === action) {
+      switch (action) {
+        case 1:
+          tempDataComments[indexComment].likePositive -= 2;
+          break;
+        case 2:
+          tempDataComments[indexComment].likeNeutral -= 1;
+          break;
+        case 3:
+          tempDataComments[indexComment].likeNegative -= 1;
+          break;
+      }
+      reaction = {action: 0, liked: false};
+    } else if (tempDataComments[indexComment].reaction.action === 0) {
+      switch (action) {
+        case 1:
+          tempDataComments[indexComment].likePositive += 2;
+          break;
+        case 2:
+          tempDataComments[indexComment].likeNeutral += 1;
+          break;
+        case 3:
+          tempDataComments[indexComment].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    } else {
+      switch (action) {
+        case 1:
+          switch (tempDataComments[indexComment].reaction.action) {
+            case 1:
+              tempDataComments[indexComment].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexComment].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexComment].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexComment].likePositive += 2;
+          break;
+        case 2:
+          switch (tempDataComments[indexComment].reaction.action) {
+            case 1:
+              tempDataComments[indexComment].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexComment].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexComment].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexComment].likeNeutral += 1;
+          break;
+        case 3:
+          switch (tempDataComments[indexComment].reaction.action) {
+            case 1:
+              tempDataComments[indexComment].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexComment].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexComment].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexComment].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    }
+    tempDataComments[indexComment].reaction = reaction;
+    setCommentsList([...tempDataComments]);
+  }
+
+  async function addReactionCounterSubComments(
+    indexCommentFather,
+    index,
+    action,
+  ) {
+    let tempDataComments = [...commentsList];
+    let reaction = {};
+    if (
+      tempDataComments[indexCommentFather].subComments[index].reaction
+        .action === action
+    ) {
+      switch (action) {
+        case 1:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likePositive -= 2;
+          break;
+        case 2:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNeutral -= 1;
+          break;
+        case 3:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNegative -= 1;
+          break;
+      }
+      reaction = {action: 0, liked: false};
+    } else if (
+      tempDataComments[indexCommentFather].subComments[index].reaction
+        .action === 0
+    ) {
+      switch (action) {
+        case 1:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likePositive += 2;
+          break;
+        case 2:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNeutral += 1;
+          break;
+        case 3:
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    } else {
+      switch (action) {
+        case 1:
+          switch (
+            tempDataComments[indexCommentFather].subComments[index].reaction
+              .action
+          ) {
+            case 1:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likePositive += 2;
+          break;
+        case 2:
+          switch (
+            tempDataComments[indexCommentFather].subComments[index].reaction
+              .action
+          ) {
+            case 1:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNeutral += 1;
+          break;
+        case 3:
+          switch (
+            tempDataComments[indexCommentFather].subComments[index].reaction
+              .action
+          ) {
+            case 1:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likePositive -= 2;
+              break;
+            case 2:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNeutral -= 1;
+              break;
+            case 3:
+              tempDataComments[indexCommentFather].subComments[
+                index
+              ].likeNegative -= 1;
+              break;
+          }
+          tempDataComments[indexCommentFather].subComments[
+            index
+          ].likeNegative += 1;
+          break;
+      }
+      reaction = {action, liked: true};
+    }
+    tempDataComments[indexCommentFather].subComments[index].reaction = reaction;
+    setCommentsList([...tempDataComments]);
+  }
+
   return loading ? (
     <SpinnerWithoutLogo />
   ) : (
-    <>
+    <SafeAreaView style={{flex: 1}}>
       <FlatList
         data={commentsList}
         style={[commentsList.length > 0 && styles.flatListHaveComments]}
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <View key={`_key${item.id.toString()}`}>
             <View style={styles.commentContainer}>
               <TouchableWithoutFeedback
@@ -181,7 +388,9 @@ function Comments({
                   <View style={styles.reactionsCommentsContainer}>
                     <View style={styles.reactionsComments}>
                       <TouchableOpacity
-                        onPress={() => !lock && addReactionComment(item.id, 1)}>
+                        onPress={() =>
+                          !lock && addReactionComment(item.id, 1, index)
+                        }>
                         <IconFontAwesome
                           name={
                             item.reaction.liked && item.reaction.action === 1
@@ -198,7 +407,9 @@ function Comments({
                     </View>
                     <View style={styles.reactionsComments}>
                       <TouchableOpacity
-                        onPress={() => !lock && addReactionComment(item.id, 2)}>
+                        onPress={() =>
+                          !lock && addReactionComment(item.id, 2, index)
+                        }>
                         <IconFontAwesome
                           name={
                             item.reaction.liked && item.reaction.action === 2
@@ -215,7 +426,9 @@ function Comments({
                     </View>
                     <View style={styles.reactionsComments}>
                       <TouchableOpacity
-                        onPress={() => !lock && addReactionComment(item.id, 3)}>
+                        onPress={() =>
+                          !lock && addReactionComment(item.id, 3, index)
+                        }>
                         <IconFontAwesome
                           name={
                             item.reaction.liked && item.reaction.action === 3
@@ -235,10 +448,12 @@ function Comments({
                 <SubComments
                   idPublication={idPublication}
                   idFatherComment={item.id.toString()}
+                  indexFatherComment={index}
                   subComments={item.subComments}
                   inputActive={
                     inputSubComment[`${item.id.toString()}`]?.active || false
                   }
+                  addReactionCounterSubComments={addReactionCounterSubComments}
                   getAllComments={getAllComments}
                   indexPublication={indexPublication}
                   addCommentCounter={addCommentCounter}
@@ -265,7 +480,7 @@ function Comments({
           <Text style={styles.buttonText}>Publicar</Text>
         </TouchableOpacity>
       </View>
-    </>
+    </SafeAreaView>
   );
 }
 

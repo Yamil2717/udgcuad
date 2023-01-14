@@ -22,8 +22,10 @@ const {width, height} = Dimensions.get('window');
 function SubComments({
   idPublication,
   idFatherComment,
+  indexFatherComment,
   subComments,
   inputActive,
+  addReactionCounterSubComments,
   getAllComments,
   indexPublication,
   addCommentCounter,
@@ -76,7 +78,7 @@ function SubComments({
       });
   }
 
-  async function addReactionSubComments(idComment, action) {
+  async function addReactionSubComments(idComment, action, index) {
     setLock(true);
     await authAxios
       .post('/comment/reaction', {
@@ -85,8 +87,8 @@ function SubComments({
         action,
       })
       .then(() => {
+        addReactionCounterSubComments(indexFatherComment, index, action);
         Alert.alert('Voces', 'Le has dado like a ese comentario exitosamente.');
-        getAllComments();
         setLock(false);
       })
       .catch(err => {
@@ -116,7 +118,7 @@ function SubComments({
         <FlatList
           data={subComments}
           style={[subComments.length > 0 && styles.flatListHaveComments]}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <View key={`_key${item.id.toString()}`}>
               <View style={styles.commentContainer}>
                 <TouchableWithoutFeedback
@@ -153,7 +155,7 @@ function SubComments({
                       <View style={styles.reactionsComments}>
                         <TouchableOpacity
                           onPress={() =>
-                            !lock && addReactionSubComments(item.id, 1)
+                            !lock && addReactionSubComments(item.id, 1, index)
                           }>
                           <IconFontAwesome
                             name={
@@ -172,7 +174,7 @@ function SubComments({
                       <View style={styles.reactionsComments}>
                         <TouchableOpacity
                           onPress={() =>
-                            !lock && addReactionSubComments(item.id, 2)
+                            !lock && addReactionSubComments(item.id, 2, index)
                           }>
                           <IconFontAwesome
                             name={
@@ -191,7 +193,7 @@ function SubComments({
                       <View style={styles.reactionsComments}>
                         <TouchableOpacity
                           onPress={() =>
-                            !lock && addReactionSubComments(item.id, 3)
+                            !lock && addReactionSubComments(item.id, 3, index)
                           }>
                           <IconFontAwesome
                             name={

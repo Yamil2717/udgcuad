@@ -52,7 +52,6 @@ function Publication({
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
-
   let [toggleComments, setToggleComments] = useState(true);
   let [modalVisible, setModalVisible] = useState(false);
   let [modalConfig, setModalConfig] = useState({});
