@@ -9,6 +9,7 @@ import {
   FlatList,
   Dimensions,
   TouchableWithoutFeedback,
+  findNodeHandle,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {AuthContext} from '../contexts/AuthContext';
@@ -29,6 +30,7 @@ function SubComments({
   getAllComments,
   indexPublication,
   addCommentCounter,
+  _scrollToInput,
   navigation,
 }) {
   Moment.updateLocale('es', ES);
@@ -229,6 +231,7 @@ function SubComments({
               style={styles.input}
               value={subCommentInput}
               onChangeText={setSubCommentInput}
+              onFocus={e => _scrollToInput(findNodeHandle(e.target))}
             />
             <TouchableOpacity
               style={[styles.button1, lock && styles.disabled]}

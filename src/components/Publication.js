@@ -11,14 +11,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Comments from './Comments';
 import Moment from 'moment';
 import ES from 'moment/locale/es';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
-import Modal from './Modal';
 import {
   MentionInput,
   replaceMentionValues,
@@ -46,34 +45,34 @@ function Publication({
   reaction,
   navigation,
   addReactionCounter,
-  addCommentCounter,
-  showComments,
 }) {
   Moment.updateLocale('es', ES);
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
-  let [toggleComments, setToggleComments] = useState(true);
-  let [modalVisible, setModalVisible] = useState(false);
-  let [modalConfig, setModalConfig] = useState({});
+  let [lock, setLock] = useState(false);
 
   async function addReaction(idPublication, action) {
+    setLock(true);
     await authAxios
       .post('/publication/reaction', {
         idPublication,
         ownerID: authContext.dataUser.id,
         action,
       })
-      .then(data => addReactionCounter(id - 1, action))
-      .catch(err => console.log(err));
+      .then(data => {
+        addReactionCounter(id - 1, action);
+        Alert.alert('Voces', 'Has dado like correctamente a esa publicación');
+        setLock(false);
+      })
+      .catch(err => {
+        setLock(false);
+        console.log(err);
+      });
   }
 
   return (
     <SafeAreaView
-      style={[
-        styles.container,
-        showComments && styles.containerPublicationById,
-        id !== length && styles.marginBottom,
-      ]}>
+      style={[styles.container, id !== length && styles.marginBottom]}>
       <View style={styles.groupData}>
         <View style={styles.flexDirectionRow}>
           <TouchableWithoutFeedback
@@ -118,9 +117,6 @@ function Publication({
       </View>
       <TouchableWithoutFeedback
         onPress={() => {
-          if (showComments) {
-            return;
-          }
           navigation.navigate('Publication', {id: idPost});
         }}>
         <View>
@@ -134,9 +130,7 @@ function Publication({
                     ({name}) => `@${name}`,
                   )}
                   style={styles.descriptionText}
-                  numberOfLines={
-                    !showComments && description.length > 150 ? 4 : null
-                  }
+                  numberOfLines={description.length > 150 ? 4 : null}
                   editable={false}
                   partTypes={[
                     {
@@ -167,13 +161,7 @@ function Publication({
             renderItem={({item, index}) => (
               <TouchableWithoutFeedback
                 onPress={() => {
-                  if (!showComments) {
-                    return navigation.navigate('Publication', {id: idPost});
-                  }
-                  setModalConfig({
-                    photoUrl: item,
-                  });
-                  setModalVisible(true);
+                  return navigation.navigate('Publication', {id: idPost});
                 }}>
                 <FastImage
                   key={index}
@@ -201,7 +189,7 @@ function Publication({
       </TouchableWithoutFeedback>
       <View style={styles.reactionsContainer}>
         <View style={styles.reaction}>
-          <TouchableOpacity onPress={() => addReaction(idPost, 1)}>
+          <TouchableOpacity onPress={() => !lock && addReaction(idPost, 1)}>
             <IconFontAwesome
               name={
                 reaction.liked && reaction.action === 1
@@ -215,7 +203,7 @@ function Publication({
           <Text style={styles.semaphoreNumber}>{likePositive}</Text>
         </View>
         <View style={styles.reaction}>
-          <TouchableOpacity onPress={() => addReaction(idPost, 2)}>
+          <TouchableOpacity onPress={() => !lock && addReaction(idPost, 2)}>
             <IconFontAwesome
               name={
                 reaction.liked && reaction.action === 2
@@ -229,7 +217,7 @@ function Publication({
           <Text style={styles.semaphoreNumber}>{likeNeutral}</Text>
         </View>
         <View style={styles.reaction}>
-          <TouchableOpacity onPress={() => addReaction(idPost, 3)}>
+          <TouchableOpacity onPress={() => !lock && addReaction(idPost, 3)}>
             <IconFontAwesome
               name={
                 reaction.liked && reaction.action === 3
@@ -245,9 +233,6 @@ function Publication({
         <TouchableOpacity
           style={styles.reaction}
           onPress={() => {
-            if (showComments) {
-              return setToggleComments(!toggleComments);
-            }
             navigation.navigate('Publication', {id: idPost});
           }}>
           <IconFeather name="message-circle" size={30} color="#828282" />
@@ -260,29 +245,11 @@ function Publication({
           <IconFeather name="bookmark" size={20} color="#2A9DD8" />
         </View>
       </View>
-      {showComments && toggleComments && (
-        <Comments
-          indexPublication={id - 1}
-          idPublication={idPost}
-          addCommentCounter={addCommentCounter}
-          navigation={navigation}
-        />
-      )}
-      {showComments && modalVisible && (
-        <Modal
-          photoUrl={modalConfig?.photoUrl}
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-        />
-      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  containerPublicationById: {
-    minHeight: height,
-  },
   container: {
     backgroundColor: '#fff',
     width: width,

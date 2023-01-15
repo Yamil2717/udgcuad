@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Alert,
   TouchableWithoutFeedback,
+  findNodeHandle,
   SafeAreaView,
 } from 'react-native';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -20,14 +21,13 @@ import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
 import SubComments from './SubComments';
 import SpinnerWithoutLogo from './SpinnerWithoutLogo';
-import useKeyboard from '../tools/useKeyboard';
 
 const {width, height} = Dimensions.get('window');
 
 function Comments({
-  indexPublication,
   idPublication,
   addCommentCounter,
+  _scrollToInput,
   navigation,
 }) {
   Moment.updateLocale('es', ES);
@@ -38,7 +38,6 @@ function Comments({
   let [commentsList, setCommentsList] = useState([]);
   let [lock, setLock] = useState(false);
   let [inputSubComment, setInputSubComment] = useState({});
-  let isUseKeyboard = useKeyboard();
 
   useEffect(() => {
     getAllComments();
@@ -84,7 +83,7 @@ function Comments({
             'Voces',
             'Tu comentario fue publicado, gracias por dar tu opinión.',
           );
-          addCommentCounter(indexPublication);
+          addCommentCounter();
           getAllComments();
         }
       })
@@ -339,7 +338,7 @@ function Comments({
   return loading ? (
     <SpinnerWithoutLogo />
   ) : (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView>
       <FlatList
         data={commentsList}
         style={[commentsList.length > 0 && styles.flatListHaveComments]}
@@ -455,8 +454,8 @@ function Comments({
                   }
                   addReactionCounterSubComments={addReactionCounterSubComments}
                   getAllComments={getAllComments}
-                  indexPublication={indexPublication}
                   addCommentCounter={addCommentCounter}
+                  _scrollToInput={_scrollToInput}
                   navigation={navigation}
                 />
               </View>
@@ -466,20 +465,23 @@ function Comments({
         listKey={item => `_key${item.id.toString()}`}
         keyExtractor={item => `_key${item.id.toString()}`}
         nestedScrollEnabled={true}
+        ListFooterComponent={
+          <View style={styles.containerCommentInput}>
+            <TextInput
+              placeholder="Comentar"
+              style={styles.input}
+              value={commentInput}
+              onChangeText={onChangeCommentInput}
+              onFocus={() => _scrollToInput()}
+            />
+            <TouchableOpacity
+              style={[styles.button1, lock && styles.disabled]}
+              onPress={() => !lock && postComment()}>
+              <Text style={styles.buttonText}>Publicar</Text>
+            </TouchableOpacity>
+          </View>
+        }
       />
-      <View style={styles.containerCommentInput}>
-        <TextInput
-          placeholder="Comentar"
-          style={styles.input}
-          value={commentInput}
-          onChangeText={onChangeCommentInput}
-        />
-        <TouchableOpacity
-          style={[styles.button1, lock && styles.disabled]}
-          onPress={() => !lock && postComment()}>
-          <Text style={styles.buttonText}>Publicar</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -487,7 +489,7 @@ function Comments({
 const styles = StyleSheet.create({
   flatListHaveComments: {
     paddingTop: 10,
-    paddingBottom: 5,
+    paddingBottom: 0,
     paddingHorizontal: 5,
   },
   imageComments: {
