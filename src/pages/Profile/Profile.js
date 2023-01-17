@@ -101,8 +101,17 @@ function Profile({route, navigation}) {
         whatsAppNumber: profileInfo.countryIndicator + profileInfo.phone,
       };
       try {
+        Share.isPackageInstalled('com.whatsapp').then(async response => {
+          if (response.isInstalled) {
+            await Share.shareSingle(shareOptions);
+          } else {
+            Alert.alert(
+              'Voces',
+              'No pudimos detectar que tengas WhatsApp instalado en este dispositivo.',
+            );
+          }
+        });
         setLock(false);
-        await Share.shareSingle(shareOptions);
       } catch (error) {
         setLock(false);
         console.error(error);

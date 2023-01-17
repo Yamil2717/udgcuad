@@ -120,7 +120,6 @@ function CreatePublicationScreen({navigation}) {
         .post('/publication', {...dataCreate})
         .then(data => {
           Alert.alert('Voces', data.message);
-          console.log('xd');
           navigation.reset({
             index: 0,
             routes: [{name: 'Home'}],

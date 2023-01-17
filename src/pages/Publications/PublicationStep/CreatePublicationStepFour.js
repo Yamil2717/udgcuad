@@ -47,11 +47,13 @@ function CreatePublicationStepFour({
     if (isEnabled) {
       if (photos || description) {
         let base64ImagesInclude = [];
-        photos.map(photo => {
-          base64ImagesInclude.push(
-            `data:image/${photo.type.split('/')[1]};base64,${photo.base64}`,
-          );
-        });
+        if (photos) {
+          photos.map(photo => {
+            base64ImagesInclude.push(
+              `data:image/${photo.type.split('/')[1]};base64,${photo.base64}`,
+            );
+          });
+        }
         const shareOptions = {
           title: 'Compartir vía Voces',
           message: `${title}\n${
@@ -60,10 +62,21 @@ function CreatePublicationStepFour({
               : ''
           }`,
           social: Share.Social.TWITTER,
-          urls: base64ImagesInclude,
+          urls: photos ? base64ImagesInclude : null,
         };
         try {
-          await Share.shareSingle(shareOptions);
+          Share.isPackageInstalled('com.twitter.android').then(
+            async response => {
+              if (response.isInstalled) {
+                await Share.shareSingle(shareOptions);
+              } else {
+                Alert.alert(
+                  'Voces',
+                  'No pudimos detectar que tengas Twitter instalado en este dispositivo.',
+                );
+              }
+            },
+          );
         } catch (error) {
           console.error(error);
           Alert.alert(
