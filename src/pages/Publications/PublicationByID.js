@@ -78,7 +78,6 @@ function PublicationByID({route, navigation}) {
       .get(`/publication/${id}`)
       .then(resultData => {
         setData({...resultData});
-        setLoading(false);
         setRefreshing(false);
       })
       .catch(() => {
@@ -86,7 +85,6 @@ function PublicationByID({route, navigation}) {
           'Voces',
           'ha ocurrido un error no sé pudo obtener la información de está publicación',
         );
-        setLoading(false);
         setRefreshing(false);
       });
   }
@@ -227,8 +225,8 @@ function PublicationByID({route, navigation}) {
                   onRefresh={getPublicationAgain}
                 />
               }
-              data={[]}
-              ListEmptyComponent={
+              data={[{...data}]}
+              renderItem={() => (
                 <View>
                   <View style={styles.subContainer}>
                     <View style={styles.groupData}>
@@ -463,7 +461,7 @@ function PublicationByID({route, navigation}) {
                     />
                   )}
                 </View>
-              }
+              )}
             />
           )}
         </KeyboardAvoidingView>

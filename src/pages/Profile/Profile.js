@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Navbar from '../../components/Navbar/Navbar';
@@ -40,6 +41,9 @@ function Profile({route, navigation}) {
   let [modalUserInfoVisible, setModalUserInfoVisible] = useState(false);
   let [modalUserInfoConfig, setModalUserInfoConfig] = useState({});
   let authContext = useContext(AuthContext);
+  let [currentPage, setCurrentPage] = useState(0);
+  let [haveMorePublications, setHaveMorePublications] = useState(true);
+  const flatListRef = useRef(null);
   const {authAxios} = useContext(AxiosContext);
 
   /* edit info */
@@ -282,6 +286,17 @@ function Profile({route, navigation}) {
       });
   }
 
+  useEffect(() => {
+    getMorePublications();
+  }, [currentPage]);
+
+  async function getMorePublications() {
+    await authAxios
+      .get(`/publications/${id}/${currentPage}`)
+      .then(data => setDataPublications([...dataPublications, ...data]))
+      .catch(() => setHaveMorePublications(false));
+  }
+
   async function getMyDataUser() {
     await authAxios
       .get('/user')
@@ -326,9 +341,9 @@ function Profile({route, navigation}) {
 
   async function getPublications() {
     await authAxios
-      .get(`/publications/${id}`)
+      .get(`/publications/${id}/${currentPage}`)
       .then(data => {
-        setDataPublications(data);
+        setDataPublications([...data]);
       })
       .catch(() => {
         setDataPublications([]);
@@ -493,12 +508,17 @@ function Profile({route, navigation}) {
     setDataPublications([...tempDataPublication]);
   }
 
+  async function loadMorePublications() {
+    setCurrentPage(currentPage + 15);
+  }
+
   return loading ? (
     <Spinner />
   ) : (
     <SafeAreaView style={styles.container}>
       <Navbar navigation={navigation} />
       <FlatList
+        ref={flatListRef}
         refreshControl={
           <RefreshControl
             colors={['#2A9DD8', '#2A9DD8']}
@@ -612,6 +632,24 @@ function Profile({route, navigation}) {
           </Text>
         }
         removeClippedSubviews={true}
+        keyExtractor={item => item.id}
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        ListFooterComponent={() =>
+          haveMorePublications ? (
+            <View style={styles.loaderStyle}>
+              <ActivityIndicator size="large" color="#2A9DD8" />
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.textNoMorePublications}>
+                No pudimos encontrar más publicaciones
+              </Text>
+            </View>
+          )
+        }
+        onEndReached={() => haveMorePublications && loadMorePublications()}
+        onEndReachedThreshold={0}
       />
       {modalVisible && (
         <Modal
@@ -715,6 +753,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
+  },
+  loaderStyle: {
+    marginVertical: 10,
+  },
+  textNoMorePublications: {
+    textAlign: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#2A9DD8',
+    color: 'white',
   },
 });
 

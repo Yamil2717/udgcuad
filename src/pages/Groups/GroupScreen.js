@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   Alert,
   FlatList,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Dimensions,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -36,6 +37,9 @@ function GroupScreen({route, navigation}) {
   let [modalUserInfoVisible, setModalUserInfoVisible] = useState(false);
   let [modalUserInfoConfig, setModalUserInfoConfig] = useState({});
   let [lock, setLock] = useState(false);
+  let [currentPage, setCurrentPage] = useState(0);
+  let [haveMorePublications, setHaveMorePublications] = useState(true);
+  const flatListRef = useRef(null);
 
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -80,9 +84,26 @@ function GroupScreen({route, navigation}) {
     }
   }
 
+  async function loadMorePublications() {
+    setCurrentPage(currentPage + 15);
+  }
+
+  useEffect(() => {
+    getMorePublications();
+  }, [currentPage]);
+
+  async function getMorePublications() {
+    await authAxios
+      .get(`/publications/group/${id}/${currentPage}`)
+      .then(data =>
+        setDataGroupPublications([...dataGroupPublications, ...data]),
+      )
+      .catch(() => setHaveMorePublications(false));
+  }
+
   async function getPublications() {
     await authAxios
-      .get(`/publications/group/${id}`)
+      .get(`/publications/group/${id}/${currentPage}`)
       .then(data => {
         setDataGroupPublications([...data]);
       })
@@ -289,6 +310,7 @@ function GroupScreen({route, navigation}) {
     <SafeAreaView style={styles.container}>
       <Navbar navigation={navigation} />
       <FlatList
+        ref={flatListRef}
         refreshControl={
           <RefreshControl
             colors={['#2A9DD8', '#2A9DD8']}
@@ -324,19 +346,6 @@ function GroupScreen({route, navigation}) {
                       {textHeaderButton}
                     </Text>
                   </TouchableOpacity>
-                  {/*textHeaderButton === 'Aceptar' && (
-                    <TouchableOpacity
-                      style={[styles.headerButton, styles.marginLeft]}
-                      onPress={() => {
-                        if (authContext.dataUser.friends[id]) {
-                          console.log('aaaa');
-                        } else {
-                          console.log('bbbb');
-                        }
-                      }}>
-                      <Text style={styles.headerTextButton}>Rechazar</Text>
-                    </TouchableOpacity>
-                    )*/}
                 </View>
               </FastImage>
             </TouchableOpacity>
@@ -402,6 +411,24 @@ function GroupScreen({route, navigation}) {
           </Text>
         }
         removeClippedSubviews={true}
+        keyExtractor={item => item.id}
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        ListFooterComponent={() =>
+          haveMorePublications ? (
+            <View style={styles.loaderStyle}>
+              <ActivityIndicator size="large" color="#2A9DD8" />
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.textNoMorePublications}>
+                No pudimos encontrar más publicaciones
+              </Text>
+            </View>
+          )
+        }
+        onEndReached={() => haveMorePublications && loadMorePublications()}
+        onEndReachedThreshold={0}
       />
       {modalVisible && (
         <Modal
@@ -510,6 +537,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 16,
+  },
+  loaderStyle: {
+    marginVertical: 10,
+  },
+  textNoMorePublications: {
+    textAlign: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#2A9DD8',
+    color: 'white',
   },
 });
 

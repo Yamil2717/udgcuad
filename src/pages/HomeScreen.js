@@ -1,4 +1,10 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,6 +14,7 @@ import {
   RefreshControl,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import {AuthContext} from '../contexts/AuthContext';
 import {AxiosContext} from '../contexts/AxiosContext';
@@ -21,6 +28,9 @@ function HomeScreen({navigation}) {
   let [loading, setLoading] = useState(true);
   let [dataPublication, setDataPublication] = useState([]);
   let [refreshing, setRefreshing] = useState(false);
+  let [currentPage, setCurrentPage] = useState(0);
+  let [haveMorePublications, setHaveMorePublications] = useState(true);
+  const flatListRef = useRef(null);
 
   let authContext = useContext(AuthContext);
   const {authAxios} = useContext(AxiosContext);
@@ -41,25 +51,25 @@ function HomeScreen({navigation}) {
         console.error(err?.response?.data?.message || err.message);
         authContext.logout();
       });
-  }
-
-  async function getDataPublications() {
-    await authAxios
-      .get('/publications')
-      .then(data => setDataPublication(data))
-      .catch(() => setDataPublication([]));
     await authAxios
       .get('/myGroups')
       .then(data => authContext.setDataGroups(data))
       .catch(() => authContext.setDataGroups([]));
   }
 
+  async function getDataPublications() {
+    await authAxios
+      .get(`/publications/home/${currentPage}`)
+      .then(data => setDataPublication([...data]))
+      .catch(() => setDataPublication([]));
+  }
+
   const refreshPublications = useCallback(async () => {
     setRefreshing(true);
     await authAxios
-      .get('/publications')
+      .get('/publications/home/1')
       .then(data => {
-        setDataPublication(data);
+        setDataPublication([...data]);
         setRefreshing(false);
       })
       .catch(() => {
@@ -67,6 +77,21 @@ function HomeScreen({navigation}) {
         setRefreshing(false);
       });
   }, []);
+
+  useEffect(() => {
+    getMorePublications();
+  }, [currentPage]);
+
+  async function getMorePublications() {
+    await authAxios
+      .get(`/publications/home/${currentPage}`)
+      .then(data => setDataPublication([...dataPublication, ...data]))
+      .catch(() => setHaveMorePublications(false));
+  }
+
+  async function loadMorePublications() {
+    setCurrentPage(currentPage + 15);
+  }
 
   function addCommentCounter(indexPublication) {
     let tempDataPublication = [...dataPublication];
@@ -176,6 +201,7 @@ function HomeScreen({navigation}) {
           </ScrollView>
         ) : (
           <FlatList
+            ref={flatListRef}
             data={dataPublication}
             style={styles.flatListContainer}
             refreshControl={
@@ -211,6 +237,23 @@ function HomeScreen({navigation}) {
               />
             )}
             removeClippedSubviews={true}
+            keyExtractor={item => item.id}
+            initialNumToRender={5}
+            ListFooterComponent={() =>
+              haveMorePublications ? (
+                <View style={styles.loaderStyle}>
+                  <ActivityIndicator size="large" color="#2A9DD8" />
+                </View>
+              ) : (
+                <View>
+                  <Text style={styles.textNoMorePublications}>
+                    No pudimos encontrar más publicaciones
+                  </Text>
+                </View>
+              )
+            }
+            onEndReached={() => haveMorePublications && loadMorePublications()}
+            onEndReachedThreshold={0}
           />
         )}
       </View>
@@ -246,6 +289,15 @@ const styles = StyleSheet.create({
     top: height - 50,
     left: 0,
     right: 0,
+  },
+  loaderStyle: {
+    marginVertical: 10,
+  },
+  textNoMorePublications: {
+    textAlign: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#2A9DD8',
+    color: 'white',
   },
 });
 
