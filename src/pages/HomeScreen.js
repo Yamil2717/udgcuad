@@ -239,6 +239,7 @@ function HomeScreen({navigation}) {
             removeClippedSubviews={true}
             keyExtractor={item => item.id}
             initialNumToRender={5}
+            maxToRenderPerBatch={5}
             ListFooterComponent={() =>
               haveMorePublications ? (
                 <View style={styles.loaderStyle}>
